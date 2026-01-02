@@ -46,10 +46,11 @@ export function PageHeader({ title, description, icon, actions, className }: Pag
             </div>
 
             <div className="flex items-center gap-2 shrink-0 self-start md:self-center">
-                {actions}
+                {/* Actions - Hide on scroll to reduce clutter */}
+                {!isScrolled && actions}
 
                 {/* Notification & Fullscreen - Show when collapsed and not scrolled */}
-                {isTopNavCollapsed && !isScrolled && (
+                {!isScrolled && (
                     <div className="flex items-center gap-1 pl-2 ml-2 border-l border-white/10">
                         <NotificationCenter />
                         <FullscreenToggle className="hidden md:flex" />

@@ -23,6 +23,10 @@ interface WindowLayoutContextType {
     // Top Nav State
     isTopNavCollapsed: boolean;
     toggleTopNav: () => void;
+
+    // Sticky Actions
+    stickyActions: ReactNode;
+    setStickyActions: (actions: ReactNode) => void;
 }
 
 const WindowLayoutContext = createContext<WindowLayoutContextType | null>(null);
@@ -40,6 +44,7 @@ export function WindowLayoutProvider({ children }: { children: ReactNode }) {
     const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
     const [isBottomPanelOpen, setIsBottomPanelOpen] = useState(false);
     const [isTopNavCollapsed, setIsTopNavCollapsed] = useState(false);
+    const [stickyActions, setStickyActions] = useState<ReactNode>(null);
     const { isScrolled } = useScroll();
 
     // Load preferences
@@ -108,7 +113,9 @@ export function WindowLayoutProvider({ children }: { children: ReactNode }) {
             toggleTopNav,
             detailPanelStyle,
             bottomPanelStyle,
-            rightPanelStyle
+            rightPanelStyle,
+            stickyActions,
+            setStickyActions
         }}>
             {children}
         </WindowLayoutContext.Provider>

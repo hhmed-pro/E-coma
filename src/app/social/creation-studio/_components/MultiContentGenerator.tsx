@@ -391,7 +391,7 @@ const DEFAULT_CONTEXT_BLOCKS: ContextBlockSpec[] = [
                 placeholder: 'e.g., Premium, Exclusive...',
                 suggestions: ['Premium', 'Fast', 'Easy', 'Guaranteed', 'Authentic'],
             },
-             {
+            {
                 id: 'wordsToAvoid',
                 label: 'Words to avoid',
                 kind: 'chips',
@@ -731,9 +731,9 @@ const PLATFORM_MATRIX: Record<string, Record<string, Record<string, any>>> = {
             YouTube: { ctx: 'Community posts engage subscribers.', type: 'YT Community Post', tools: ['Poll', 'Related Video Link'] }
         },
         reel: {
-            Instagram: { 
-                ctx: 'Reels account for 20% of time on app.', 
-                type: 'Insta Reel (9:16)', 
+            Instagram: {
+                ctx: 'Reels account for 20% of time on app.',
+                type: 'Insta Reel (9:16)',
                 tools: ['Trending Audio', 'Topics', 'Collab'],
                 constraints: {
                     length: "Up to 90s (Rec: 7-15s)",
@@ -743,9 +743,9 @@ const PLATFORM_MATRIX: Record<string, Record<string, Record<string, any>>> = {
                 }
             },
             Facebook: { ctx: 'Reels on FB reach older demographics.', type: 'FB Reel (9:16)', tools: ['Remix Settings', 'Captions'] },
-            TikTok: { 
-                ctx: 'Native content converts 72% better.', 
-                type: 'TikTok Video (9:16)', 
+            TikTok: {
+                ctx: 'Native content converts 72% better.',
+                type: 'TikTok Video (9:16)',
                 tools: ['TikTok Sound', 'Duet/Stitch', 'Text Duration'],
                 constraints: {
                     length: "15s – 60s (Sweet spot: 21-34s)",
@@ -852,9 +852,15 @@ const PLATFORM_MATRIX: Record<string, Record<string, Record<string, any>>> = {
     }
 };
 
-export default function MultiContentGenerator() {
+interface MultiContentGeneratorProps {
+    onHistory?: () => void;
+    onImport?: () => void;
+    onExport?: () => void;
+}
+
+export default function MultiContentGenerator({ onHistory, onImport, onExport }: MultiContentGeneratorProps = {}) {
     const [currentStep, setCurrentStep] = useState(1);
-    
+
     // State
     const [product, setProduct] = useState<ProductConfig>({ name: '', description: '', url: '', cloneUrl: '' });
     const [selectedGoal, setSelectedGoal] = useState<ContentGoal>('product_launch');
@@ -923,8 +929,8 @@ export default function MultiContentGenerator() {
         const voiceSummary = Object.entries(brief.voiceSliders)
             .map(([k, v]) => {
                 const label = k === 'formalCasual' ? (v < 40 ? 'Formal' : v > 60 ? 'Casual' : 'Neutral') :
-                              k === 'boldSoft' ? (v < 40 ? 'Bold' : v > 60 ? 'Soft' : 'Balanced') :
-                              k === 'funnySerious' ? (v < 40 ? 'Funny' : v > 60 ? 'Serious' : 'Standard') : '';
+                    k === 'boldSoft' ? (v < 40 ? 'Bold' : v > 60 ? 'Soft' : 'Balanced') :
+                        k === 'funnySerious' ? (v < 40 ? 'Funny' : v > 60 ? 'Serious' : 'Standard') : '';
                 return label;
             })
             .filter(Boolean)
@@ -956,9 +962,9 @@ export default function MultiContentGenerator() {
         const niceIds = comboContextSpec?.niceToHave ?? ['targetAudience', 'offer', 'proof', 'brandVoice'];
 
         const isFilled = (id: ContextFieldId) => {
-             // Special check for sliders/chips if they are required (usually optional)
-             if (id === 'voiceSliders') return true; // Always has value
-             return Boolean((contextValues[id] ?? '').trim());
+            // Special check for sliders/chips if they are required (usually optional)
+            if (id === 'voiceSliders') return true; // Always has value
+            return Boolean((contextValues[id] ?? '').trim());
         };
 
         const requiredTotal = requiredIds.length;
@@ -1075,7 +1081,7 @@ export default function MultiContentGenerator() {
         setSelectedGoal(selectedPreset.goal);
         setSelectedFormat(selectedPreset.format);
         setSelectedPlatforms(selectedPreset.platforms);
-        
+
         // Auto-fill defaults if fields are empty
         setBrief(prev => ({
             ...prev,
@@ -1085,9 +1091,9 @@ export default function MultiContentGenerator() {
 
         if (selectedPreset.defaults.funnelStage) setFunnelStage(selectedPreset.defaults.funnelStage);
         if (selectedPreset.defaults.actionType) setActionType(selectedPreset.defaults.actionType);
-        
+
         // You could also set structure as a "hint" or "template" if you had a field for it
-        
+
         setSelectedPreset(null);
     };
 
@@ -1099,7 +1105,7 @@ export default function MultiContentGenerator() {
 
     return (
         <div className="w-full max-w-7xl mx-auto space-y-8 p-4 pb-24">
-            
+
             {/* Preset Confirmation Dialog */}
             <Dialog open={!!selectedPreset} onOpenChange={(open) => !open && setSelectedPreset(null)}>
                 <DialogContent className="sm:max-w-lg">
@@ -1109,13 +1115,13 @@ export default function MultiContentGenerator() {
                             Apply "{selectedPreset?.label}" Preset?
                         </DialogTitle>
                     </DialogHeader>
-                    
+
                     {selectedPreset && (
                         <div className="space-y-4 py-2">
                             <p className="text-sm text-slate-500">
                                 We'll configure your workspace for optimal results.
                             </p>
-                            
+
                             {/* Configuration Summary */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border text-sm space-y-2">
@@ -1131,8 +1137,8 @@ export default function MultiContentGenerator() {
                                     <div className="flex items-center gap-1 flex-wrap">
                                         <span className="text-xs text-slate-400 mr-1">Platforms:</span>
                                         {selectedPreset.platforms.slice(0, 3).map(p => {
-                                             const Icon = getPlatformIcon(p);
-                                             return <Icon key={p} className={cn("w-3 h-3", getPlatformColor(p))} />
+                                            const Icon = getPlatformIcon(p);
+                                            return <Icon key={p} className={cn("w-3 h-3", getPlatformColor(p))} />
                                         })}
                                     </div>
                                 </div>
@@ -1144,16 +1150,16 @@ export default function MultiContentGenerator() {
                                     <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-xs">
                                         <span className="text-slate-500">Tone:</span>
                                         <span className="font-medium text-slate-700 dark:text-slate-200">{selectedPreset.defaults.tone}</span>
-                                        
+
                                         <span className="text-slate-500">CTA:</span>
                                         <span className="font-medium text-slate-700 dark:text-slate-200">{selectedPreset.defaults.ctaStyle}</span>
-                                        
+
                                         <span className="text-slate-500">Struct:</span>
                                         <span className="font-medium text-slate-700 dark:text-slate-200">{selectedPreset.defaults.structure}</span>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {/* What's Next Hint */}
                             <div className="flex gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800 rounded-lg">
                                 <Lightbulb className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
@@ -1181,17 +1187,17 @@ export default function MultiContentGenerator() {
                 <div className="flex items-center justify-between relative">
                     {/* Progress Bar Background */}
                     <div className="absolute left-0 top-1/2 w-full h-0.5 bg-slate-200 dark:bg-slate-800 -z-10" />
-                    
+
                     {STEPS.map((step) => {
                         const isActive = currentStep === step.id;
                         const isCompleted = currentStep > step.id;
                         return (
                             <div key={step.id} className="flex flex-col items-center gap-2 bg-white dark:bg-slate-950 px-4">
-                                <div 
+                                <div
                                     className={cn(
                                         "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all",
-                                        isActive ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-110" : 
-                                        isCompleted ? "bg-green-500 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-400"
+                                        isActive ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-110" :
+                                            isCompleted ? "bg-green-500 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-400"
                                     )}
                                 >
                                     {isCompleted ? <Check className="w-4 h-4" /> : step.id}
@@ -1210,11 +1216,11 @@ export default function MultiContentGenerator() {
             <div className={cn("space-y-6", currentStep !== 1 && "hidden")}>
                 {/* 1. Product Row */}
                 <Card className="p-4 border-slate-200 dark:border-slate-800">
-                     <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center gap-2 mb-4">
                         <ShoppingBag className="w-5 h-5 text-indigo-500" />
                         <h2 className="text-lg font-bold">What are we selling?</h2>
-                     </div>
-                     <div ref={sectionRefs.product} className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    </div>
+                    <div ref={sectionRefs.product} className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                         <div className="flex gap-2">
                             <Button variant="outline" size="sm" className="gap-2"><ShoppingBag className="w-4 h-4" /> Inventory</Button>
                             <Button variant="outline" size="sm" className="gap-2"><Globe className="w-4 h-4" /> Research</Button>
@@ -1238,12 +1244,12 @@ export default function MultiContentGenerator() {
 
                 {/* 1.5. Intent & Funnel (New) */}
                 <Card className="p-6 border-slate-200 dark:border-slate-800 space-y-4">
-                     <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-2">
                         <Target className="w-5 h-5 text-red-500" />
                         <h2 className="text-lg font-bold">Campaign Intent</h2>
-                     </div>
+                    </div>
 
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Funnel Stage */}
                         <div className="space-y-3">
                             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Funnel Stage</label>
@@ -1287,7 +1293,7 @@ export default function MultiContentGenerator() {
                                 ))}
                             </div>
                         </div>
-                     </div>
+                    </div>
                 </Card>
 
                 {/* 2. Context Blocks */}
@@ -1432,7 +1438,7 @@ export default function MultiContentGenerator() {
                                                                             <span>{slider.left}</span>
                                                                             <span>{slider.right}</span>
                                                                         </div>
-                                                                        <Slider 
+                                                                        <Slider
                                                                             value={[brief.voiceSliders[slider.id] ?? 50]}
                                                                             onValueChange={([val]) => setBrief(b => ({
                                                                                 ...b,
@@ -1529,7 +1535,7 @@ export default function MultiContentGenerator() {
 
             {/* --- STEP 2: STRUCTURE (Goal, Format, Platforms) --- */}
             <div className={cn("grid grid-cols-1 lg:grid-cols-12 gap-6", currentStep !== 2 && "hidden")}>
-                
+
                 {/* LEFT: PRESETS & CONTEXT (5 cols) */}
                 <div className="lg:col-span-5 space-y-4">
                     <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Quick Presets (Auto-Config)</h3>
@@ -1646,7 +1652,7 @@ export default function MultiContentGenerator() {
                                 {PLATFORMS.map((platform) => {
                                     const selected = selectedPlatforms.includes(platform.id);
                                     const isPrimary = primaryPlatform === platform.id;
-                                    
+
                                     return (
                                         <button
                                             key={platform.id}
@@ -1672,8 +1678,8 @@ export default function MultiContentGenerator() {
                                             }}
                                             className={cn(
                                                 "relative flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all overflow-hidden group",
-                                                selected 
-                                                    ? "bg-slate-900 text-white border-slate-900 shadow-md ring-offset-1" 
+                                                selected
+                                                    ? "bg-slate-900 text-white border-slate-900 shadow-md ring-offset-1"
                                                     : "bg-white dark:bg-slate-800 hover:bg-slate-50 border-slate-200 text-slate-600",
                                                 isPrimary && "ring-2 ring-indigo-500 border-indigo-500"
                                             )}
@@ -1687,7 +1693,7 @@ export default function MultiContentGenerator() {
 
                                             <platform.icon className={cn("w-4 h-4", selected ? "text-white" : platform.color)} />
                                             <span>{platform.label}</span>
-                                            
+
                                             {/* Hover "Make Primary" hint */}
                                             {selected && !isPrimary && (
                                                 <span className="absolute inset-0 bg-slate-900/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold text-white">
@@ -1730,7 +1736,7 @@ export default function MultiContentGenerator() {
 
             {/* --- STEP 3: CREATIVE (Creation & Edit) --- */}
             <div className={cn("space-y-6", currentStep !== 3 && "hidden")}>
-                
+
                 {/* Header & Switcher */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
@@ -1758,7 +1764,7 @@ export default function MultiContentGenerator() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* LEFT: INPUT FORM */}
                     <Card className="p-6 space-y-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                         {/* Media Source */}
+                        {/* Media Source */}
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <label className="text-sm font-medium flex items-center gap-2">
@@ -1791,17 +1797,17 @@ export default function MultiContentGenerator() {
                                     </label>
                                     <span className="text-[10px] text-slate-400">Click to Apply</span>
                                 </div>
-                                
+
                                 <Tabs defaultValue="hooks" className="w-full">
                                     <TabsList className="grid w-full grid-cols-3 h-8">
                                         <TabsTrigger value="hooks" className="text-xs">Hooks</TabsTrigger>
                                         <TabsTrigger value="ctas" className="text-xs">CTAs</TabsTrigger>
                                         <TabsTrigger value="mistakes" className="text-xs text-red-500">Mistakes</TabsTrigger>
                                     </TabsList>
-                                    
+
                                     <TabsContent value="hooks" className="space-y-2 mt-2">
                                         {currentMatrix.examples?.hooks?.map((hook: string, i: number) => (
-                                            <button 
+                                            <button
                                                 key={i}
                                                 onClick={() => setContentInput(prev => ({ ...prev, title: hook }))}
                                                 className="w-full text-left text-xs p-2 rounded hover:bg-white dark:hover:bg-slate-700 border border-transparent hover:border-indigo-200 transition-all flex items-start gap-2 group"
@@ -1811,10 +1817,10 @@ export default function MultiContentGenerator() {
                                             </button>
                                         ))}
                                     </TabsContent>
-                                    
+
                                     <TabsContent value="ctas" className="space-y-2 mt-2">
                                         {currentMatrix.examples?.ctas?.map((cta: string, i: number) => (
-                                            <button 
+                                            <button
                                                 key={i}
                                                 onClick={() => setContentInput(prev => ({ ...prev, caption: prev.caption ? prev.caption + "\n\n" + cta : cta }))}
                                                 className="w-full text-left text-xs p-2 rounded hover:bg-white dark:hover:bg-slate-700 border border-transparent hover:border-green-200 transition-all flex items-start gap-2 group"
@@ -1824,7 +1830,7 @@ export default function MultiContentGenerator() {
                                             </button>
                                         ))}
                                     </TabsContent>
-                                    
+
                                     <TabsContent value="mistakes" className="space-y-2 mt-2">
                                         {currentMatrix.examples?.mistakes?.map((mistake: string, i: number) => (
                                             <div key={i} className="text-xs p-2 rounded bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 flex items-start gap-2">
@@ -1837,8 +1843,8 @@ export default function MultiContentGenerator() {
                             </div>
                         )}
 
-                         {/* Core Fields */}
-                         <div className="space-y-4">
+                        {/* Core Fields */}
+                        <div className="space-y-4">
                             <label className="text-sm font-medium text-slate-600">2. Core Fields</label>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">ðŸ“ {currentMatrix.title}</label>
@@ -1877,8 +1883,8 @@ export default function MultiContentGenerator() {
                         </div>
 
                         {/* Output Quality Checklist */}
-                        <QualityChecklist 
-                            goal={selectedGoal} 
+                        <QualityChecklist
+                            goal={selectedGoal}
                             format={selectedFormat}
                             data={{
                                 hook: contentInput.title,
@@ -1898,7 +1904,7 @@ export default function MultiContentGenerator() {
                     {/* RIGHT: PREVIEW & EDIT */}
                     <div className="space-y-4">
                         <Card className="overflow-hidden bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800">
-                             <div className="p-3 border-b bg-white dark:bg-slate-900 flex justify-between items-center text-xs text-slate-500 font-medium">
+                            <div className="p-3 border-b bg-white dark:bg-slate-900 flex justify-between items-center text-xs text-slate-500 font-medium">
                                 <span className="flex items-center gap-2">
                                     Content Preview
                                     <Badge variant="outline" className="text-[10px]">{currentMatrix.preview || 'Preview'}</Badge>
@@ -1920,7 +1926,7 @@ export default function MultiContentGenerator() {
                                 )}
                             </div>
                         </Card>
-                        
+
                         {/* Platform Specific Previews (Horizontal Scroll) */}
                         <div className="mt-6 space-y-3">
                             <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Platform Optimization</h3>
@@ -1951,15 +1957,37 @@ export default function MultiContentGenerator() {
             {/* Navigation Footer */}
             <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur border-t z-50">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
-                    <Button 
-                        variant="ghost" 
-                        onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                        disabled={currentStep === 1}
-                        className="text-slate-500"
-                    >
-                        Back
-                    </Button>
-                    
+                    {/* Left: Tools & Export (if callbacks provided) */}
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+                            disabled={currentStep === 1}
+                            className="text-slate-500"
+                        >
+                            Back
+                        </Button>
+                        {onHistory && (
+                            <Button variant="outline" size="sm" onClick={onHistory} className="gap-1">
+                                <RefreshCw className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">History</span>
+                            </Button>
+                        )}
+                        {onImport && (
+                            <Button variant="outline" size="sm" onClick={onImport} className="gap-1">
+                                <Download className="w-3.5 h-3.5 rotate-180" />
+                                <span className="hidden sm:inline">Import</span>
+                            </Button>
+                        )}
+                        {onExport && (
+                            <Button variant="outline" size="sm" onClick={onExport} className="gap-1">
+                                <Download className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Export</span>
+                            </Button>
+                        )}
+                    </div>
+
+                    {/* Right: Navigation */}
                     <div className="flex gap-2">
                         {currentStep < 3 ? (
                             <Button onClick={() => setCurrentStep(currentStep + 1)} className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">
@@ -1973,7 +2001,7 @@ export default function MultiContentGenerator() {
                     </div>
                 </div>
             </div>
-            
+
         </div>
     );
 }

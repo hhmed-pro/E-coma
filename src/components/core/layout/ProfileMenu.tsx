@@ -23,6 +23,8 @@ interface ProfileMenuProps {
     isOpenControlled?: boolean;
     /** Dropdown alignment */
     align?: "start" | "end";
+    /** Optional class name for the trigger button */
+    triggerClassName?: string;
 }
 
 export function ProfileMenu({
@@ -31,7 +33,8 @@ export function ProfileMenu({
 
     onOpenChange,
     isOpenControlled,
-    align = "end"
+    align = "end",
+    triggerClassName
 }: ProfileMenuProps) {
     const [isOpenInternal, setIsOpenInternal] = useState(false);
     const [showSubMenu, setShowSubMenu] = useState(false);
@@ -94,7 +97,8 @@ export function ProfileMenu({
                     "w-9 h-9 rounded-full flex items-center justify-center transition-all font-[Poppins,Arial,sans-serif]",
                     "bg-gradient-to-br from-[hsl(var(--accent-orange))] to-[hsl(var(--accent-blue))] text-[hsl(var(--background))] font-semibold text-sm",
                     "hover:ring-2 hover:ring-[hsl(var(--accent-orange))]/50 hover:ring-offset-2 hover:ring-offset-background",
-                    isOpen && "ring-2 ring-[hsl(var(--accent-orange))] ring-offset-2 ring-offset-background"
+                    isOpen && "ring-2 ring-[hsl(var(--accent-orange))] ring-offset-2 ring-offset-background",
+                    triggerClassName
                 )}
             >
                 {user.avatar ? (

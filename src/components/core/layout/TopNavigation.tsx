@@ -23,7 +23,7 @@ interface TopNavigationProps {
 
 export function TopNavigation({ }: TopNavigationProps) {
     const pathname = usePathname();
-    const { isTopNavCollapsed, toggleTopNav } = useWindowLayout();
+    const { isTopNavCollapsed, toggleTopNav, stickyActions } = useWindowLayout();
     const { isScrolled } = useScroll();
 
     // Use shared config
@@ -48,8 +48,10 @@ export function TopNavigation({ }: TopNavigationProps) {
     return (
         <div className={containerClasses}>
             {/* Notification & Fullscreen - Fixed to Right Side (hide when collapsed and not scrolled - shown in PageHeader instead) */}
-            {(!isTopNavCollapsed || isScrolled) && (
+            {isScrolled && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
+                    {stickyActions}
+                    <div className="h-4 w-px bg-border/50 mx-1" />
                     <NotificationCenter />
                     <FullscreenToggle className="hidden md:flex" />
                 </div>
@@ -73,10 +75,14 @@ export function TopNavigation({ }: TopNavigationProps) {
                 {/* Main Nav Pill - Hidden when collapsed */}
                 <nav
                     className={cn(
-                        "h-14 border border-border/40 bg-card/85 backdrop-blur-md rounded-full shadow-lg flex items-center px-6 gap-1 overflow-visible relative transition-all duration-300 origin-left",
+                        "border border-border/40 bg-card/85 backdrop-blur-md rounded-full shadow-lg flex items-center gap-1 overflow-visible relative transition-all duration-300 origin-left",
                         isTopNavCollapsed
-                            ? "w-0 opacity-0 overflow-hidden px-0 border-0 scale-95 pointer-events-none"
-                            : "w-full max-w-7xl opacity-100 scale-100"
+                            ? "w-0 h-14 opacity-0 overflow-hidden px-0 border-0 scale-95 pointer-events-none"
+                            : cn(
+                                "opacity-100 scale-100",
+                                isScrolled ? "w-fit" : "w-full max-w-7xl"
+                            ),
+                        !isTopNavCollapsed && isScrolled ? "h-9 px-3" : "h-14 px-6"
                     )}
                 >
                     {/* Subtle Glow Border Effect - Anthropic Orange accent */}
@@ -88,28 +94,43 @@ export function TopNavigation({ }: TopNavigationProps) {
                     )}
 
                     {/* Nav Pages - Horizontal Scrollable on smaller screens */}
-                    <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar mask-linear-fade">
+                    <div className={cn(
+                        "flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar mask-linear-fade transition-all duration-300",
+                        isScrolled ? "pr-[180px]" : "" // Add safe padding for sticky actions
+                    )}>
                         {navPages.map((page) => (
                             <Link
                                 key={page.href}
                                 href={page.href}
                                 className={cn(
-                                    "flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap relative group click-feedback shrink-0 font-[Poppins,Arial,sans-serif]",
+                                    "flex items-center rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap relative group click-feedback shrink-0 font-[Poppins,Arial,sans-serif]",
+                                    isScrolled ? "px-1.5 py-1 gap-1" : "px-3 py-2 gap-2", // Ultra-compact on scroll
                                     isActive(page.href)
                                         ? "bg-[hsl(var(--accent-orange))]/15 text-[hsl(var(--accent-orange))] shadow-[0_0_15px_hsl(var(--accent-orange)/0.25)] nav-active-underline"
                                         : "text-muted-foreground hover:bg-accent hover:text-foreground"
                                 )}
                             >
                                 <page.icon className={cn(
-                                    "h-3.5 w-3.5 transition-colors",
+                                    "transition-colors",
+                                    isScrolled ? "h-3.5 w-3.5" : "h-3.5 w-3.5",
                                     isActive(page.href) ? "text-[hsl(var(--accent-orange))]" : "text-muted-foreground/70 group-hover:text-foreground/80"
                                 )} />
-                                <span>{page.name}</span>
+                                <span className={cn(
+                                    "transition-all duration-300 overflow-hidden whitespace-nowrap",
+                                    isScrolled
+                                        ? isActive(page.href)
+                                            ? "max-w-[200px] opacity-100 text-[10px]" // Active: Always visible but compact
+                                            : "max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 text-[10px]" // Inactive: Hidden -> Show on Hover (Dynamic)
+                                        : "max-w-[200px] opacity-100" // Not Scrolled: Always visible
+                                )}>
+                                    {page.name}
+                                </span>
 
                                 {/* Badge */}
                                 {page.badge && (
                                     <span className={cn(
-                                        "ml-1 px-1.5 py-0.5 text-[9px] font-bold rounded-full border",
+                                        "ml-1 px-1.5 py-0.5 font-bold rounded-full border",
+                                        isScrolled ? "text-[8px]" : "text-[9px]", // Smaller badge
                                         isActive(page.href)
                                             ? "bg-[hsl(var(--accent-orange))] text-background border-[hsl(var(--accent-orange))]"
                                             : "bg-destructive/20 text-destructive border-destructive/50"
@@ -132,6 +153,7 @@ export function TopNavigation({ }: TopNavigationProps) {
                                 plan: "Free"
                             }}
                             align="end"
+                            triggerClassName={isScrolled ? "w-7 h-7 text-xs" : undefined}
                         />
                     </div>
                 </nav>
