@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePageActions } from "@/components/core/layout/PageActionsContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/core/ui/card";
 import {
     BarChart3,
@@ -32,21 +33,23 @@ import {
     CheckCircle,
     Plus,
     X,
-    Check
+    Check,
+    RefreshCw,
+    Activity
 } from "lucide-react";
 import { PageHeader } from "@/components/core/layout/PageHeader";
 import { Badge } from "@/components/core/ui/badge";
 import { Button } from "@/components/core/ui/button";
-import { WilayaHeatmap, generateWilayaOrderData } from "@/components/store/delivery/wilaya-heatmap";
-import { OrdersChart } from "@/components/analytics/OrdersChart";
-import { LifecycleFunnel } from "@/components/analytics/charts/lifecycle-funnel";
-import PlatformHub, { PlatformCards, PlatformGrowthTrends } from "@/app/social/posts-studio/_components/PlatformHub";
+import { WilayaHeatmap, generateWilayaOrderData } from "@/app/ecommerce/_components/delivery/wilaya-heatmap";
+import { OrdersChart } from "@/app/analytics/_components/OrdersChart";
+import { LifecycleFunnel } from "@/app/analytics/_components/charts/lifecycle-funnel";
+import PlatformHub, { PlatformCards, PlatformGrowthTrends } from "@/app/marketing/_components/PlatformHub";
 import { IFUCalculator } from "@/app/analytics/_components/IFUCalculator";
 import { CreatorEarnings } from "@/app/analytics/_components/CreatorEarnings";
 import { PaymentMethodAnalytics } from "@/app/analytics/_components/PaymentMethodAnalytics";
-import { CarrierComparison } from "@/components/store/inventory/CarrierComparison";
-import { RevenueProfitChart } from "@/components/analytics/RevenueProfitChart";
-import SchedulerView from "@/components/social/scheduler/SchedulerView";
+import { CarrierComparison } from "@/app/ecommerce/_components/inventory/CarrierComparison";
+import { RevenueProfitChart } from "@/app/analytics/_components/RevenueProfitChart";
+import SchedulerView from "@/app/creatives/_components/scheduler/SchedulerView";
 import PlatformGuides from "./_components/PlatformGuides";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/core/ui/sheet";
 
@@ -55,7 +58,7 @@ import { useRightPanel } from "@/components/core/layout/RightPanelContext";
 import { DateRangePicker } from "@/components/core/ui/date-range-picker";
 import { FeatureCluster } from "@/components/core/ui/FeatureCluster";
 import { FeatureClusterGroup } from "@/components/core/ui/FeatureClusterGroup";
-import { FeatureFavoriteStar } from "@/components/core/ui/FeatureFavoriteStar";
+
 
 import { cn } from "@/lib/utils";
 import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
@@ -214,76 +217,96 @@ function ActionPanelWrapper({
 
 export default function AnalyticsPage() {
     const { setConfig, setIsOpen, isOpen } = useRightPanel();
+    const { setSuggestions } = usePageActions();
+
+    useEffect(() => {
+        setSuggestions([
+            { id: "1", type: "trend", title: "Revenue Up", description: "Revenue increased 12% this month - best performing period" },
+            { id: "2", type: "timing", title: "Peak Sales", description: "Wednesdays see 25% more orders than average" },
+            { id: "3", type: "improvement", title: "COD Fees High", description: "Consider offering online payment discounts to reduce COD fees" }
+        ]);
+        return () => setSuggestions([]);
+    }, [setSuggestions]);
 
     const closePanel = () => {
         setIsOpen(false);
         setConfig(null);
     };
 
+    const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
+
     const openSchedulerPanel = () => {
-        setIsOpen(true);
-        setConfig({
-            enabled: true,
-            title: "Social Scheduler",
-            content: (
-                <ActionPanelWrapper
-                    title="Social Scheduler"
-                    onSave={closePanel}
-                    onCancel={closePanel}
-                    saveLabel="Done"
-                >
-                    <SchedulerView />
-                </ActionPanelWrapper>
-            )
-        });
+        setIsSchedulerOpen(true);
     };
 
     return (
         <div className="flex flex-col gap-8 p-6 max-w-[1600px] mx-auto pb-20">
+            <Sheet open={isSchedulerOpen} onOpenChange={setIsSchedulerOpen}>
+                <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+                    <ActionPanelWrapper
+                        title="Social Scheduler"
+                        onSave={() => setIsSchedulerOpen(false)}
+                        onCancel={() => setIsSchedulerOpen(false)}
+                        saveLabel="Done"
+                    >
+                        <SchedulerView />
+                    </ActionPanelWrapper>
+                </SheetContent>
+            </Sheet>
             {/* Header */}
             <PageHeader
                 title="Business Analytics"
                 description="Real-time insights and performance metrics"
                 icon={<BarChart3 className="h-6 w-6 text-[hsl(var(--accent-purple))]" />}
                 actions={
-                    <div className="flex items-center gap-2">
-                        <DateRangePicker />
-                        <Button variant="outline" className="gap-2 hidden sm:flex">
-                            <Download className="h-4 w-4" />
-                            Export
-                        </Button>
-                        <FeatureFavoriteStar featureId="analytics" size="lg" />
-                    </div>
+                    <QuickActionsBar
+                        variant="inline"
+                        primaryAction={{
+                            label: "Generate Report",
+                            icon: FileText,
+                            onClick: () => console.log("Generate report")
+                        }}
+                        actions={[
+                            {
+                                id: "export-report",
+                                label: "Export Report",
+                                icon: Download,
+                                onClick: () => console.log("Export report"),
+                                hoverColor: "hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/20"
+                            },
+                            {
+                                id: "scheduler",
+                                label: "Scheduler",
+                                icon: Calendar,
+                                onClick: openSchedulerPanel,
+                                hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
+                            },
+                            {
+                                id: "refresh",
+                                label: "Refresh Data",
+                                icon: RefreshCw,
+                                onClick: () => console.log("Refresh data"),
+                                hoverColor: "hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 dark:hover:bg-orange-900/20"
+                            },
+                            {
+                                id: "health",
+                                label: "Data Health",
+                                icon: Activity,
+                                onClick: () => console.log("Data health"),
+                                hoverColor: "hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-900/20"
+                            }
+                        ]}
+                        moreActions={[
+                            {
+                                id: "upload-data",
+                                label: "Upload Data",
+                                icon: UploadCloud,
+                                onClick: () => console.log("Upload data"),
+                                iconColor: "text-purple-500"
+                            }
+                        ]}
+                    />
                 }
-            />
-
-            {/* Quick Actions Bar */}
-            <QuickActionsBar
-                actions={[
-                    {
-                        id: "export-report",
-                        label: "Export Report",
-                        icon: Download,
-                        onClick: () => console.log("Export report"),
-                        hoverColor: "hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/20"
-                    },
-                    {
-                        id: "scheduler",
-                        label: "Scheduler",
-                        icon: Calendar,
-                        onClick: openSchedulerPanel,
-                        hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
-                    }
-                ]}
-                moreActions={[
-                    {
-                        id: "upload-data",
-                        label: "Upload Data",
-                        icon: UploadCloud,
-                        onClick: () => console.log("Upload data"),
-                        iconColor: "text-purple-500"
-                    }
-                ]}
             />
 
             {/* SECTION 2: Delivery Hub */}
@@ -301,6 +324,15 @@ export default function AnalyticsPage() {
                         storageKey="analytics-revenue-earnings"
                         defaultExpanded={true}
                         headerClassName="bg-[hsl(var(--accent-green))]"
+                        actions={
+                            <div className="flex items-center gap-2">
+                                <DateRangePicker />
+                                <Button size="sm" variant="secondary" className="gap-2 bg-white/20 hover:bg-white/30 text-white border-0">
+                                    <Download className="h-4 w-4" />
+                                    Export
+                                </Button>
+                            </div>
+                        }
                     >
                         <div className="space-y-4">
                             {/* Row 1: Payment Analytics full width */}

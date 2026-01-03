@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 
+import { AISuggestion } from "@/types/ai-tips";
+
 interface PageAction {
     id: string;
     label: string;
@@ -14,12 +16,15 @@ interface PageActionsContextType {
     actions: PageAction[];
     setActions: (actions: PageAction[]) => void;
     clearActions: () => void;
+    suggestions: AISuggestion[];
+    setSuggestions: (suggestions: AISuggestion[]) => void;
 }
 
 const PageActionsContext = createContext<PageActionsContextType | null>(null);
 
 export function PageActionsProvider({ children }: { children: ReactNode }) {
     const [actions, setActionsState] = useState<PageAction[]>([]);
+    const [suggestions, setSuggestions] = useState<AISuggestion[]>([]);
 
     const setActions = useCallback((newActions: PageAction[]) => {
         setActionsState(newActions);
@@ -27,10 +32,11 @@ export function PageActionsProvider({ children }: { children: ReactNode }) {
 
     const clearActions = useCallback(() => {
         setActionsState([]);
+        setSuggestions([]); // Optionally clear suggestions too? Maybe generic clear
     }, []);
 
     return (
-        <PageActionsContext.Provider value={{ actions, setActions, clearActions }}>
+        <PageActionsContext.Provider value={{ actions, setActions, clearActions, suggestions, setSuggestions }}>
             {children}
         </PageActionsContext.Provider>
     );
@@ -47,7 +53,11 @@ export function usePageActions() {
 // Hook to register page actions - use in page components
 export function useRegisterPageActions(actions: PageAction[], deps: React.DependencyList = []) {
     const { setActions, clearActions } = usePageActions();
-
-    // This is designed to be called within useEffect in page components
+    // This hook usage pattern is simplified here, real usage might need useEffect
     return { setActions, clearActions };
+}
+
+export function useAISuggestions() {
+    const { suggestions, setSuggestions } = usePageActions();
+    return { suggestions, setSuggestions };
 }

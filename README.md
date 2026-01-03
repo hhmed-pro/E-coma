@@ -55,6 +55,7 @@
 ## ✨ Key Features
 
 ### 📈 Business Analytics
+
 - Real-time dashboard with key performance indicators (KPIs)
 - Revenue, profit, and cost analysis with interactive charts
 - Customer lifecycle funnels and conversion tracking
@@ -63,6 +64,7 @@
 - Top products and landing pages reports
 
 ### 🛒 E-Commerce Operations
+
 - **Order Management**: Full confirmation workflow (SMS → Call → GPS collection)
 - **Inventory Control**: Multi-location stock tracking with low stock alerts
 - **Smart Delivery**: Integration with Yalidine, Maystro, NordEst carriers
@@ -72,6 +74,7 @@
 - **Offer Management**: Create and manage discounts/promotions
 
 ### 🔍 Product Research Studio
+
 - Trending products discovery with AI scoring (0-10 scale)
 - Competitor tracking and analysis
 - Product search by name, photo, or URL
@@ -80,6 +83,7 @@
 - China import service with budget tracking
 
 ### 📱 Social Media Management
+
 - **AI Content Creator**: Generate captions, hooks, and articles with Gemini
 - **Media Studio**: Edit photos and videos with built-in tools
 - **Darja Optimizer**: Optimize content for Algerian Arabic dialect
@@ -89,6 +93,7 @@
 - **Inbox Management**: Unified conversation inbox
 
 ### 🎯 Advertising & Marketing
+
 - **Ad Manager**: Create and manage Meta/TikTok ads at scale
 - **Bulk Creation**: Generate multiple ad variations automatically
 - **ROAS Analyzer**: Real-time return on ad spend tracking with smart stop-loss
@@ -99,12 +104,14 @@
 - **Influencer Marketplace**: Find and pay influencers for promotions
 
 ### 🤖 AI Agents (Ecosystem Modules)
+
 - **DM Sales Agent**: Automated sales conversations in Messenger/WhatsApp
 - **DM Support Agent**: 24/7 customer support automation
 - **Comment Response Agent**: Auto-reply to comments with context awareness
 - **Content Generator**: Create posts, captions, and articles with AI
 
 ### 🎨 Advanced Content Creation
+
 - **Hook Generator**: Create attention-grabbing opening lines
 - **Hook Analyzer**: Score and improve your hooks (0-10 scale)
 - **TikTok Monetization Wizard**: Optimize for TikTok Creator Fund
@@ -114,6 +121,7 @@
 - **Format Presets**: One-click formatting for different platforms
 
 ### 💼 Admin & Settings
+
 - **Brand Kit**: Manage colors, fonts, logos, and brand assets
 - **Brand Voice**: Define brand personality and tone guidelines
 - **Team Management**: Invite team members with role-based access
@@ -126,16 +134,19 @@
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Framework**: [Next.js 15](https://nextjs.org/) (React 18.3, App Router)
 - **Language**: [TypeScript 5](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS 3.4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
 - **UI Components**: [Radix UI](https://www.radix-ui.com/) (Accessible, unstyled primitives)
+- **Modal System**: Unified [Dialog, Sheet, Command Palette] patterns
 - **Animations**: [Framer Motion 12](https://www.framer.com/motion/)
 - **Charts**: [Recharts 3.5](https://recharts.org/)
 - **Forms**: React Hook Form + [Zod](https://zod.dev/) validation
 - **Date Handling**: [date-fns 3.6](https://date-fns.org/)
 
 ### Backend & Database
+
 - **Database**: [Supabase](https://supabase.com/) (PostgreSQL)
 - **Authentication**: Supabase Auth (Email, OAuth)
 - **Storage**: Supabase Storage for media files
@@ -143,17 +154,20 @@
 - **SSR**: Supabase SSR for Next.js App Router
 
 ### AI & APIs
+
 - **AI Model**: [Google Gemini 1.5 Flash](https://ai.google.dev/)
 - **Content Generation**: AI-powered copywriting, hooks, descriptions
 - **Risk Scoring**: Predictive analytics for returns and engagement
 - **Optimization**: ROAS optimization, budget allocation
 
 ### State Management
+
 - **Global State**: [Zustand 4.5](https://zustand-demo.pmnd.rs/)
 - **Context API**: React Context for layout, scroll, panels
 - **Server State**: TanStack Query 5.0 (React Query)
 
 ### Additional Tools
+
 - **Drag & Drop**: [@dnd-kit](https://dndkit.com/)
 - **Notifications**: [Sonner](https://sonner.emilkowal.ski/)
 - **Icons**: [Lucide React](https://lucide.dev/)
@@ -174,22 +188,26 @@
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/e-coma.git
    cd e-coma
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Edit `.env.local` with your credentials:
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -200,11 +218,13 @@
    - Create a new Supabase project
    - Run the migration files in `supabase/migrations/`
    - Or use Supabase CLI:
+
      ```bash
      npx supabase db push
      ```
 
 5. **Run development server**
+
    ```bash
    npm run dev
    ```
@@ -283,8 +303,8 @@ e-coma/
 ### Key Directories
 
 - **`src/app/`**: Next.js 15 App Router with file-based routing
-- **`src/components/core/layout/`**: Advanced layout system with 6 context providers
-- **`src/components/core/ui/`**: 73 reusable UI components (shadcn/ui based)
+- **`src/components/core/layout/`**: Advanced layout system with context providers
+- **`src/components/core/ui/`**: 69 reusable UI components (shadcn/ui based)
 - **`src/config/`**: Centralized configuration for navigation, features, and modules
 - **`src/lib/`**: Core utilities and third-party integrations
 
@@ -309,18 +329,22 @@ Comprehensive documentation is available in the `docs/` folder:
 ## 🎨 Screenshots
 
 ### Dashboard
+
 ![Dashboard](docs/screenshots/dashboard.png)
 *Real-time business analytics with KPI cards and revenue charts*
 
 ### Product Research
+
 ![Product Research](docs/screenshots/research.png)
 *Discover trending products with AI scoring and competitor analysis*
 
 ### Social Media Studio
+
 ![Social Media](docs/screenshots/social.png)
 *Create, schedule, and publish content across multiple platforms*
 
 ### Ad Manager
+
 ![Ads Manager](docs/screenshots/ads.png)
 *Manage advertising campaigns with ROAS tracking and optimization*
 
@@ -329,11 +353,13 @@ Comprehensive documentation is available in the `docs/` folder:
 ## 🌍 Algerian Market Features
 
 ### Geographic Data
+
 - **58 Wilayas** (provinces) with heatmap visualization
 - **1,541 Communes** (municipalities) for precise addressing
 - **Regional Zones**: Center, East, West, South for delivery pricing
 
 ### Business Localization
+
 - **COD-First**: ~90% of transactions are cash on delivery
 - **Return Rate Optimization**: AI predicts and prevents high return rates (~40%)
 - **Delivery Integration**: Yalidine, Maystro, NordEst APIs
@@ -341,6 +367,7 @@ Comprehensive documentation is available in the `docs/` folder:
 - **Language Support**: Arabic, French, English, and Darja (Algerian dialect)
 
 ### Payment Methods
+
 - Cash on Delivery (COD)
 - Baridimob (Algeria Post mobile payment)
 - Bank transfers
@@ -380,11 +407,13 @@ npm run build
 ## 🐛 Known Issues & Roadmap
 
 ### Current Limitations
+
 - ⚠️ API routes return mock data (backend integration in progress)
 - ⚠️ Authentication flow needs completion
 - ⚠️ Build warnings for TypeScript errors (temporarily ignored)
 
 ### Roadmap
+
 - [ ] Real-time collaboration features
 - [ ] Mobile app (React Native)
 - [ ] WhatsApp Business API integration
@@ -409,7 +438,7 @@ For licensing inquiries, please contact: [your-email@example.com](mailto:your-em
 
 - **Documentation**: [docs/](docs/)
 - **Issues**: [GitHub Issues](https://github.com/yourusername/e-coma/issues)
-- **Email**: support@e-coma.com
+- **Email**: <support@e-coma.com>
 - **WhatsApp**: +213 XXX XXX XXX
 
 ---

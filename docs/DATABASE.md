@@ -16,6 +16,7 @@ Complete guide to the E-coma database schema and Supabase configuration.
 ## Overview
 
 E-coma uses **PostgreSQL** via **Supabase** with the following features:
+
 - Row-Level Security (RLS) for data isolation
 - Real-time subscriptions
 - Full-text search
@@ -83,6 +84,7 @@ CREATE TABLE merchants (
 ```
 
 **Indexes:**
+
 ```sql
 CREATE INDEX idx_merchants_email ON merchants(email);
 CREATE INDEX idx_merchants_subscription_tier ON merchants(subscription_tier);
@@ -150,6 +152,7 @@ CREATE TABLE products (
 ```
 
 **Indexes:**
+
 ```sql
 CREATE INDEX idx_products_merchant ON products(merchant_id);
 CREATE INDEX idx_products_status ON products(status);
@@ -223,6 +226,7 @@ CREATE TABLE orders (
 ```
 
 **Indexes:**
+
 ```sql
 CREATE INDEX idx_orders_merchant ON orders(merchant_id);
 CREATE INDEX idx_orders_status ON orders(status);
@@ -287,6 +291,7 @@ CREATE TABLE wilayas (
 ```
 
 **Sample Data:**
+
 ```sql
 INSERT INTO wilayas (code, name_ar, name_fr, name_en, region) VALUES
   (16, 'الجزائر', 'Alger', 'Algiers', 'center'),
@@ -586,6 +591,7 @@ CREATE POLICY "Users can manage own orders"
 Located in `supabase/migrations/`
 
 **001_initial_schema.sql** - Initial database setup
+
 - Create all tables
 - Add indexes
 - Set up RLS policies
@@ -594,11 +600,13 @@ Located in `supabase/migrations/`
 ### Running Migrations
 
 **Local Development:**
+
 ```bash
 npx supabase db push
 ```
 
 **Production:**
+
 ```bash
 # Via Supabase Dashboard
 # SQL Editor → Paste migration → Run
@@ -712,6 +720,7 @@ ORDER BY revenue DESC;
 ### Indexes
 
 All critical columns are indexed:
+
 - Foreign keys
 - Status fields
 - Date fields for sorting

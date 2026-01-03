@@ -144,7 +144,7 @@ export const AVAILABLE_WIDGETS: FavoriteWidget[] = [
     {
         id: "engagement-stats",
         name: "Engagement Stats",
-        description: "Likes, comments, shares",
+        description: "Likes, @/app/ecommerce/_components/delivery/, shares",
         icon: MessageCircle,
         category: "social",
         color: "text-rose-500",

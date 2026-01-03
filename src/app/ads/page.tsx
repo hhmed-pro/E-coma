@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
+import { usePageActions } from "@/components/core/layout/PageActionsContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/core/ui/card";
 import { Button } from "@/components/core/ui/button";
 import { Badge } from "@/components/core/ui/badge";
@@ -15,34 +16,34 @@ import {
     Eye, MousePointerClick, Activity, Globe, Wrench, ShieldAlert, Info,
     Wallet, ImagePlus, CheckCircle, Clock, ArrowUpRight, Users2, Gift, Share2, Store, Wand2,
     ChevronDown, ChevronUp, Bot, MessageSquare, Shield, LayoutDashboard, PieChart, CreditCard, HelpCircle,
-    Zap, Heart
+    Zap, Heart, Settings
 } from "lucide-react";
 import { PageHeader } from "@/components/core/layout/PageHeader";
-import { FeatureFavoriteStar } from "@/components/core/ui/FeatureFavoriteStar";
+import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
+import { DateRangePicker } from "@/components/core/ui/date-range-picker";
+
 import { FeatureCluster } from "@/components/core/ui/FeatureCluster";
 import { FeatureClusterGroup } from "@/components/core/ui/FeatureClusterGroup";
 import { cn } from "@/lib/utils";
 
 // Import traffic components for Analytics
-import { TrafficKPIDashboard } from '@/components/marketing/traffic/TrafficKPIDashboard';
-import { TrafficSourcesChart } from '@/components/marketing/traffic/TrafficSourcesChart';
-import { TopLandingPages } from '@/components/marketing/traffic/TopLandingPages';
-import { TrafficTimelineChart } from '@/components/marketing/traffic/TrafficTimeline';
+import { TrafficKPIDashboard } from '@/app/marketing/_components/traffic/TrafficKPIDashboard';
+import { TrafficSourcesChart } from '@/app/marketing/_components/traffic/TrafficSourcesChart';
+import { TopLandingPages } from '@/app/marketing/_components/traffic/TopLandingPages';
+import { TrafficTimelineChart } from '@/app/marketing/_components/traffic/TrafficTimeline';
 
-// Import Budget AI Tips
-import BudgetAiTips from "@/app/marketing/ads-manager/_components/BudgetAiTips";
 
 // Import Financial Charts from analytics
 
 
 // Ads Components
-import AccountHealthMonitor from "@/components/ads/AccountHealthMonitor";
-import CurrencyTracker from "@/components/ads/CurrencyTracker";
+import AccountHealthMonitor from "@/app/ads/_components/AccountHealthMonitor";
+import CurrencyTracker from "@/app/ads/_components/CurrencyTracker";
 
-import AgencyAccountManager from "@/components/ads/AgencyAccountManager";
-import DeliveryRateKPI from "@/components/ads/DeliveryRateKPI";
-import { LifecycleFunnel, TrafficAcquisitionSection } from "@/components/analytics/charts/lifecycle-funnel";
-import { OfflineConversionSync } from "@/components/sales/OfflineConversionSync";
+import AgencyAccountManager from "@/app/ads/_components/AgencyAccountManager";
+import DeliveryRateKPI from "@/app/ads/_components/DeliveryRateKPI";
+import { LifecycleFunnel, TrafficAcquisitionSection } from "@/app/analytics/_components/charts/lifecycle-funnel";
+import { OfflineConversionSync } from "@/app/sales-dashboard/_components/OfflineConversionSync";
 
 // ============ MOCK DATA ============
 
@@ -169,6 +170,16 @@ const StatusBadge = ({ status }: { status: string }) => {
 function AdsContent() {
     const [selectedAdId, setSelectedAdId] = useState<number | null>(1);
     const [showRealData, setShowRealData] = useState(false);
+    const { setSuggestions } = usePageActions();
+
+    useEffect(() => {
+        setSuggestions([
+            { id: "1", type: "trend", title: "ROAS Alert", description: "Campaign 'Summer Promo' has 3.2x ROAS - consider increasing budget" },
+            { id: "2", type: "timing", title: "Peak Hours", description: "Your ads perform 35% better between 6-9 PM" },
+            { id: "3", type: "improvement", title: "Low CTR", description: "Flash Sale campaign has below-average CTR. Try new creatives." }
+        ]);
+        return () => setSuggestions([]);
+    }, [setSuggestions]);
 
     // Exchange rate constants for True ROAS calculation
     const OFFICIAL_RATE = 134;
@@ -195,21 +206,61 @@ function AdsContent() {
                 description="Manage your campaigns and track performance across all platforms"
                 icon={<Megaphone className="h-6 w-6 text-[hsl(var(--accent-blue))]" />}
                 actions={
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline" className="gap-2 hidden sm:flex">
-                            <FileText className="h-4 w-4" />
-                            Generate Report
-                        </Button>
-                        <Button variant="outline" className="gap-2 hidden sm:flex">
-                            <Upload className="h-4 w-4" />
-                            Import
-                        </Button>
-                        <Button variant="outline" className="gap-2 hidden sm:flex">
-                            <Download className="h-4 w-4" />
-                            Export
-                        </Button>
-                        <FeatureFavoriteStar featureId="ads-manager" size="lg" />
-                    </div>
+                    <QuickActionsBar
+                        variant="inline"
+                        primaryAction={{
+                            label: "Create Campaign",
+                            icon: Plus,
+                            onClick: () => console.log("Create campaign")
+                        }}
+                        actions={[
+                            {
+                                id: "pause-all",
+                                label: "Pause All",
+                                icon: Pause,
+                                onClick: () => console.log("Pause all"),
+                                hoverColor: "hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 dark:hover:bg-orange-900/20"
+                            },
+                            {
+                                id: "budget",
+                                label: "Budget Planner",
+                                icon: Wallet,
+                                onClick: () => console.log("Budget planner"),
+                                hoverColor: "hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/20"
+                            },
+                            {
+                                id: "health",
+                                label: "Account Health",
+                                icon: ShieldCheck,
+                                onClick: () => console.log("Account health"),
+                                hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
+                            },
+                            {
+                                id: "sync",
+                                label: "Sync Platforms",
+                                icon: UploadCloud,
+                                onClick: () => console.log("Sync platforms"),
+                                hoverColor: "hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 dark:hover:bg-purple-900/20"
+                            }
+                        ]}
+                        moreActions={[
+                            {
+                                id: "stop-loss",
+                                label: "Stop-Loss Rules",
+                                icon: ShieldAlert,
+                                onClick: () => console.log("Stop-loss rules"),
+                                iconColor: "text-red-500"
+                            },
+                            {
+                                id: "account-settings",
+                                label: "Account Settings",
+                                icon: Settings,
+                                onClick: () => console.log("Account settings"),
+                                iconColor: "text-gray-500",
+                                separator: true
+                            }
+                        ]}
+                    />
                 }
             />
 
@@ -350,7 +401,6 @@ function AdsContent() {
                     defaultExpanded={true}
                 >
                     <div className="space-y-6">
-                        <BudgetAiTips />
 
                         {/* Stop-Loss Rules */}
                         <Card>
@@ -421,6 +471,14 @@ function AdsContent() {
                     icon={<BarChart3 className="h-5 w-5 text-[hsl(var(--accent-blue))]" />}
                     storageKey="ads-analytics"
                     defaultExpanded={false}
+                    actions={
+                        <div className="flex items-center gap-2">
+                            <DateRangePicker />
+                            <Button variant="ghost" size="sm"><FileText className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="sm"><Upload className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="sm"><Download className="h-4 w-4" /></Button>
+                        </div>
+                    }
                 >
                     <div className="space-y-8">
                         {/* Engagement KPIs */}

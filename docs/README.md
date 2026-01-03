@@ -16,6 +16,7 @@ Welcome to the comprehensive documentation for E-coma platform.
 - **[Components](COMPONENTS.md)** - Component library documentation and usage examples
 - **[Contributing](CONTRIBUTING.md)** - Guidelines for contributing to the project
 - **[Database Schema](DATABASE.md)** - Database tables, relationships, and queries
+- **[UI Relation Analytics](UI-Relation-Analytics.md)** - In-depth analysis of global UI elements
 
 ### Deployment & Operations
 
@@ -24,7 +25,7 @@ Welcome to the comprehensive documentation for E-coma platform.
 
 ### Features
 
-- **[Features Guide](FEATURES.md)** - Detailed documentation of all 127 features
+- **[Features Guide](FEATURES.md)** - Detailed documentation of implemented and planned features
 
 ---
 
@@ -37,81 +38,74 @@ Welcome to the comprehensive documentation for E-coma platform.
 3. Review [Architecture](ARCHITECTURE.md) to understand the system
 4. Check [Contributing](CONTRIBUTING.md) for coding standards
 
-### For Designers
-
-1. [Components](COMPONENTS.md) - UI component library
-2. [Features Guide](FEATURES.md) - Feature specifications
-
-### For DevOps
-
-1. [Deployment Guide](DEPLOYMENT.md) - Deployment strategies
-2. [Environment Variables](ENVIRONMENT.md) - Configuration management
-3. [Database Schema](DATABASE.md) - Database setup
-
-### For Product Managers
-
-1. [Features Guide](FEATURES.md) - All features explained
-2. [Main README](../README.md) - Product overview
-
 ---
 
 ## 📊 Documentation Statistics
 
-- **Total Files:** 10 documents
-- **Total Size:** ~165 KB
-- **Total Lines:** ~6,000 lines
-- **Coverage:** Architecture, API, Components, Database, Features, Setup, Deployment
+- **Total Files:** 15+ documents
+- **Total Size:** ~200 KB
+- **Coverage:** Architecture, API, Components, Database, Features, Setup, Deployment, UI Analytics
 
 ---
 
 ## 🎯 Document Purposes
 
 ### README.md (Main)
+
 **Purpose:** Project introduction and overview  
 **Audience:** Everyone  
 **Contains:** Features list, tech stack, quick start, project structure
 
 ### SETUP.md
+
 **Purpose:** Get the project running locally  
 **Audience:** Developers  
 **Contains:** Prerequisites, installation, database setup, troubleshooting
 
 ### ARCHITECTURE.md
+
 **Purpose:** Understand system design  
 **Audience:** Developers, Technical Leads  
 **Contains:** Design patterns, layout system, state management, data flow
 
 ### COMPONENTS.md
+
 **Purpose:** Use and create UI components  
 **Audience:** Frontend Developers  
 **Contains:** Component API, usage examples, best practices
 
 ### API.md
+
 **Purpose:** Integrate with backend APIs  
 **Audience:** Full-stack Developers  
 **Contains:** Endpoint documentation, request/response examples, error handling
 
 ### DATABASE.md
+
 **Purpose:** Understand data model  
 **Audience:** Backend Developers, DBAs  
 **Contains:** Schema design, relationships, queries, migrations
 
 ### FEATURES.md
+
 **Purpose:** Understand all platform features  
 **Audience:** Product, Sales, Support  
 **Contains:** Feature descriptions, use cases, access levels
 
 ### ENVIRONMENT.md
+
 **Purpose:** Configure the application  
 **Audience:** Developers, DevOps  
 **Contains:** Environment variables, security best practices, validation
 
 ### DEPLOYMENT.md
+
 **Purpose:** Deploy to production  
 **Audience:** DevOps, Developers  
 **Contains:** Deployment strategies, platform guides, monitoring
 
 ### CONTRIBUTING.md
+
 **Purpose:** Maintain code quality  
 **Audience:** Contributors  
 **Contains:** Code standards, commit conventions, PR process
@@ -123,24 +117,29 @@ Welcome to the comprehensive documentation for E-coma platform.
 ### By Topic
 
 **Authentication & Security**
+
 - [Setup Guide](SETUP.md#database-setup) - Initial auth setup
 - [Architecture](ARCHITECTURE.md#security-architecture) - Security patterns
 - [Database](DATABASE.md#row-level-security) - RLS policies
 
 **Components & UI**
+
 - [Components](COMPONENTS.md) - Component library
 - [Architecture](ARCHITECTURE.md#layout-system) - Layout system
 
 **Deployment**
+
 - [Deployment Guide](DEPLOYMENT.md) - All deployment options
 - [Environment Variables](ENVIRONMENT.md) - Configuration
 - [Setup Guide](SETUP.md) - Local development
 
 **Features**
+
 - [Features Guide](FEATURES.md) - All 127 features
 - [Main README](../README.md#key-features) - Feature overview
 
 **API Integration**
+
 - [API Reference](API.md) - All endpoints
 - [Architecture](ARCHITECTURE.md#data-flow) - Data flow patterns
 
@@ -151,6 +150,7 @@ Welcome to the comprehensive documentation for E-coma platform.
 ### Documentation Issues
 
 Found a typo or error in documentation?
+
 1. Create an issue on GitHub
 2. Or submit a PR with the fix
 
@@ -159,7 +159,7 @@ Found a typo or error in documentation?
 - Check relevant documentation section
 - Search GitHub issues
 - Ask in GitHub Discussions
-- **Email**: dev@e-coma.com
+- **Email**: <dev@e-coma.com>
 
 ### Feature Requests
 
@@ -248,8 +248,8 @@ export function Example() {
 
 ## 📞 Contact
 
-- **Documentation Team:** docs@e-coma.com
-- **Technical Support:** dev@e-coma.com
+- **Documentation Team:** <docs@e-coma.com>
+- **Technical Support:** <dev@e-coma.com>
 - **GitHub:** [github.com/yourusername/e-coma](https://github.com/yourusername/e-coma)
 
 ---

@@ -2,22 +2,20 @@
 
 import { useState, useRef, useMemo, useEffect } from "react";
 import { IconSidebar } from "./IconSidebar";
-import { CategoryRightPanel } from "./CategoryRightPanel";
 import { TopNavigation } from "./TopNavigation";
-import { EcosystemBar } from "./EcosystemBar";
+import { EcosystemBar, DetailPanel } from "./EcosystemBar";
 import { BottomPanel } from "./BottomPanel";
-import { HeaderTabs } from "./HeaderTabs";
-import { SplitLayout } from "./SplitLayout";
-import { PAGE_INFO_CONFIG, SUBTABS_CONFIG } from "./SecondTopBar";
 import { RightPanelProvider, useRightPanel } from "./RightPanelContext";
 import { WindowLayoutProvider, useWindowLayout } from "./WindowLayoutContext";
 import { ScrollProvider, useScroll } from "./ScrollContext";
 import { HelpProvider } from "./HelpContext";
 import { PageActionsProvider, usePageActions } from "./PageActionsContext";
+import { ModeProvider } from "./ModeContext";
+
 import { CommandPalette } from "@/components/core/ui/command-palette";
 import { NotificationCenter } from "@/components/core/ui/notification-center";
 
-import { FloatingHelpWidget } from "@/components/help/FloatingHelpWidget";
+import { FloatingHelpWidget } from "@/app/help/_components/FloatingHelpWidget";
 
 import { MobileSidebar, BottomTabBar } from "@/components/core/ui/mobile-sidebar";
 import { PeriodSelector } from "@/components/core/ui/period-selector";
@@ -25,7 +23,7 @@ import { ViewModeToggle } from "@/components/core/ui/view-mode-toggle";
 import { Breadcrumb, BreadcrumbItem } from "@/components/core/ui/breadcrumb";
 import { Settings, Maximize2, Minimize2, ChevronRight } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import Link from "next/link";
+
 import { Period } from "@/components/core/ui/period-selector";
 import { ProfileMenu } from "./ProfileMenu";
 import { saveLastVisitedPage } from "@/lib/last-visited";
@@ -48,7 +46,6 @@ function LayoutContent({ children }: LayoutWrapperProps) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const currentTab = searchParams.get("tab");
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -153,64 +150,9 @@ function LayoutContent({ children }: LayoutWrapperProps) {
 
                 {/* Content Row with Split Layout */}
                 <div className="flex-1 flex relative px-4 md:px-6">
-                    <SplitLayout
-                        rightContent={config?.content || <CategoryRightPanel />}
-                        isFocusMode={isFocusMode}
-                        onExitFocusMode={() => {
-                            setIsFocusMode(false);
-                            if (document.fullscreenElement) {
-                                document.exitFullscreen().catch(() => { });
-                            }
-                        }}
-                    >
-                        <main className={`p-4 md:p-6 pb-20 md:pb-16 ${isPanelOpen ? "mb-80" : ""}`}>
-                            {/* Main Content Toolbar has been removed to use in-page headers */}
-                            {/* Subtabs Only Area (Page Info Moved Up) */}
-                            <div>
-                                {(() => {
-                                    // Check if current route has sub-tabs
-                                    const subtabs = SUBTABS_CONFIG[pathname];
-                                    const hasSubtabs = subtabs && subtabs.length > 0;
-                                    const pageInfo = PAGE_INFO_CONFIG[pathname]; // Keep reference for HeaderTabs fallback if needed
-
-                                    // If route has sub-tabs, render them inline
-                                    if (hasSubtabs) {
-                                        const activeTab = currentTab || subtabs[0].param;
-                                        return (
-                                            <div className="flex items-center gap-1 border-b border-white/5 pb-1">
-                                                {subtabs.map((tab) => {
-                                                    const isActive = tab.param === activeTab;
-                                                    const href = `${tab.href}?tab=${tab.param}`;
-                                                    return (
-                                                        <Link
-                                                            key={tab.param}
-                                                            href={href}
-                                                            className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-all ${isActive
-                                                                ? "bg-white/10 text-white shadow-sm"
-                                                                : "text-white/60 hover:text-white hover:bg-white/5"
-                                                                }`}
-                                                        >
-                                                            {tab.label}
-                                                        </Link>
-                                                    );
-                                                })}
-                                            </div>
-                                        );
-                                    }
-
-                                    // If pageInfo was handled above, we don't need to render it here again.
-                                    // But if it's the specific case that fell through to HeaderTabs (e.g. Home page might not have pageInfo configured?), we check here.
-
-                                    if (!pageInfo && !hasSubtabs) {
-                                        return <HeaderTabs />;
-                                    }
-
-                                    return null;
-                                })()}
-                            </div>
-                            {children}
-                        </main>
-                    </SplitLayout>
+                    <main className={`w-full p-4 md:p-6 pb-20 md:pb-16`}>
+                        {children}
+                    </main>
                 </div>
             </div>
 
@@ -220,6 +162,8 @@ function LayoutContent({ children }: LayoutWrapperProps) {
                 isExpanded={isPanelOpen}
                 onToggleExpand={handleToggleExpand}
             />
+            {/* Detail Panel */}
+            <DetailPanel />
 
             {/* Bottom Panel - Expandable */}
             <BottomPanel
@@ -249,7 +193,9 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
                 <WindowLayoutProvider>
                     <RightPanelProvider>
                         <PageActionsProvider>
-                            <LayoutContent>{children}</LayoutContent>
+                            <ModeProvider>
+                                <LayoutContent>{children}</LayoutContent>
+                            </ModeProvider>
                         </PageActionsProvider>
                     </RightPanelProvider>
                 </WindowLayoutProvider>

@@ -16,6 +16,7 @@ interface FeatureClusterProps {
     collapsedHeight?: 'small' | 'medium' | 'large'; // small = 50px, medium = 150px, large = 300px
     onExpandChange?: (expanded: boolean) => void; // Callback when expand state changes
     className?: string; // Additional class for wrapper (e.g., col-span-2)
+    actions?: ReactNode; // Optional actions to render in the header
 }
 
 /**
@@ -36,7 +37,8 @@ export function FeatureCluster({
     backgroundImage,
     collapsedHeight = 'medium',
     onExpandChange,
-    className
+    className,
+    actions
 }: FeatureClusterProps) {
     const [isExpanded, setIsExpanded] = useState(defaultExpanded);
     const [isPinned, setIsPinned] = useState(false);
@@ -149,6 +151,13 @@ export function FeatureCluster({
                     </div>
 
                     <div className="flex items-center gap-4 relative z-10">
+                        {/* Custom Actions */}
+                        {actions && (
+                            <div className="flex items-center gap-2 mr-2" onClick={(e) => e.stopPropagation()}>
+                                {actions}
+                            </div>
+                        )}
+
                         {/* Pin Button */}
                         <div
                             onClick={togglePin}

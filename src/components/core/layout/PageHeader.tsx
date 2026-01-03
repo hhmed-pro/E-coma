@@ -31,7 +31,7 @@ export function PageHeader({ title, description, icon, actions, className }: Pag
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0 self-start md:self-center">
+            <div className="flex items-center gap-2 flex-1 justify-end min-w-0 md:self-center">
                 {actions}
             </div>
         </div>

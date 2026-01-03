@@ -55,6 +55,7 @@ src/app/
 ```
 
 **Benefits:**
+
 - Automatic code splitting per route
 - Nested layouts with shared UI
 - Parallel and intercepting routes support
@@ -101,6 +102,7 @@ RootLayout (Providers)
 │       │
 │       ├── IconSidebar (Left Navigation)
 │       ├── TopNavigation (Collapsible Header)
+│       ├── PageHeader (Title, Actions Slot)
 │       ├── HeaderTabs (Dynamic Tabs)
 │       ├── Page Content (Dynamic)
 │       ├── CategoryRightPanel (Context Sidebar)
@@ -116,6 +118,7 @@ RootLayout (Providers)
 The layout system uses **6 nested React contexts** for sophisticated state management:
 
 #### 1. WindowLayoutContext
+
 ```typescript
 interface WindowLayoutState {
   isFullscreen: boolean;
@@ -124,9 +127,11 @@ interface WindowLayoutState {
   bottomBarVisible: boolean;
 }
 ```
+
 **Purpose:** Global window state management
 
 #### 2. RightPanelContext
+
 ```typescript
 interface RightPanelState {
   content: React.ReactNode | null;
@@ -135,9 +140,11 @@ interface RightPanelState {
   title: string;
 }
 ```
+
 **Purpose:** Dynamic right sidebar content
 
 #### 3. ScrollContext
+
 ```typescript
 interface ScrollState {
   scrollY: number;
@@ -146,9 +153,11 @@ interface ScrollState {
   isAtBottom: boolean;
 }
 ```
+
 **Purpose:** Scroll-aware UI adaptations
 
 #### 4. HelpContext
+
 ```typescript
 interface HelpState {
   isOpen: boolean;
@@ -156,53 +165,69 @@ interface HelpState {
   searchQuery: string;
 }
 ```
+
 **Purpose:** Contextual help system
 
 #### 5. PageActionsContext
+
 ```typescript
 interface PageActionsState {
   actions: Action[];
   primaryAction: Action | null;
 }
 ```
+
 **Purpose:** Page-specific action buttons
 
 #### 6. ThemeProvider
+
 ```typescript
 type Theme = 'light' | 'dark' | 'system';
 ```
+
 **Purpose:** Dark/light mode management
 
 ### Layout Components
 
 #### IconSidebar
+
 - Fixed left sidebar with icon navigation
 - Expandable popup menus on hover
 - Category-based organization
 - Active state tracking
 
 #### TopNavigation
+
 - Collapsible header with breadcrumbs
 - Auto-hides on scroll down
 - Profile menu and quick actions
 - Search command palette trigger
 
 #### HeaderTabs
+
 - Dynamic tab system per page
 - Persistent active tab state
 - Smooth animations
 
 #### CategoryRightPanel
+
 - Context-aware sidebar
 - AI agents panel
 - Quick actions
 - Category-specific tools
 
 #### EcosystemBar
+
 - Bottom status bar
 - Module health indicators
 - Quick access to AI agents
 - Connection status
+
+#### PageHeader Action Toolbars
+
+- Action toolbars (QuickActionsBar) are moved into the `actions` prop of `PageHeader`.
+- Uses `variant="inline"` for seamless integration.
+- Provides consistent placement of page-level primary and secondary actions.
 
 ---
 
@@ -239,24 +264,28 @@ type Theme = 'light' | 'dark' | 'system';
 ### When to Use Each
 
 **Supabase (Server State):**
+
 - User authentication
 - Database records
 - File storage
 - Real-time subscriptions
 
 **Zustand (Global Client State):**
+
 - Cross-component data
 - User preferences
 - App-wide settings
 - Non-persistent UI state
 
 **Context API (Layout State):**
+
 - Layout configuration
 - Theme settings
 - UI panel states
 - Scroll behavior
 
 **useState (Local State):**
+
 - Form inputs
 - Component visibility
 - Temporary selections
@@ -307,6 +336,7 @@ export const navigationConfig = {
 ### Breadcrumb Generation
 
 Automatic breadcrumbs from URL:
+
 ```
 /marketing/ads-manager → Marketing > Ads Manager
 /social/creation-studio → Social > Creation Studio
@@ -387,6 +417,13 @@ Used for complex UI components:
     {/* Content */}
   </FeatureCluster.Content>
 </FeatureCluster>
+
+### 2. Unified Modal System (Dialog, Sheet, Command Palette)
+
+E-coma standardizes all overlay interfaces into three semantic patterns:
+- **Dialogs** for focused, critical tasks.
+- **Sheets** for context-aware side panels.
+- **Command Palette** for global navigation and search.
 ```
 
 ### 2. Render Props Pattern
@@ -592,24 +629,28 @@ Visual Regression (Chromatic)
 ## Technology Decisions
 
 ### Why Next.js 15?
+
 - Server components for better performance
 - Built-in API routes
 - Excellent TypeScript support
 - Vercel deployment optimization
 
 ### Why Supabase?
+
 - PostgreSQL with real-time capabilities
 - Built-in authentication
 - Row-level security
 - Generous free tier
 
 ### Why Tailwind CSS?
+
 - Utility-first approach
 - Excellent performance
 - Design system consistency
 - Developer experience
 
 ### Why Google Gemini?
+
 - Cost-effective AI ($0.075/1M tokens)
 - Fast response times
 - Multilingual support
@@ -632,6 +673,7 @@ Visual Regression (Chromatic)
 ## Conclusion
 
 The E-coma architecture is designed for:
+
 - **Rapid development** - Feature-based organization
 - **Maintainability** - Clear separation of concerns
 - **Scalability** - Modular design and stateless services

@@ -7,28 +7,27 @@ import {
     Download, Upload, Sparkles, Wand2,
     PenTool, Clock, ChevronDown, ChevronUp,
     MessageSquare, Video, Shield, Languages, Palette, Image, Smartphone,
-    LayoutTemplate
+    LayoutTemplate, Rocket, FileText
 } from "lucide-react";
-import { FeatureFavoriteStar } from "@/components/core/ui/FeatureFavoriteStar";
+
 import { PageHeader } from "@/components/core/layout/PageHeader";
 import { useWindowLayout } from "@/components/core/layout/WindowLayoutContext";
+import { usePageActions } from "@/components/core/layout/PageActionsContext";
 
 // Import Creation Studio components
-import MultiContentGenerator from "@/app/social/creation-studio/_components/MultiContentGenerator";
+import MultiContentGenerator from "@/app/creatives/_components/MultiContentGenerator";
 import BrandVoiceProfile from "./_components/BrandVoiceProfile";
 
 // Import External Services & Tools
-import { UGCServiceBanner } from "@/components/marketing/UGCServiceBanner";
+import { UGCServiceBanner } from "@/app/marketing/_components/UGCServiceBanner";
 
 // Import NEW UX Components
 import { SectionHeader } from "./_components/shared";
-import { QuickActionsBar } from "./_components/QuickActionsBar";
+import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
 import { ToolGrid, ToolGridSection } from "./_components/ToolGrid";
 import { ContentKanban } from "./_components/kanban";
 import { ToolCard } from "./_components/shared/ToolCard";
 
-// Import Onboarding Components
-import { ProductTour } from "./_components/onboarding";
 
 // Import Templates
 import { TemplateLibrary } from "./_components/templates";
@@ -57,6 +56,16 @@ import FormatPresets from "./_components/FormatPresets";
 function CreativesContent() {
     const [isBrandVoiceOpen, setIsBrandVoiceOpen] = useState(false);
     const [activeToolId, setActiveToolId] = useState<string | null>(null);
+    const { setSuggestions } = usePageActions();
+
+    useEffect(() => {
+        setSuggestions([
+            { id: "1", type: "timing", title: "Optimal Post Time", description: "Posts at 9-11 AM get 23% more engagement in Algeria" },
+            { id: "2", type: "trend", title: "Trending Hashtag", description: "#AlgeriaVibes is trending - add it for more reach" },
+            { id: "3", type: "content", title: "Content Idea", description: "Unboxing videos get 4x more engagement" }
+        ]);
+        return () => setSuggestions([]);
+    }, [setSuggestions]);
 
     // New state for wizard and templates
     const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -122,25 +131,69 @@ function CreativesContent() {
                     title="Creatives & Content"
                     description="From idea to posting — Create, design, and publish across all platforms"
                     icon={<Sparkles className="h-6 w-6 text-[hsl(var(--accent-blue))]" />}
+                    actions={
+                        <QuickActionsBar
+                            variant="inline"
+                            primaryAction={{
+                                label: "Start Wizard",
+                                icon: Rocket,
+                                onClick: () => setIsWizardOpen(true)
+                            }}
+                            actions={[
+                                {
+                                    id: "hook-generator",
+                                    label: "Hook Generator",
+                                    icon: MessageSquare,
+                                    onClick: () => handleOpenTool("hook-generator"),
+                                    hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
+                                },
+                                {
+                                    id: "media-editor",
+                                    label: "Media Editor",
+                                    icon: Video,
+                                    onClick: () => handleOpenTool("media-editor"),
+                                    hoverColor: "hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 dark:hover:bg-purple-900/20"
+                                },
+                                {
+                                    id: "health",
+                                    label: "Content Health",
+                                    icon: PenTool,
+                                    onClick: () => console.log("Content health"),
+                                    hoverColor: "hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-900/20"
+                                }
+                            ]}
+                            moreActions={[
+                                {
+                                    id: "darja",
+                                    label: "Darja Optimizer",
+                                    icon: Languages,
+                                    onClick: () => handleOpenTool("darja"),
+                                    iconColor: "text-green-500"
+                                },
+                                {
+                                    id: "safety",
+                                    label: "Safety Checker",
+                                    icon: Shield,
+                                    onClick: () => handleOpenTool("safety"),
+                                    iconColor: "text-red-500"
+                                },
+                                {
+                                    id: "brand-voice",
+                                    label: "Brand Voice",
+                                    icon: Sparkles,
+                                    onClick: () => handleOpenTool("brand-voice"),
+                                    iconColor: "text-purple-500",
+                                    separator: true
+                                }
+                            ]}
+                        >
+                            <Button variant="outline" onClick={() => setIsTemplatesOpen(true)} className="gap-2 hidden">
+                                <LayoutTemplate className="h-4 w-4" />
+                                Templates
+                            </Button>
+                        </QuickActionsBar>
+                    }
                 />
-
-                {/* ============================================================================== */}
-                {/* SECTION 2: QUICK ACTIONS BAR                                                  */}
-                {/* ============================================================================== */}
-                <div className="flex items-center gap-3">
-                    <QuickActionsBar
-                        onStartWizard={() => setIsWizardOpen(true)}
-                        onOpenHookGenerator={() => handleOpenTool("hook-generator")}
-                        onOpenMediaEditor={() => handleOpenTool("media-editor")}
-                        onOpenDarja={() => handleOpenTool("darja")}
-                        onOpenSafetyChecker={() => handleOpenTool("safety")}
-                    />
-                    <Button variant="outline" onClick={() => setIsTemplatesOpen(true)} className="gap-2">
-                        <LayoutTemplate className="h-4 w-4" />
-                        Templates
-                    </Button>
-                    <ProductTour />
-                </div>
 
                 {/* ============================================================================== */}
                 {/* SECTION 3: CONTENT KANBAN BOARD                                               */}
@@ -295,6 +348,23 @@ function CreativesContent() {
                         title="Content Creation"
                         icon={PenTool}
                         iconColor="text-[hsl(var(--accent-blue))]"
+                        actions={
+                            <div className="flex items-center gap-2">
+                                <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplatesOpen(true)}>
+                                    <LayoutTemplate className="h-4 w-4" />
+                                    Templates
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => setIsHistoryOpen(true)}>
+                                    <Clock className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => setIsImportOpen(true)}>
+                                    <Upload className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => setIsExportOpen(true)}>
+                                    <Download className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        }
                     />
 
                     <Collapsible

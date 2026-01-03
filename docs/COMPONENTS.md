@@ -16,8 +16,9 @@ Comprehensive guide to reusable components in E-coma.
 ## Overview
 
 E-coma uses a component-based architecture with:
-- **73 UI primitives** built on Radix UI and shadcn/ui
-- **14 layout components** for the multi-panel system
+
+- **69 UI primitives** built on Radix UI and shadcn/ui
+- **23 layout components** for the multi-panel system
 - **200+ feature components** for business logic
 
 ### Component Structure
@@ -25,8 +26,8 @@ E-coma uses a component-based architecture with:
 ```
 src/components/
 ├── core/
-│   ├── ui/              # UI primitives (73 components)
-│   └── layout/          # Layout system (14 components)
+│   ├── ui/              # UI primitives (69 components)
+│   └── layout/          # Layout system (23 components)
 ├── analytics/           # Analytics features
 ├── marketing/           # Marketing features
 ├── social/              # Social media features
@@ -38,13 +39,14 @@ src/components/
 
 ## UI Primitives
 
-Located in `src/components/core/ui/` and `src/components/ui/`
+Located in `src/components/core/ui/`
 
 ### Button
 
 Versatile button component with multiple variants.
 
 **Props:**
+
 ```typescript
 interface ButtonProps {
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
@@ -55,6 +57,7 @@ interface ButtonProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { Button } from '@/components/ui/button';
 
@@ -78,6 +81,7 @@ import { Button } from '@/components/ui/button';
 Container component with header, content, and footer sections.
 
 **Compound Components:**
+
 ```tsx
 <Card>
   <CardHeader>
@@ -94,6 +98,7 @@ Container component with header, content, and footer sections.
 ```
 
 **Example:**
+
 ```tsx
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -114,6 +119,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 Modal dialog component.
 
 **Props:**
+
 ```typescript
 interface DialogProps {
   open?: boolean;
@@ -123,6 +129,7 @@ interface DialogProps {
 ```
 
 **Usage:**
+
 ```tsx
 import {
   Dialog,
@@ -151,6 +158,37 @@ import {
 
 ---
 
+### Unified Modal System
+
+E-coma uses a unified system for all modals and panels, categorized into three distinct patterns:
+
+#### 1. Dialog (Modal)
+
+Used for critical actions and focused tasks that require the user's full attention.
+
+- **Location:** `src/components/core/ui/dialog.tsx`
+- **When to use:** Confirmations, small forms, alerts.
+
+#### 2. Sheet (Side Panel)
+
+Used for secondary information, complex filters, or supplementary tasks that benefit from seeing the main content.
+
+- **Location:** `src/components/core/ui/sheet.tsx`
+- **When to use:** Advanced filters, detailed settings, AI agent interactions.
+
+#### 3. Command Palette
+
+Used for rapid navigation and global actions across the platform.
+
+- **Location:** `src/components/core/ui/command-palette.tsx`
+- **When to use:** Quick search, jumping between pages, executing commands.
+
+---
+
+```
+
+---
+
 ### Input
 
 Text input with variants and states.
@@ -164,6 +202,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 ```
 
 **Usage:**
+
 ```tsx
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -185,6 +224,7 @@ import { Label } from '@/components/ui/label';
 Dropdown select component.
 
 **Usage:**
+
 ```tsx
 import {
   Select,
@@ -213,6 +253,7 @@ import {
 Tabbed interface component.
 
 **Usage:**
+
 ```tsx
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -241,6 +282,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 Data table component with sorting and filtering.
 
 **Usage:**
+
 ```tsx
 import {
   Table,
@@ -276,6 +318,7 @@ import {
 Small status or label indicator.
 
 **Props:**
+
 ```typescript
 interface BadgeProps {
   variant?: 'default' | 'secondary' | 'destructive' | 'outline';
@@ -283,6 +326,7 @@ interface BadgeProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { Badge } from '@/components/ui/badge';
 
@@ -299,6 +343,7 @@ import { Badge } from '@/components/ui/badge';
 Hover tooltip component.
 
 **Usage:**
+
 ```tsx
 import {
   Tooltip,
@@ -324,6 +369,7 @@ import {
 Toast notification system.
 
 **Usage:**
+
 ```tsx
 import { useToast } from '@/components/ui/toast';
 
@@ -343,6 +389,7 @@ function MyComponent() {
 ```
 
 **Variants:**
+
 ```tsx
 // Success
 toast({ title: "Success!", variant: "default" });
@@ -368,6 +415,7 @@ Located in `src/components/core/layout/`
 Root layout component that provides all contexts.
 
 **Features:**
+
 - Window layout state
 - Right panel management
 - Scroll tracking
@@ -375,6 +423,7 @@ Root layout component that provides all contexts.
 - Page actions
 
 **Usage:**
+
 ```tsx
 import { LayoutWrapper } from '@/components/core/layout/LayoutWrapper';
 
@@ -394,6 +443,7 @@ export default function RootLayout({ children }) {
 Left sidebar with icon navigation.
 
 **Features:**
+
 - Category-based navigation
 - Expandable popups on hover
 - Active state tracking
@@ -409,12 +459,14 @@ Edit `src/config/navigation.tsx` to customize.
 Context-aware right sidebar.
 
 **Features:**
+
 - Dynamic content based on current page
 - AI agents panel
 - Quick actions
 - Feature-specific tools
 
 **Usage:**
+
 ```tsx
 import { useCategoryRightPanel } from '@/components/core/layout/CategoryRightPanel';
 
@@ -434,6 +486,7 @@ function MyPage() {
 Dynamic tab navigation.
 
 **Usage:**
+
 ```tsx
 import { HeaderTabs } from '@/components/core/layout/HeaderTabs';
 
@@ -452,6 +505,7 @@ const tabs = [
 Bottom status bar for AI agents.
 
 **Features:**
+
 - Module health indicators
 - Connection status
 - Quick access to agents
@@ -468,6 +522,7 @@ Analytics KPI display card.
 **Location:** `src/components/analytics/KPICard.tsx`
 
 **Props:**
+
 ```typescript
 interface KPICardProps {
   title: string;
@@ -479,6 +534,7 @@ interface KPICardProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { KPICard } from '@/components/analytics/KPICard';
 import { DollarSign } from 'lucide-react';
@@ -501,6 +557,7 @@ Collapsible feature group container.
 **Location:** `src/components/core/ui/FeatureCluster.tsx`
 
 **Usage:**
+
 ```tsx
 import { FeatureCluster } from '@/components/core/ui/FeatureCluster';
 
@@ -523,6 +580,7 @@ Advanced table with filtering and sorting.
 **Location:** `src/components/core/ui/data-table-extras.tsx`
 
 **Usage:**
+
 ```tsx
 import { DataTable } from '@/components/ui/data-table-extras';
 
@@ -550,6 +608,7 @@ Date range selection component.
 **Location:** `src/components/core/ui/date-range-picker.tsx`
 
 **Usage:**
+
 ```tsx
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 
@@ -572,6 +631,7 @@ Recharts wrapper components.
 **Location:** `src/components/analytics/charts/`
 
 **Line Chart:**
+
 ```tsx
 import { RevenueChart } from '@/components/analytics/RevenueChart';
 
@@ -582,6 +642,7 @@ import { RevenueChart } from '@/components/analytics/RevenueChart';
 ```
 
 **Bar Chart:**
+
 ```tsx
 import { OrdersChart } from '@/components/analytics/OrdersChart';
 
@@ -600,6 +661,7 @@ Algerian province heatmap visualization.
 **Location:** `src/components/ui/wilaya-heatmap.tsx`
 
 **Usage:**
+
 ```tsx
 import { WilayaHeatmap } from '@/components/ui/wilaya-heatmap';
 
@@ -622,6 +684,7 @@ Empty state placeholder component.
 **Location:** `src/components/ui/empty-state.tsx`
 
 **Usage:**
+
 ```tsx
 import { EmptyState } from '@/components/ui/empty-state';
 import { Package } from 'lucide-react';

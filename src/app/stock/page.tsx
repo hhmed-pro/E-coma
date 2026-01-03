@@ -1,31 +1,37 @@
 "use client";
 
+import { useEffect } from "react";
+import { usePageActions } from "@/components/core/layout/PageActionsContext";
+
 import { Button } from "@/components/core/ui/button";
 import { Badge } from "@/components/core/ui/badge";
 import {
     Download, Package, Truck,
     Box, AlertTriangle, TrendingDown, TrendingUp,
     ShoppingBag, Network, Globe,
-    Tag, Upload, Plus
+    Tag, Upload, Plus, PackageCheck
 } from "lucide-react";
 import { PageHeader } from "@/components/core/layout/PageHeader";
 import { FeatureCluster } from "@/components/core/ui/FeatureCluster";
 import { FeatureClusterGroup } from "@/components/core/ui/FeatureClusterGroup";
+import { DateRangePicker } from "@/components/core/ui/date-range-picker";
 
-import { FeatureFavoriteStar } from "@/components/core/ui/FeatureFavoriteStar";
+
 
 // ✅ RESTRUCTURE: Import Stock Components 
-import { Product } from "@/components/store/inventory/ProductCard";
-import { InventorySplitView } from "@/components/store/inventory/InventorySplitView";
-import InventoryAiScore from "@/components/store/inventory/InventoryAiScore";
-import { OffersModule } from "@/components/store/inventory/OffersModule";
+import { Product } from "@/app/ecommerce/_components/inventory/ProductCard";
+import { InventorySplitView } from "@/app/ecommerce/_components/inventory/InventorySplitView";
+import InventoryAiScore from "@/app/ecommerce/_components/inventory/InventoryAiScore";
+import { OffersModule } from "@/app/ecommerce/_components/inventory/OffersModule";
 
-import { CarrierStockSync } from "@/components/store/inventory/CarrierStockSync";
-import { ImportBudgetTracker } from "@/components/store/inventory/ImportBudgetTracker";
+import { CarrierStockSync } from "@/app/ecommerce/_components/inventory/CarrierStockSync";
+import { ImportBudgetTracker } from "@/app/ecommerce/_components/inventory/ImportBudgetTracker";
 
-import SupplierDatabase from "@/components/shared/research/SupplierDatabase";
-import { ChinaImportService } from "@/components/store/inventory/ChinaImportService";
+import SupplierDatabase from "@/app/product-research/_components/SupplierDatabase";
+import { ChinaImportService } from "@/app/ecommerce/_components/inventory/ChinaImportService";
 import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
+// Import SectionHeader
+import { SectionHeader } from "@/app/creatives/_components/shared/SectionHeader";
 
 // ✅ RESTRUCTURE: Mock Products for Sales Metrics (P1 - moved to Section 1)
 const PRODUCTS_SALES_DATA = [
@@ -140,6 +146,16 @@ const stockMovements = [
 
 export default function StockPage() {
     // ✅ RESTRUCTURE: Removed tab state - using vertical sections instead
+    const { setSuggestions } = usePageActions();
+
+    useEffect(() => {
+        setSuggestions([
+            { id: "1", type: "trend", title: "Stock Alert", description: "3 products below reorder threshold" },
+            { id: "2", type: "timing", title: "Restock Timing", description: "Best to restock Wireless Earbuds before weekend" },
+            { id: "3", type: "improvement", title: "Slow Movers", description: "Consider discount on 2 items with low sales velocity" }
+        ]);
+        return () => setSuggestions([]);
+    }, [setSuggestions]);
 
     return (
         <div className="flex flex-col gap-6 p-6">
@@ -148,69 +164,54 @@ export default function StockPage() {
                 ✅ RESTRUCTURE: Moved from tabs to top vertical section
             ════════════════════════════════════════════════════════════════════ */}
             <section className="space-y-6">
-                {/* Header */}
                 <PageHeader
                     title="Stock Management"
                     description="Manage inventory, track stock levels, and handle suppliers"
                     icon={<Package className="h-6 w-6 text-[hsl(var(--accent-blue))]" />}
                     actions={
-                        <div className="flex items-center gap-2">
-                            <Button variant="outline" className="gap-2 hidden sm:flex">
-                                <Upload className="h-4 w-4" />
-                                Import
-                            </Button>
-                            <Button variant="outline" className="gap-2 hidden sm:flex">
-                                <Download className="h-4 w-4" />
-                                Export
-                            </Button>
-                            <Button className="gap-2">
-                                <Plus className="h-4 w-4" />
-                                Add Product
-                            </Button>
-                            <FeatureFavoriteStar featureId="stock-management" size="lg" />
-                        </div>
+                        <QuickActionsBar
+                            variant="inline"
+                            primaryAction={{
+                                label: "Add Product",
+                                icon: Plus,
+                                onClick: () => console.log("Add product")
+                            }}
+                            actions={[
+                                {
+                                    id: "sync-carriers",
+                                    label: "Sync Carriers",
+                                    icon: Truck,
+                                    onClick: () => console.log("Sync carriers"),
+                                    hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
+                                },
+                                {
+                                    id: "health",
+                                    label: "Inventory Health",
+                                    icon: PackageCheck,
+                                    onClick: () => console.log("Inventory health"),
+                                    hoverColor: "hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-900/20"
+                                }
+                            ]}
+                            moreActions={[
+                                {
+                                    id: "low-stock-alerts",
+                                    label: "Low Stock Alerts",
+                                    icon: AlertTriangle,
+                                    onClick: () => console.log("Low stock alerts"),
+                                    iconColor: "text-orange-500"
+                                }
+                            ]}
+                        />
                     }
                 />
 
-                {/* Quick Actions Bar */}
-                <QuickActionsBar
-                    primaryAction={{
-                        label: "Add Product",
-                        icon: Plus,
-                        onClick: () => console.log("Add product")
-                    }}
-                    actions={[
-                        {
-                            id: "sync-carriers",
-                            label: "Sync Carriers",
-                            icon: Truck,
-                            onClick: () => console.log("Sync carriers"),
-                            hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
-                        },
-                        {
-                            id: "import-stock",
-                            label: "Import",
-                            icon: Upload,
-                            onClick: () => console.log("Import stock"),
-                            hoverColor: "hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/20"
-                        }
-                    ]}
-                    moreActions={[
-                        {
-                            id: "export-stock",
-                            label: "Export Stock",
-                            icon: Download,
-                            onClick: () => console.log("Export stock"),
-                            iconColor: "text-purple-500"
-                        },
-                        {
-                            id: "low-stock-alerts",
-                            label: "Low Stock Alerts",
-                            icon: AlertTriangle,
-                            onClick: () => console.log("Low stock alerts"),
-                            iconColor: "text-orange-500"
-                        }
-                    ]}
+                {/* Performance Header */}
+                <SectionHeader
+                    title="Performance Overview"
+                    icon={TrendingUp}
+                    actions={
+                        <DateRangePicker />
+                    }
                 />
 
                 {/* ✅ RESTRUCTURE: AI Inventory Score with merged Top Sellers, Low Stock Alerts, Return Rates & Recent Movements */}
@@ -230,10 +231,22 @@ export default function StockPage() {
                 ✅ RESTRUCTURE: Full width split view for product CRUD
             ════════════════════════════════════════════════════════════════════ */}
             <section className="space-y-4">
-                <div className="flex items-center gap-2">
-                    <ShoppingBag className="h-5 w-5 text-[hsl(var(--accent-blue))]" />
-                    <h2 className="text-lg font-semibold">Product Operations</h2>
-                </div>
+                <SectionHeader
+                    title="Product Operations"
+                    icon={ShoppingBag}
+                    actions={
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <Upload className="h-4 w-4" />
+                                Import
+                            </Button>
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <Download className="h-4 w-4" />
+                                Export
+                            </Button>
+                        </div>
+                    }
+                />
                 <InventorySplitView products={products} />
             </section>
 

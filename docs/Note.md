@@ -1,4 +1,6 @@
+Agents Rules :
 Do not verify in the web browser until i told you .
+when migrating or merging an element , confirm if its correctly moved befor cleaning it up .
 ###############################################
 
 # Check what changed in your files
@@ -18,39 +20,47 @@ git push
 
 git pull
 ###############################################
-from the creatives page tell me about this .
-
 ###############################################
-global webapp enhancement file :
-Relative sections :
+chek for a safe cleanup :
 
-add to plan :
-apply a similar Header Actions , Quick Actions Bar and its surrounding elements to all others pages (each one have his own element) .
+update the Page Migrations in the plan to reflect all the current elements and buttons across all the webapp and make sure to not losing actual features and functionality through the procces .
 
-add to plan :
-FLOATING/MODAL in the Creation Wizard and the Smart Templates .
+apply the plan ..
 
-Creat a new relation analytics md file that have a table of all of this and the realation between all of those UIs elements  (the goal is to Propose a better UI placement in the view port of all of those) :
-
-scan this compennents :
-Top Navigation Bar .
-EcoSystem Bar .
-
-Bars restructuration .
-side by side sections in a column grid layout .
-Content Pipeline
-wizard modal
-
-tell me , enhance x2
+look for remeaning usage of HeaderTabs ,RightPanelContext , SplitLayout .
+PAGE_INFO_CONFIG in SecondTopBar -> safely remove if not neded .
 ###############################################
+Work only on UI/UX:
+Devlope an enterprise Approach for Modes switching and collaboratiolns Integration :
 
-apply this Behavior to all the Header Actions & Collaboration Bar :
+Lets say that i have an Ecommerce bussines with a multipule Teams like sales team , marketing team , ads team , Reasearch team ....
+each team have his own page to work on it .
+as an admin , i should be able to navigate across all the webapp , manage teams and accesss , but other users should not .
+in the admin mode : collaboratioln icons should show all real time active teams icon with a configuration icon so the admin can configurate and active / disactive team access on each activated team pages .
 
-1. When Top Navigation is Expanded or Collapsed
-Behavior: They appear in the Page Header , not in the Top Navigation Bar.
-They are fixed to the right side of the screen.
-Why: always available in the main navigation.
-2. When Scrolled Down
-Behavior: They disappear from the Page Header .
-Exceptions: If the top navigation is expanded, they might still be visible in the sticky top nav bar depending on its specific configuration, but they are removed from the page content area to reduce clutter.
-Summary: They intelligently "jump" between the Top Bar and the Page Header depending on which one is the primary focus, ensuring they are always available but never duplicated.
+mock and synce :
+sync the Mocks of the Active Teams Display and all the ecosystem bar pannels for all pages and modes .
+session objectives and configs , todos lists (admin list - team list) , comunucation layer and chats (admin chat - team chat) .
+Module Button should use the ecossytem bar pop modal and showing the view according to the current mode and session .
+###############################################
+update all documentations and configurations files to reflect the actual current codebase .
+check thefor not longer and unecesery documentations to clean up .
+push to github .
+###############################################
+enterprise dashboard Global UI/UX Unified context-aware enhacement :
+top navigation dynamic elements .  
+ecosystem bar tabs system .
+
+Visual board to manage stages
+Promotional or access banner for services
+A grid of clickable cards to open specific tools
+Active Tool Panel (Dynamic)
+
+Advanced tabes system , remember behavior ;;;;;
+Look for aalready existing features that have oportunitys to apply a similar modal pattern to :
+the side by side sections in a column grid layout modal .
+the Content Pipeline modal .
+(Step-by-step creation) CreationWizard
+###############################################
+import exports , reports and emails and therd party integrations .
+data tranfer between admin and teams .

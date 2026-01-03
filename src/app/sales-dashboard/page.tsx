@@ -1,30 +1,34 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ReturnRiskCalculator } from '@/components/sales/ReturnRiskCalculator';
-import { CustomerBlacklist } from '@/components/sales/CustomerBlacklist';
-import { LocationCollector } from '@/components/sales/LocationCollector';
-import { ConfirmationWorkflow } from '@/components/sales/ConfirmationWorkflow';
-import { CallCenterScripts } from '@/components/sales/CallCenterScripts';
-import { OfflineConversionSync } from '@/components/sales/OfflineConversionSync';
-import PackerModePanel from '@/components/store/delivery/PackerModePanel';
-import ShipmentTracker from '@/components/store/delivery/ShipmentTracker';
+import { ReturnRiskCalculator } from '@/app/sales-dashboard/_components/ReturnRiskCalculator';
+import { CustomerBlacklist } from '@/app/sales-dashboard/_components/CustomerBlacklist';
+import { LocationCollector } from '@/app/sales-dashboard/_components/LocationCollector';
+import { ConfirmationWorkflow } from '@/app/sales-dashboard/_components/ConfirmationWorkflow';
+import { CallCenterScripts } from '@/app/sales-dashboard/_components/CallCenterScripts';
+import { OfflineConversionSync } from '@/app/sales-dashboard/_components/OfflineConversionSync';
+import PackerModePanel from '@/app/ecommerce/_components/delivery/PackerModePanel';
+import ShipmentTracker from '@/app/ecommerce/_components/delivery/ShipmentTracker';
 import { FeatureClusterGroup } from '@/components/core/ui/FeatureClusterGroup';
-import { useRightPanel } from "@/components/core/layout/RightPanelContext";
+import { Sheet, SheetContent } from "@/components/core/ui/sheet";
 import { useToast } from "@/components/core/ui/toast";
-import { ConfirmationBot } from "@/components/marketing/ConfirmationBot";
+import { ConfirmationBot } from "@/app/marketing/_components/ConfirmationBot";
 import {
     TrendingUp, PackageX, CheckCircle, AlertTriangle, Ban,
-    Truck, ShieldAlert, Phone, Package, UploadCloud, BarChart, RotateCcw, PieChart, Settings, Shield, X, Check, Bot
+    Truck, ShieldAlert, Phone, Package, UploadCloud, BarChart, RotateCcw, PieChart, Settings, Shield, X, Check, Bot, Download, FileText, HeartPulse
 } from 'lucide-react';
 import { PageHeader } from "@/components/core/layout/PageHeader";
 import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
-import { OrdersChart } from '@/components/analytics/OrdersChart';
-import { CashCollector } from '@/components/analytics/CashCollector';
-import { LifecycleFunnel } from '@/components/analytics/charts/lifecycle-funnel';
+import { OrdersChart } from '@/app/analytics/_components/OrdersChart';
+import { CashCollector } from '@/app/analytics/_components/CashCollector';
+import { LifecycleFunnel } from '@/app/analytics/_components/charts/lifecycle-funnel';
 import { Badge } from '@/components/core/ui/badge';
+import { Button } from '@/components/core/ui/button';
 import { Card, CardContent } from '@/components/core/ui/card';
+import { DateRangePicker } from '@/components/core/ui/date-range-picker';
 import { cn } from '@/lib/utils';
+import { usePageActions } from "@/components/core/layout/PageActionsContext"; // Added import
+import { useEffect } from "react";
 
 // Integrated Action Panel Wrapper (Reused for consistency)
 const ActionPanelWrapper = ({
@@ -101,87 +105,62 @@ const TRAFFIC_SOURCES_DATA = [
 
 export default function SalesDashboardPage() {
     const [viewMode, setViewMode] = useState<'chart' | 'list'>('chart');
-    const { setConfig, setIsOpen, isOpen } = useRightPanel();
     const { warning } = useToast();
+    const { setSuggestions } = usePageActions();
+
+    useEffect(() => {
+        setSuggestions([
+            { id: "1", type: "trend", title: "High Return Rate", description: "Consider reviewing product quality for top 3 returned items" },
+            { id: "2", type: "timing", title: "Peak Hours", description: "Most orders confirmed between 2-5 PM" }
+        ]);
+        return () => setSuggestions([]);
+    }, [setSuggestions]);
+
+    // Replaced useRightPanel with local state
+    const [activePanelPlugin, setActivePanelPlugin] = useState<{ component: React.ReactNode; title: string } | null>(null);
+
 
     const closePanel = () => {
-        setIsOpen(false);
-        setConfig(null);
+        setActivePanelPlugin(null);
     };
 
     const openRiskPanel = () => {
-        if (isOpen) {
-            warning("Action Blocked", "Please save or cancel the current panel before switching.");
-            return;
-        }
-        setIsOpen(true);
-        setConfig({
-            enabled: true,
+        setActivePanelPlugin({
             title: "Return Risk Settings",
-            content: (
-                <ActionPanelWrapper
-                    title="Return Risk Settings"
-                    onSave={() => {
-                        // Logic to save risk settings would go here
-                        closePanel();
-                    }}
-                    onCancel={closePanel}
-                    saveLabel="Save Settings"
-                >
-                    <ReturnRiskCalculator />
-                </ActionPanelWrapper>
-            )
+            component: <ReturnRiskCalculator />
         });
     };
 
     const openBlacklistPanel = () => {
-        if (isOpen) {
-            warning("Action Blocked", "Please save or cancel the current panel before switching.");
-            return;
-        }
-        setIsOpen(true);
-        setConfig({
-            enabled: true,
+        setActivePanelPlugin({
             title: "Blacklist Management",
-            content: (
-                <ActionPanelWrapper
-                    title="Blacklist Management"
-                    onSave={() => {
-                        // Logic to save blacklist changes would go here
-                        closePanel();
-                    }}
-                    onCancel={closePanel}
-                    saveLabel="Save Changes"
-                >
-                    <CustomerBlacklist />
-                </ActionPanelWrapper>
-            )
+            component: <CustomerBlacklist />
         });
     };
+
     const openBotPanel = (component: React.ReactNode, title: string) => {
-        if (isOpen) {
-            warning("Action Blocked", "Please save or cancel the current panel before switching.");
-            return;
-        }
-        setIsOpen(true);
-        setConfig({
-            enabled: true,
-            title: title,
-            content: (
-                <ActionPanelWrapper
-                    title={title}
-                    onSave={closePanel}
-                    onCancel={closePanel}
-                    saveLabel="Save Changes"
-                >
-                    {component}
-                </ActionPanelWrapper>
-            )
-        });
+        setActivePanelPlugin({ component, title });
     };
 
     return (
         <div className="space-y-6 p-4 md:p-6 rounded-xl">
+            {/* Sheet for Dynamic Panels */}
+            <Sheet open={!!activePanelPlugin} onOpenChange={(open) => !open && closePanel()}>
+                <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto p-0">
+                    {activePanelPlugin && (
+                        <div className="h-full p-6">
+                            <ActionPanelWrapper
+                                title={activePanelPlugin.title}
+                                onSave={closePanel}
+                                onCancel={closePanel}
+                                saveLabel="Save Changes"
+                            >
+                                {activePanelPlugin.component}
+                            </ActionPanelWrapper>
+                        </div>
+                    )}
+                </SheetContent>
+            </Sheet>
 
             {/* ═══════════════════════════════════════════════════════════════════
                     SECTION 1: HIGH-LEVEL OVERVIEW (P1 - Always Visible)
@@ -192,76 +171,101 @@ export default function SalesDashboardPage() {
                 description="Boost sales & kill returns with AI-driven insights"
                 icon={<BarChart className="h-6 w-6 text-[#788c5d]" />}
                 className="mb-4"
+                actions={
+                    <QuickActionsBar
+                        variant="inline"
+                        primaryAction={{
+                            label: "New Order",
+                            icon: Package,
+                            onClick: () => { }
+                        }}
+                        actions={[
+                            { id: "risk", label: "Risk Settings", icon: Shield, onClick: openRiskPanel },
+                            { id: "blacklist", label: "Blacklist", icon: Ban, onClick: openBlacklistPanel },
+                            { id: "bot", label: "AI Bot", icon: Bot, onClick: () => openBotPanel(<ConfirmationBot />, "AI Order Confirmation Bot") },
+                            { id: "health", label: "Order Health", icon: HeartPulse, onClick: () => console.log("Order health") },
+                        ]}
+                        moreActions={[
+                            {
+                                id: "export",
+                                label: "Export Data",
+                                icon: Download,
+                                onClick: () => console.log("Export data"),
+                                iconColor: "text-green-500"
+                            },
+                            {
+                                id: "report",
+                                label: "Generate Report",
+                                icon: FileText,
+                                onClick: () => console.log("Generate report"),
+                                iconColor: "text-blue-500"
+                            }
+                        ]}
+                    />
+                }
             />
 
-            {/* QuickActionsBar - Phase 4 Enhancement */}
-            <QuickActionsBar
-                primaryAction={{
-                    label: "New Order",
-                    icon: Package,
-                    onClick: () => { }
-                }}
-                actions={[
-                    { id: "risk", label: "Risk Settings", icon: Shield, onClick: openRiskPanel },
-                    { id: "blacklist", label: "Blacklist", icon: Ban, onClick: openBlacklistPanel },
-                    { id: "bot", label: "AI Bot", icon: Bot, onClick: () => openBotPanel(<ConfirmationBot />, "AI Order Confirmation Bot") },
-                ]}
-                showAITips={true}
-                suggestions={[
-                    { id: "1", type: "trend", title: "High Return Rate", description: "Consider reviewing product quality for top 3 returned items" },
-                    { id: "2", type: "timing", title: "Peak Hours", description: "Most orders confirmed between 2-5 PM" }
-                ]}
-                className="mb-6"
-            />
-
-            <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {/* KPI 1: Return Rate */}
-                <div className="bg-card p-4 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow">
-                    <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-sm font-medium text-muted-foreground font-[Poppins,Arial,sans-serif]">Return Rate</h4>
-                        <PackageX className="w-4 h-4 text-[hsl(var(--accent-orange))]" />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground font-[Lora,Georgia,serif]">12.5%</div>
-                    <div className="text-xs text-[hsl(var(--accent-green))] flex items-center mt-1 font-[Lora,Georgia,serif]">
-                        <TrendingUp className="w-3 h-3 mr-1" /> -2.1% this week
+            <section className="space-y-4">
+                <div className="flex items-center justify-between border-b pb-2 mb-4">
+                    <h2 className="text-xl font-bold flex items-center gap-2">
+                        <BarChart className="h-5 w-5 text-primary" />
+                        Overview
+                    </h2>
+                    <div className="flex items-center gap-2">
+                        <DateRangePicker />
+                        <Button variant="outline" size="sm" className="gap-2"><BarChart className="h-4 w-4" /> Report</Button>
+                        <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4" /> Export</Button>
                     </div>
                 </div>
-
-                {/* KPI 2: Confirmed Orders */}
-                <div className="bg-card p-4 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow">
-                    <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-sm font-medium text-muted-foreground font-[Poppins,Arial,sans-serif]">Confirmed Orders</h4>
-                        <CheckCircle className="w-4 h-4 text-[hsl(var(--accent-green))]" />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground font-[Lora,Georgia,serif]">142</div>
-                    <div className="text-xs text-[hsl(var(--accent-green))] flex items-center mt-1 font-[Lora,Georgia,serif]">
-                        <TrendingUp className="w-3 h-3 mr-1" /> +15% vs last week
-                    </div>
-                </div>
-
-                {/* KPI 3: Risk Alerts */}
-                <div className="bg-card p-4 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow">
-                    <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-sm font-medium text-muted-foreground font-[Poppins,Arial,sans-serif]">Risk Alerts</h4>
-                        <AlertTriangle className="w-4 h-4 text-[hsl(var(--accent-orange))]" />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground font-[Lora,Georgia,serif]">8</div>
-                    <div className="text-xs text-[hsl(var(--accent-orange))] mt-1 font-[Lora,Georgia,serif]">
-                        Requires attention
-                    </div>
-                </div>
-
-                {/* KPI 4: Shielded */}
-                <div className="bg-card p-4 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow">
-                    <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-sm font-medium text-muted-foreground font-[Poppins,Arial,sans-serif]">Shielded</h4>
-                        <div className="w-4 h-4 rounded-full bg-[hsl(var(--accent-green))]/20 flex items-center justify-center">
-                            <span className="w-2 h-2 rounded-full bg-[hsl(var(--accent-green))]"></span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {/* KPI 1: Return Rate */}
+                    <div className="bg-card p-4 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow">
+                        <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-sm font-medium text-muted-foreground font-[Poppins,Arial,sans-serif]">Return Rate</h4>
+                            <PackageX className="w-4 h-4 text-[hsl(var(--accent-orange))]" />
+                        </div>
+                        <div className="text-2xl font-bold text-foreground font-[Lora,Georgia,serif]">12.5%</div>
+                        <div className="text-xs text-[hsl(var(--accent-green))] flex items-center mt-1 font-[Lora,Georgia,serif]">
+                            <TrendingUp className="w-3 h-3 mr-1" /> -2.1% this week
                         </div>
                     </div>
-                    <div className="text-2xl font-bold text-foreground font-[Lora,Georgia,serif]">24</div>
-                    <div className="text-xs text-muted-foreground mt-1 font-[Lora,Georgia,serif]">
-                        Orders auto-blocked
+
+                    {/* KPI 2: Confirmed Orders */}
+                    <div className="bg-card p-4 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow">
+                        <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-sm font-medium text-muted-foreground font-[Poppins,Arial,sans-serif]">Confirmed Orders</h4>
+                            <CheckCircle className="w-4 h-4 text-[hsl(var(--accent-green))]" />
+                        </div>
+                        <div className="text-2xl font-bold text-foreground font-[Lora,Georgia,serif]">142</div>
+                        <div className="text-xs text-[hsl(var(--accent-green))] flex items-center mt-1 font-[Lora,Georgia,serif]">
+                            <TrendingUp className="w-3 h-3 mr-1" /> +15% vs last week
+                        </div>
+                    </div>
+
+                    {/* KPI 3: Risk Alerts */}
+                    <div className="bg-card p-4 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow">
+                        <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-sm font-medium text-muted-foreground font-[Poppins,Arial,sans-serif]">Risk Alerts</h4>
+                            <AlertTriangle className="w-4 h-4 text-[hsl(var(--accent-orange))]" />
+                        </div>
+                        <div className="text-2xl font-bold text-foreground font-[Lora,Georgia,serif]">8</div>
+                        <div className="text-xs text-[hsl(var(--accent-orange))] mt-1 font-[Lora,Georgia,serif]">
+                            Requires attention
+                        </div>
+                    </div>
+
+                    {/* KPI 4: Shielded */}
+                    <div className="bg-card p-4 rounded-xl shadow-md border border-border hover:shadow-lg transition-shadow">
+                        <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-sm font-medium text-muted-foreground font-[Poppins,Arial,sans-serif]">Shielded</h4>
+                            <div className="w-4 h-4 rounded-full bg-[hsl(var(--accent-green))]/20 flex items-center justify-center">
+                                <span className="w-2 h-2 rounded-full bg-[hsl(var(--accent-green))]"></span>
+                            </div>
+                        </div>
+                        <div className="text-2xl font-bold text-foreground font-[Lora,Georgia,serif]">24</div>
+                        <div className="text-xs text-muted-foreground mt-1 font-[Lora,Georgia,serif]">
+                            Orders auto-blocked
+                        </div>
                     </div>
                 </div>
             </section>

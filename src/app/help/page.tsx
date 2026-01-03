@@ -1,6 +1,6 @@
 "use client";
 
-import { HelpCenterContent } from "@/components/help/HelpCenterContent";
+import { HelpCenterContent } from "@/app/help/_components/HelpCenterContent";
 import { useRightPanel } from "@/components/core/layout/RightPanelContext";
 import { useEffect, useState } from "react";
 import { HelpCircle, BookOpen, Headphones } from "lucide-react";

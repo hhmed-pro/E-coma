@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X, Maximize2, Minimize2, Truck, Share2, Bot, Key, Settings, Save, Rocket } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X, Maximize2, Minimize2, Truck, Share2, Bot, Key, Settings, Save, Rocket, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingChecklistInline } from "@/components/core/ui/onboarding-checklist";
 import { useWindowLayout } from "./WindowLayoutContext";
 import { useScroll } from "./ScrollContext";
 import { ECOSYSTEM_MODULES } from "@/config/ecosystem-config";
 import { AIAgentsPanel } from "./AIAgentsPanel";
+import { SessionModuleContent } from "./SessionControlPanel";
+
 
 interface BottomPanelProps {
     isOpen: boolean;
@@ -41,17 +43,87 @@ MODULE_CONTENT["ai-agents"] = {
     tabs: ["Accounts", "Configuration", "Logs"]
 };
 
+// 4. Session Module
+MODULE_CONTENT["session"] = {
+    title: "Session Control",
+    icon: Target, // Imported from lucide-react? Need to check imports
+    tabs: ["Overview"]
+};
+
 export function BottomPanel({ isOpen, onClose, activeModule }: BottomPanelProps) {
+    // Layout State
     const [isMaximized, setIsMaximized] = useState(false);
-    const [activeTab, setActiveTab] = useState(0);
-    const { bottomPanelStyle, setBottomPanelOpen } = useWindowLayout(); // Corrected destructuring
+    const [height, setHeight] = useState(320); // Default height
+    const [isResizing, setIsResizing] = useState(false);
+
+    // Refs for resizing
+    const activeTabState = useState(0);
+    const [activeTab, setActiveTab] = activeTabState;
+    const { bottomPanelStyle, setBottomPanelOpen } = useWindowLayout();
     const { isScrolled } = useScroll();
+    const isResizingRef = useRef(false);
+    const lastHeightRef = useRef(320);
 
     // Sync visibility
     useEffect(() => {
         setBottomPanelOpen(isOpen);
         return () => setBottomPanelOpen(false);
     }, [isOpen, setBottomPanelOpen]);
+
+    // Resizing Logic
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isResizingRef.current) return;
+
+            // Calculate new height: Window Height - Mouse Y - Bottom Offset (48px for footer)
+            const newHeight = window.innerHeight - e.clientY - 48;
+
+            // Constraints
+            const minHeight = 200;
+            const maxHeight = window.innerHeight - 80; // Leave space for top bar
+
+            const clampedHeight = Math.min(Math.max(newHeight, minHeight), maxHeight);
+            setHeight(clampedHeight);
+        };
+
+        const handleMouseUp = () => {
+            isResizingRef.current = false;
+            setIsResizing(false);
+            document.body.style.cursor = 'default';
+            document.body.style.userSelect = 'auto'; // Re-enable selection
+        };
+
+        if (isResizing) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizing]);
+
+    const startResizing = (e: React.MouseEvent) => {
+        e.preventDefault();
+        isResizingRef.current = true;
+        setIsResizing(true);
+        document.body.style.cursor = 'row-resize';
+        document.body.style.userSelect = 'none'; // Prevent text selection while dragging
+    };
+
+    const toggleMaximize = () => {
+        if (isMaximized) {
+            // Restore
+            setHeight(lastHeightRef.current);
+            setIsMaximized(false);
+        } else {
+            // Maximize
+            lastHeightRef.current = height;
+            setHeight(window.innerHeight - 100); // Almost full screen
+            setIsMaximized(true);
+        }
+    };
 
     if (!isOpen || !activeModule) return null;
 
@@ -61,18 +133,24 @@ export function BottomPanel({ isOpen, onClose, activeModule }: BottomPanelProps)
     return (
         <div
             className={cn(
-                "fixed left-0 bottom-12 z-40 bg-card/98 backdrop-blur-xl border-t border-border shadow-2xl",
-                isMaximized
-                    ? (isScrolled ? "top-[120px]" : "top-[260px]")
-                    : (isScrolled ? "h-80" : "h-64")
+                "fixed left-0 bottom-12 z-40 bg-card/98 backdrop-blur-xl border-t border-border shadow-2xl flex flex-col",
+                // Remove fixed height classes, use inline style instead
             )}
             style={{
                 right: bottomPanelStyle.right,
-                transition: "right 300ms ease-in-out, top 300ms ease-in-out, height 300ms ease-in-out"
+                height: `${height}px`,
+                // Disable transition during resize for performance
+                transition: isResizing ? "none" : "right 300ms ease-in-out, height 300ms cubic-bezier(0.4, 0, 0.2, 1)"
             }}
         >
+            {/* Drag Handle */}
+            <div
+                onMouseDown={startResizing}
+                className="absolute top-0 left-0 right-0 h-1.5 cursor-row-resize hover:bg-primary/20 transition-colors z-50 transform -translate-y-1/2 w-full"
+            />
+
             {/* Header */}
-            <div className="h-12 flex items-center justify-between px-4 border-b border-border bg-muted/30">
+            <div className="h-12 flex items-center justify-between px-4 border-b border-border bg-muted/30 shrink-0 select-none">
                 <div className="flex items-center gap-3">
                     <activeModuleConfig.icon className="h-5 w-5 text-primary" />
                     <span className="font-semibold text-foreground">{activeModuleConfig.title}</span>
@@ -99,8 +177,9 @@ export function BottomPanel({ isOpen, onClose, activeModule }: BottomPanelProps)
                 {/* Controls */}
                 <div className="flex items-center gap-1">
                     <button
-                        onClick={() => setIsMaximized(!isMaximized)}
+                        onClick={toggleMaximize}
                         className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        title={isMaximized ? "Restore" : "Maximize"}
                     >
                         {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
                     </button>
@@ -114,13 +193,15 @@ export function BottomPanel({ isOpen, onClose, activeModule }: BottomPanelProps)
             </div>
 
             {/* Content */}
-            <div className="p-6 overflow-y-auto" style={{ height: isMaximized ? "calc(100% - 3rem)" : "calc(100% - 3rem)" }}>
+            <div className="flex-1 overflow-y-auto p-6">
                 <div className="max-w-4xl mx-auto">
                     {/* Custom Content for Onboarding */}
                     {activeModule === "onboarding" ? (
                         <OnboardingChecklistInline />
                     ) : activeModule === "ai-agents" ? (
                         <AIAgentsPanel activeTab={activeTab} />
+                    ) : activeModule === "session" ? (
+                        <SessionModuleContent />
                     ) : (
                         /* Placeholder Content for other modules */
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

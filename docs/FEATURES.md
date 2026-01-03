@@ -13,16 +13,14 @@ Complete guide to all 127 features in E-coma.
 
 ---
 
-## Overview
-
-E-coma includes **127 favoritable features** organized across 5 main categories:
-- **Analytics** (13 features)
-- **E-Commerce** (40+ features)
-- **Social Media** (25+ features)
-- **Marketing & Ads** (45+ features)
-- **Admin** (5+ features)
-
 Each feature can be marked as a favorite for quick access.
+
+### 🚀 Implementation Status Overview
+
+| Feature Status | Count | Description |
+|----------------|-------|-------------|
+| **Core (Implemented)** | ~40 | Features currently configured and active in `feature-favorites-config.ts`. |
+| **Roadmap (Planned)** | ~87 | Features defined in the specification but currently under development or integration. |
 
 ---
 
@@ -37,6 +35,7 @@ Each feature can be marked as a favorite for quick access.
 Real-time business performance dashboard with key metrics and charts.
 
 **Key Features:**
+
 - Revenue and profit tracking
 - Order volume statistics
 - Customer acquisition metrics
@@ -44,6 +43,7 @@ Real-time business performance dashboard with key metrics and charts.
 - Interactive date range selection
 
 **Usage:**
+
 ```tsx
 // Navigate to analytics dashboard
 <Link href="/analytics">View Analytics</Link>
@@ -63,6 +63,7 @@ Real-time business performance dashboard with key metrics and charts.
 **Track and analyze revenue streams**
 
 **Features:**
+
 - Total revenue by period
 - Revenue vs. profit comparison
 - Product-wise revenue breakdown
@@ -70,6 +71,7 @@ Real-time business performance dashboard with key metrics and charts.
 - Revenue forecasting
 
 **Metrics:**
+
 - Gross revenue
 - Net profit
 - Profit margin (%)
@@ -83,6 +85,7 @@ Real-time business performance dashboard with key metrics and charts.
 **Geographic revenue visualization**
 
 **Features:**
+
 - Interactive Algeria map
 - Color-coded performance by wilaya
 - Click for detailed wilaya stats
@@ -90,6 +93,7 @@ Real-time business performance dashboard with key metrics and charts.
 - Delivery zone analysis
 
 **Data Points:**
+
 - Orders per wilaya
 - Revenue per wilaya
 - Average order value
@@ -103,6 +107,7 @@ Real-time business performance dashboard with key metrics and charts.
 **Website and landing page analytics**
 
 **Features:**
+
 - Traffic sources (Direct, Social, Ads, Referral)
 - Top landing pages
 - Bounce rate tracking
@@ -116,6 +121,7 @@ Real-time business performance dashboard with key metrics and charts.
 **Visualize customer journey**
 
 **Stages:**
+
 1. **Visitors** - Website visitors
 2. **Engaged** - Add to cart
 3. **Checkout** - Initiated checkout
@@ -123,6 +129,7 @@ Real-time business performance dashboard with key metrics and charts.
 5. **Retained** - Repeat customers
 
 **Metrics:**
+
 - Conversion rate per stage
 - Drop-off analysis
 - Time to conversion
@@ -135,6 +142,7 @@ Real-time business performance dashboard with key metrics and charts.
 **Best-selling products analysis**
 
 **Columns:**
+
 - Product name & image
 - Units sold
 - Revenue generated
@@ -149,6 +157,7 @@ Real-time business performance dashboard with key metrics and charts.
 **Real-time profit calculation tool**
 
 **Inputs:**
+
 - Product cost
 - Selling price
 - Delivery fees
@@ -157,6 +166,7 @@ Real-time business performance dashboard with key metrics and charts.
 - Payment processing fees
 
 **Outputs:**
+
 - Gross profit
 - Net profit
 - Profit margin (%)
@@ -170,6 +180,7 @@ Real-time business performance dashboard with key metrics and charts.
 **Return on Ad Spend tracking**
 
 **Features:**
+
 - Real-time ROAS calculation
 - Campaign comparison
 - Break-even ROAS indicator
@@ -177,6 +188,7 @@ Real-time business performance dashboard with key metrics and charts.
 - Budget optimization suggestions
 
 **Formula:**
+
 ```
 ROAS = Revenue from Ads / Ad Spend
 ```
@@ -188,6 +200,7 @@ ROAS = Revenue from Ads / Ad Spend
 **COD payment tracking**
 
 **Features:**
+
 - Total COD collected
 - Pending collections
 - Collection by delivery company
@@ -201,6 +214,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Social media analytics**
 
 **Platforms:**
+
 - Instagram
 - Facebook
 - TikTok
@@ -208,6 +222,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Messenger
 
 **Metrics:**
+
 - Engagement rate
 - Follower growth
 - Content performance
@@ -221,6 +236,7 @@ ROAS = Revenue from Ads / Ad Spend
 **For content creators and influencers**
 
 **Calculations:**
+
 - TikTok Creator Fund earnings
 - Instagram Reels bonuses
 - YouTube AdSense
@@ -234,12 +250,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Payment distribution analysis**
 
 **Methods Tracked:**
+
 - Cash on Delivery (COD)
 - Baridimob
 - CIB Card
 - Bank Transfer
 
 **Insights:**
+
 - Preferred payment method
 - Success rate by method
 - Average value by method
@@ -252,6 +270,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Tax compliance calculator**
 
 **For Algerian businesses to calculate:**
+
 - Impôt Forfaitaire Unique (IFU)
 - Quarterly tax obligations
 - Annual declarations
@@ -268,6 +287,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Complete product management**
 
 **Features:**
+
 - Add/edit/delete products
 - Bulk upload via CSV
 - Image gallery management
@@ -282,6 +302,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Real-time inventory tracking**
 
 **Displays:**
+
 - Current stock levels
 - Low stock alerts
 - Out-of-stock items
@@ -295,6 +316,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Track stock across locations**
 
 **Locations:**
+
 - Warehouse
 - Store
 - Home
@@ -308,6 +330,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Automatic inventory notifications**
 
 **Alert Types:**
+
 - Low stock warning (< threshold)
 - Out of stock
 - Overstock alert
@@ -320,6 +343,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Track inventory changes**
 
 **Records:**
+
 - Stock adjustments
 - Purchase orders
 - Sales deductions
@@ -333,6 +357,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Create and manage promotions**
 
 **Offer Types:**
+
 - Percentage discount
 - Fixed amount off
 - Buy X Get Y
@@ -340,6 +365,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Flash sales
 
 **Configuration:**
+
 - Start/end dates
 - Product selection
 - Customer targeting
@@ -354,6 +380,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Central order management**
 
 **Views:**
+
 - All orders list
 - Pending confirmations
 - Ready to ship
@@ -361,6 +388,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Delivered/Returned
 
 **Actions:**
+
 - Confirm order
 - Print invoice
 - Generate shipping label
@@ -374,12 +402,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Multi-step order confirmation**
 
 **Steps:**
+
 1. **SMS Confirmation** - Automated SMS sent
 2. **Call Center** - Agent calls customer
 3. **GPS Collection** - WhatsApp location request
 4. **Confirmed** - Ready for fulfillment
 
 **Features:**
+
 - Script templates for calls
 - Call recording (future)
 - GPS coordinates storage
@@ -392,16 +422,19 @@ ROAS = Revenue from Ads / Ad Spend
 **AI-powered return prediction**
 
 **Risk Factors:**
+
 - Customer return history (40%)
 - Order value (30%)
 - Delivery location (30%)
 
 **Risk Score:** 0-10 scale
+
 - **0-3:** Low risk (green)
 - **4-6:** Medium risk (yellow)
 - **7-10:** High risk (red)
 
 **Actions:**
+
 - Request upfront payment for high-risk
 - Add insurance
 - Video confirmation
@@ -414,12 +447,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Fraud prevention system**
 
 **Reasons for Blacklisting:**
+
 - Multiple returns
 - False information
 - Refusal to pay COD
 - Abusive behavior
 
 **Features:**
+
 - Automatic blocking on checkout
 - Manual blacklist management
 - Blacklist sharing (future)
@@ -432,6 +467,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Manage out-of-stock pre-orders**
 
 **Features:**
+
 - Pre-order collection
 - Estimated restock date
 - Automatic notifications
@@ -445,6 +481,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Optimized for warehouse packing**
 
 **Display:**
+
 - Large text for visibility
 - Simple interface
 - Barcode scanner support
@@ -460,12 +497,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Integration with carriers**
 
 **Supported:**
+
 - Yalidine
 - Maystro
 - NordEst
 - Custom carriers
 
 **Features:**
+
 - Automatic label generation
 - Bulk shipping
 - Rate comparison
@@ -479,6 +518,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Real-time delivery tracking**
 
 **Status Updates:**
+
 - Label created
 - Picked up
 - In transit
@@ -487,6 +527,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Return in progress
 
 **Notifications:**
+
 - Customer SMS updates
 - Merchant dashboard alerts
 - Email notifications
@@ -498,6 +539,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Carrier analytics**
 
 **Metrics:**
+
 - Delivery success rate
 - Average delivery time
 - Return rate by carrier
@@ -513,6 +555,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Discover winning products**
 
 **Sources:**
+
 - AliExpress trends
 - Facebook ad library
 - TikTok viral products
@@ -520,6 +563,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Algeria-specific trends
 
 **Filters:**
+
 - Category
 - Price range
 - Supplier location
@@ -533,6 +577,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Monitor competitors**
 
 **Track:**
+
 - Product offerings
 - Pricing changes
 - New launches
@@ -540,6 +585,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Social media activity
 
 **Alerts:**
+
 - Price drops
 - New products
 - Promotional campaigns
@@ -551,12 +597,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Multi-method product finder**
 
 **Search By:**
+
 - Product name
 - Photo (image recognition)
 - URL (scrapes product data)
 - Barcode/SKU
 
 **Results:**
+
 - Supplier information
 - Bulk pricing
 - Shipping costs
@@ -570,12 +618,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Trending content ideas**
 
 **Platforms:**
+
 - TikTok trends
 - Instagram Reels trends
 - Facebook viral posts
 - Twitter/X topics
 
 **Data:**
+
 - Hashtag popularity
 - Engagement rates
 - Content format (video/image)
@@ -588,6 +638,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Local market insights**
 
 **Features:**
+
 - Most searched products in Algeria
 - Seasonal trends
 - Regional preferences
@@ -601,6 +652,7 @@ ROAS = Revenue from Ads / Ad Spend
 **AI evaluates product potential**
 
 **Scoring Factors:**
+
 - Market demand (30%)
 - Competition level (20%)
 - Profit margin (20%)
@@ -608,6 +660,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Marketing potential (15%)
 
 **Score:** 0-10
+
 - **8-10:** Excellent opportunity
 - **6-7:** Good potential
 - **4-5:** Moderate
@@ -620,6 +673,7 @@ ROAS = Revenue from Ads / Ad Spend
 **China supplier directory**
 
 **Information:**
+
 - Supplier name & rating
 - Product categories
 - MOQ (Minimum Order Quantity)
@@ -634,6 +688,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Track import costs**
 
 **Cost Breakdown:**
+
 - Product cost
 - Shipping to Algeria
 - Customs duties
@@ -650,6 +705,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Assisted importing**
 
 **Services:**
+
 - Supplier verification
 - Quality inspection
 - Shipping arrangement
@@ -667,6 +723,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Generate captions and copy**
 
 **Content Types:**
+
 - Instagram captions
 - Facebook posts
 - TikTok descriptions
@@ -674,6 +731,7 @@ ROAS = Revenue from Ads / Ad Spend
 - LinkedIn posts
 
 **Options:**
+
 - Tone (professional, casual, humorous)
 - Length (short, medium, long)
 - Include emojis
@@ -687,6 +745,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Create attention-grabbing openers**
 
 **Hook Types:**
+
 - Question hooks
 - Shocking statement
 - Relatable scenario
@@ -694,6 +753,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Social proof
 
 **Examples:**
+
 ```
 "You've been doing this wrong your whole life..."
 "The secret nobody tells you about..."
@@ -707,6 +767,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Score your hooks**
 
 **Analysis:**
+
 - Attention score (0-10)
 - Curiosity factor
 - Emotional appeal
@@ -714,6 +775,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Uniqueness
 
 **Suggestions:**
+
 - Make it more specific
 - Add urgency
 - Include numbers
@@ -726,6 +788,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Edit photos and videos**
 
 **Photo Editing:**
+
 - Crop and resize
 - Filters and adjustments
 - Text overlays
@@ -733,6 +796,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Background removal
 
 **Video Editing:**
+
 - Trim and cut
 - Add captions
 - Transitions
@@ -746,6 +810,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Algerian Arabic dialect optimization**
 
 **Features:**
+
 - Convert standard Arabic to Darja
 - Common Darja phrases
 - Local expressions
@@ -753,6 +818,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Pronunciation guide
 
 **Use Cases:**
+
 - More relatable content
 - Higher engagement in Algeria
 - Authentic voice
@@ -765,6 +831,7 @@ ROAS = Revenue from Ads / Ad Spend
 **One-click formatting**
 
 **Presets:**
+
 - Instagram Square (1:1)
 - Instagram Story (9:16)
 - Facebook Post (various)
@@ -778,6 +845,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Maintain consistent tone**
 
 **Define:**
+
 - Brand personality
 - Key messages
 - Forbidden words/topics
@@ -785,6 +853,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Example posts
 
 **AI Uses:**
+
 - Generate on-brand content
 - Review content compliance
 - Suggest improvements
@@ -796,6 +865,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Ensure brand-safe content**
 
 **Checks:**
+
 - Offensive language
 - Copyright violations
 - Misleading claims
@@ -809,6 +879,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Improve content quality**
 
 **Improvements:**
+
 - Grammar and spelling
 - Sentence structure
 - Readability score
@@ -822,12 +893,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Optimize for Creator Fund**
 
 **Requirements Checker:**
+
 - 10K followers ✓
 - 100K video views (30 days) ✓
 - Age 18+ ✓
 - Original content ✓
 
 **Optimization Tips:**
+
 - Best posting times
 - Trending sounds
 - Hashtag strategy
@@ -843,6 +916,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Schedule and publish content**
 
 **Features:**
+
 - Calendar view
 - Drag-and-drop scheduling
 - Bulk upload
@@ -856,6 +930,7 @@ ROAS = Revenue from Ads / Ad Spend
 **AI-optimized posting schedule**
 
 **Analyzes:**
+
 - Audience online times
 - Historical engagement patterns
 - Platform algorithms
@@ -863,6 +938,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Content type performance
 
 **Auto-schedules:**
+
 - Best time per platform
 - Optimal frequency
 - Content mix balance
@@ -874,6 +950,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Multi-platform management**
 
 **Platforms:**
+
 - Instagram (Feed, Stories, Reels)
 - Facebook (Page, Group)
 - TikTok
@@ -881,6 +958,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Twitter/X
 
 **Per Platform:**
+
 - Connection status
 - Follower count
 - Recent performance
@@ -895,6 +973,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Unified messaging**
 
 **Channels:**
+
 - Instagram DMs
 - Facebook Messenger
 - WhatsApp Business
@@ -902,6 +981,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Website chat
 
 **Features:**
+
 - Unified inbox
 - Auto-responses
 - Conversation labels
@@ -915,6 +995,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Auto-moderate comments**
 
 **Actions:**
+
 - Hide spam
 - Filter offensive language
 - Mark as important
@@ -928,6 +1009,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Automated responses**
 
 **Response Types:**
+
 - Answer FAQs
 - Product inquiries
 - Pricing questions
@@ -935,6 +1017,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Shipping info
 
 **Features:**
+
 - Context-aware responses
 - Natural language
 - Emoji support
@@ -947,12 +1030,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Auto-responses when offline**
 
 **Triggers:**
+
 - Outside business hours
 - High message volume
 - Specific keywords
 - VIP customers (custom message)
 
 **Message Types:**
+
 - Simple text
 - With quick replies
 - Include links
@@ -967,6 +1052,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Track social media performance**
 
 **Metrics:**
+
 - Follower growth
 - Engagement rate
 - Reach and impressions
@@ -974,6 +1060,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Best performing content
 
 **Reports:**
+
 - Daily/weekly/monthly summaries
 - Content type comparison
 - Audience demographics
@@ -990,12 +1077,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Campaign management hub**
 
 **Platforms:**
+
 - Meta Ads (Facebook/Instagram)
 - TikTok Ads
 - Snapchat Ads
 - Google Ads (future)
 
 **Features:**
+
 - Campaign overview
 - Performance dashboard
 - Budget tracking
@@ -1009,6 +1098,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Create multiple ads at once**
 
 **Features:**
+
 - Template-based creation
 - Dynamic creative
 - Multiple variations
@@ -1016,6 +1106,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Batch publishing
 
 **Use Cases:**
+
 - Test multiple audiences
 - Multiple products
 - Various ad formats
@@ -1028,6 +1119,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Analyze ad creative performance**
 
 **Metrics:**
+
 - Best performing images
 - Top video hooks
 - Winning headlines
@@ -1035,6 +1127,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Color psychology analysis
 
 **Recommendations:**
+
 - Similar successful creatives
 - Refresh suggestions
 - Trend alerts
@@ -1046,6 +1139,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Create ads without page posts**
 
 **Benefits:**
+
 - A/B test without cluttering page
 - Multiple versions simultaneously
 - Different messages per audience
@@ -1058,6 +1152,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Track account status**
 
 **Monitors:**
+
 - Spending limits
 - Payment methods
 - Policy violations
@@ -1065,6 +1160,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Quality score
 
 **Alerts:**
+
 - Account suspended
 - Payment failed
 - Approaching limits
@@ -1077,6 +1173,7 @@ ROAS = Revenue from Ads / Ad Spend
 **For managing client accounts**
 
 **Features:**
+
 - Multi-account dashboard
 - Client-specific budgets
 - White-label reporting
@@ -1092,6 +1189,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Create high-converting pages**
 
 **Templates:**
+
 - Product showcase
 - Lead generation
 - Event registration
@@ -1099,6 +1197,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Video sales letter
 
 **Features:**
+
 - Drag-and-drop builder
 - Mobile responsive
 - A/B testing
@@ -1112,6 +1211,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Instagram link management**
 
 **Features:**
+
 - Multiple links on one page
 - Click tracking
 - Custom design
@@ -1127,6 +1227,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Website conversion tools**
 
 **Types:**
+
 - Exit intent pop-ups
 - Timed overlays
 - Scroll-triggered
@@ -1134,6 +1235,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Welcome mats
 
 **Use Cases:**
+
 - Email collection
 - Discount offers
 - Announcement bars
@@ -1146,6 +1248,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Upsells during checkout**
 
 **Strategies:**
+
 - Related products
 - Warranty/insurance
 - Express shipping
@@ -1159,6 +1262,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Customer relationship management**
 
 **Features:**
+
 - Contact database
 - Customer segmentation
 - Purchase history
@@ -1166,6 +1270,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Tags and notes
 
 **Segments:**
+
 - New customers
 - VIP customers
 - Inactive customers
@@ -1181,6 +1286,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Long-form content generation**
 
 **Content Types:**
+
 - Blog posts
 - Product guides
 - How-to articles
@@ -1188,6 +1294,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Case studies
 
 **SEO Optimization:**
+
 - Keyword integration
 - Meta descriptions
 - Header structure
@@ -1200,6 +1307,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Platform-specific hashtags**
 
 **Analysis:**
+
 - Hashtag popularity
 - Competition level
 - Related hashtags
@@ -1207,6 +1315,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Banned hashtags
 
 **Strategy:**
+
 - Mix of popular and niche
 - Branded hashtags
 - Location-based tags
@@ -1218,6 +1327,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Improve social profiles**
 
 **Analyzes:**
+
 - Bio effectiveness
 - Profile picture quality
 - Link optimization
@@ -1225,6 +1335,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Pinned posts
 
 **Suggestions:**
+
 - CTA in bio
 - Keywords for search
 - Consistent branding
@@ -1236,6 +1347,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Download content from URLs**
 
 **Platforms:**
+
 - Instagram photos/videos
 - TikTok videos
 - Facebook videos
@@ -1243,6 +1355,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Twitter images
 
 **Use Cases:**
+
 - Repost user content
 - Save competitor ads
 - Archive your content
@@ -1256,6 +1369,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Find and connect with influencers**
 
 **Filters:**
+
 - Niche/category
 - Follower count
 - Engagement rate
@@ -1263,6 +1377,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Price range
 
 **Information:**
+
 - Audience demographics
 - Past collaborations
 - Rate card
@@ -1275,6 +1390,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Calculate influencer pricing**
 
 **Based On:**
+
 - Follower count
 - Engagement rate
 - Content type (post/story/reel)
@@ -1282,6 +1398,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Exclusivity
 
 **Market Rates:**
+
 - Nano (1K-10K): 500-2,000 DA
 - Micro (10K-100K): 2,000-10,000 DA
 - Mid (100K-500K): 10,000-50,000 DA
@@ -1294,6 +1411,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Request user-generated content**
 
 **Process:**
+
 1. Create brief
 2. Set budget
 3. Send to creators
@@ -1301,6 +1419,7 @@ ROAS = Revenue from Ads / Ad Spend
 5. Purchase rights
 
 **Content Types:**
+
 - Product photos
 - Unboxing videos
 - Review videos
@@ -1313,6 +1432,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Manage creator payments**
 
 **Features:**
+
 - Payment tracking
 - Contracts storage
 - Performance metrics
@@ -1326,6 +1446,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Pay-per-sale influencer model**
 
 **How It Works:**
+
 1. Influencer applies
 2. You approve
 3. They promote (unique link)
@@ -1333,6 +1454,7 @@ ROAS = Revenue from Ads / Ad Spend
 5. Pay commission
 
 **Commission Settings:**
+
 - Percentage or fixed
 - Cookie duration
 - Minimum payout
@@ -1347,11 +1469,13 @@ ROAS = Revenue from Ads / Ad Spend
 **Automated order confirmation**
 
 **Channels:**
+
 - WhatsApp
 - Messenger
 - SMS
 
 **Flow:**
+
 1. New order received
 2. Bot sends confirmation
 3. Asks for address confirmation
@@ -1365,12 +1489,14 @@ ROAS = Revenue from Ads / Ad Spend
 **Automatic ad spend control**
 
 **Features:**
+
 - Set target ROAS
 - Auto-pause underperforming ads
 - Budget reallocation
 - Alert notifications
 
 **Example:**
+
 - Target ROAS: 3.0
 - Current ROAS: 1.5
 - Action: Pause campaign
@@ -1382,6 +1508,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Real-time optimization suggestions**
 
 **Recommendations:**
+
 - Increase budget (performing well)
 - Decrease budget (underperforming)
 - Change targeting
@@ -1397,6 +1524,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Brand asset management**
 
 **Assets:**
+
 - Logo (multiple formats)
 - Color palette
 - Typography
@@ -1404,6 +1532,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Brand patterns
 
 **Usage:**
+
 - Consistent design
 - Quick access
 - Share with team
@@ -1416,6 +1545,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Collaborate with team members**
 
 **Roles:**
+
 - Owner (full access)
 - Admin (all features)
 - Manager (most features)
@@ -1423,6 +1553,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Viewer (read-only)
 
 **Permissions:**
+
 - Product management
 - Order fulfillment
 - Customer service
@@ -1436,6 +1567,7 @@ ROAS = Revenue from Ads / Ad Spend
 **Built-in knowledge base**
 
 **Content:**
+
 - Getting started guides
 - Feature tutorials
 - Video walkthroughs
@@ -1443,6 +1575,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Troubleshooting
 
 **Features:**
+
 - Search functionality
 - Categories
 - Related articles
@@ -1456,6 +1589,7 @@ ROAS = Revenue from Ads / Ad Spend
 **AI credits management**
 
 **Display:**
+
 - Current balance
 - Monthly allowance
 - Usage this month
@@ -1463,6 +1597,7 @@ ROAS = Revenue from Ads / Ad Spend
 - Top-up options
 
 **Pricing:**
+
 - 100 credits: $5
 - 500 credits: $20
 - 1000 credits: $35
@@ -1475,11 +1610,13 @@ ROAS = Revenue from Ads / Ad Spend
 **Manage subscription**
 
 **Plans:**
+
 - **Free:** Basic features, 10 credits/month
 - **Tajer:** $29/month, 100 credits/month
 - **Imbrator:** $99/month, 500 credits/month
 
 **Features:**
+
 - Change plan
 - Payment methods
 - Billing history
@@ -1521,4 +1658,4 @@ ROAS = Revenue from Ads / Ad Spend
 
 ---
 
-For feature requests or suggestions, contact: features@e-coma.com
+For feature requests or suggestions, contact: <features@e-coma.com>

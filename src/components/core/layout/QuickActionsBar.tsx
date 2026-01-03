@@ -1,17 +1,10 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useRef, useLayoutEffect } from "react";
 import { Button } from "@/components/core/ui/button";
 import {
     MoreHorizontal,
-    Bot,
-    Clock,
-    TrendingUp,
-    Lightbulb,
-    Sparkles,
     ChevronRight,
-    ThumbsUp,
-    ThumbsDown,
     LucideIcon
 } from "lucide-react";
 import {
@@ -21,12 +14,6 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from "@/components/core/ui/dropdown-menu";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/core/ui/popover";
-import { Badge } from "@/components/core/ui/badge";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -50,14 +37,6 @@ export interface MoreAction {
     separator?: boolean;
 }
 
-export interface AISuggestion {
-    id: string;
-    type: "timing" | "content" | "trend" | "improvement";
-    title: string;
-    description: string;
-    action?: string;
-    priority?: "high" | "medium" | "low";
-}
 
 export interface QuickActionsBarProps {
     primaryAction?: {
@@ -67,11 +46,9 @@ export interface QuickActionsBarProps {
     };
     actions?: QuickAction[];
     moreActions?: MoreAction[];
-    showAITips?: boolean;
-    suggestions?: AISuggestion[];
-    onDismissSuggestion?: (id: string) => void;
     className?: string;
     children?: ReactNode;
+    variant?: "default" | "inline";
 }
 
 /**
@@ -82,193 +59,176 @@ export function QuickActionsBar({
     primaryAction,
     actions = [],
     moreActions = [],
-    showAITips = false,
-    suggestions = [],
-    onDismissSuggestion,
     className,
     children,
+    variant = "default",
 }: QuickActionsBarProps) {
-    const [isAIOpen, setIsAIOpen] = useState(false);
-    const [localSuggestions, setLocalSuggestions] = useState<AISuggestion[]>(suggestions);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const ghostRef = useRef<HTMLDivElement>(null);
+    const [visibleCount, setVisibleCount] = useState<number>(actions.length);
+    const [isMeasuring, setIsMeasuring] = useState(true);
 
-    const dismissSuggestion = (id: string) => {
-        setLocalSuggestions(prev => prev.filter(s => s.id !== id));
-        onDismissSuggestion?.(id);
-    };
+    // Combine all passed actions into one pool for logic, preserving order
+    // We treat 'actions' as high priority, 'moreActions' as low priority
+    const allPool = [
+        ...actions.map(a => ({ ...a, origin: 'main' })),
+        ...moreActions.map(a => ({ ...a, origin: 'more', variant: 'ghost' as const }))
+    ];
 
-    const getTypeIcon = (type: AISuggestion["type"]) => {
-        switch (type) {
-            case "timing": return Clock;
-            case "trend": return TrendingUp;
-            case "content": return Lightbulb;
-            case "improvement": return Sparkles;
-        }
-    };
+    useLayoutEffect(() => {
+        const calculateVisible = () => {
+            if (!containerRef.current || !ghostRef.current) return;
 
-    const getTypeColor = (type: AISuggestion["type"]) => {
-        switch (type) {
-            case "timing": return "text-blue-500 bg-blue-100 dark:bg-blue-900/30";
-            case "trend": return "text-green-500 bg-green-100 dark:bg-green-900/30";
-            case "content": return "text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30";
-            case "improvement": return "text-purple-500 bg-purple-100 dark:bg-purple-900/30";
-        }
-    };
+            const containerWidth = containerRef.current.offsetWidth;
+            const primaryWidth = primaryAction ? (ghostRef.current.querySelector('[data-id="primary"]')?.getBoundingClientRect().width || 0) + 12 : 0; // +12 for divider gap
+            const moreBtnWidth = 84; // Approx width of "More" button + gap
+            const childrenWidth = children ? (ghostRef.current.querySelector('[data-id="children"]')?.getBoundingClientRect().width || 0) : 0;
 
-    const visibleActions = actions.filter(a => !a.hidden);
+            // Available space for dynamic actions
+            // Deduct primary action, children, and some padding
+            const availableSpace = containerWidth - primaryWidth - childrenWidth - 16;
+
+            let currentWidth = 0;
+            let count = 0;
+            const actionElements = Array.from(ghostRef.current.querySelectorAll('[data-action-index]'));
+
+            for (let i = 0; i < actionElements.length; i++) {
+                const el = actionElements[i];
+                const width = el.getBoundingClientRect().width + 8; // +8 for gap
+
+                // Check if adding this item + "More" button would exceed space
+                // (Unless it's the very last item, then we don't need "More" button space)
+                const isLast = i === actionElements.length - 1;
+                const overhead = isLast ? 0 : moreBtnWidth;
+
+                if (currentWidth + width + overhead <= availableSpace) {
+                    currentWidth += width;
+                    count++;
+                } else {
+                    break;
+                }
+            }
+
+            setVisibleCount(count);
+            setIsMeasuring(false);
+        };
+
+        const debouncedCalc = () => requestAnimationFrame(calculateVisible);
+
+        calculateVisible(); // Initial calc
+
+        const observer = new ResizeObserver(debouncedCalc);
+        if (containerRef.current) observer.observe(containerRef.current);
+
+        return () => observer.disconnect();
+    }, [allPool.length, primaryAction, children]);
+
+
+    // Partition based on calculated count
+    const visibleActions = allPool.slice(0, visibleCount);
+    const overflowActions = allPool.slice(visibleCount);
 
     return (
         <motion.div
+            ref={containerRef}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
             className={cn(
-                "flex items-center gap-2 p-3 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-xl border border-primary/20 shadow-sm",
+                "flex items-center gap-2 w-full overflow-hidden",
+                variant === "default" && "p-3 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-xl border border-primary/20 shadow-sm",
                 className
             )}
         >
-            {/* Primary CTA */}
+            {/* Primary CTA - Always Visible if present */}
             {primaryAction && (
-                <>
+                <div className="shrink-0 flex items-center">
                     <Button
                         onClick={primaryAction.onClick}
-                        className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-md"
+                        className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-md whitespace-nowrap"
                     >
                         <primaryAction.icon className="h-4 w-4" />
                         {primaryAction.label}
                     </Button>
-                    <div className="h-6 w-px bg-border mx-1" />
-                </>
+                    <div className="h-6 w-px bg-border mx-2" />
+                </div>
             )}
 
-            {/* Quick Tool Shortcuts */}
-            {visibleActions.map(action => (
-                <Button
-                    key={action.id}
-                    variant={action.variant || "outline"}
-                    size="sm"
-                    className={cn("gap-2", action.hoverColor)}
-                    onClick={action.onClick}
-                >
-                    <action.icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{action.label}</span>
-                </Button>
-            ))}
+            {/* Visible Actions */}
+            <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                {visibleActions.map((action) => (
+                    <Button
+                        key={action.id}
+                        // @ts-ignore - Variant types matching
+                        variant={action.variant || "outline"}
+                        size="sm"
+                        className={cn("gap-2 whitespace-nowrap shrink-0", action.hoverColor)}
+                        onClick={action.onClick}
+                    >
+                        <action.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{action.label}</span>
+                    </Button>
+                ))}
 
-            {/* AI Tips Popover */}
-            {showAITips && (
-                <Popover open={isAIOpen} onOpenChange={setIsAIOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className={cn(
-                                "gap-2 relative",
-                                isAIOpen && "bg-primary/10 border-primary"
-                            )}
-                        >
-                            <Bot className="h-4 w-4 text-primary" />
-                            <span className="hidden sm:inline">AI Tips</span>
-                            {localSuggestions.length > 0 && (
-                                <Badge
-                                    variant="destructive"
-                                    className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-[10px]"
-                                >
-                                    {localSuggestions.length}
-                                </Badge>
-                            )}
+                {/* Overflow 'More' Menu */}
+                {overflowActions.length > 0 && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="gap-1 shrink-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="hidden sm:inline">More</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                            {overflowActions.map((action, idx) => (
+                                <div key={action.id}>
+                                    {/* Restore separators if originally from more actions or arbitrarily between groups */}
+                                    {(action.separator || (idx === 0 && action.origin === 'more')) && <DropdownMenuSeparator />}
+                                    <DropdownMenuItem onClick={action.onClick} className="gap-2">
+                                        <action.icon className={cn("h-4 w-4", action.iconColor)} />
+                                        {action.label}
+                                    </DropdownMenuItem>
+                                </div>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
+            </div>
+
+            {/* Additional children (e.g. specialized controls) */}
+            {children && <div className="shrink-0">{children}</div>}
+
+            {/* =========================================================
+                GHOST LAYER
+                Render everything invisible to measure widths
+               ========================================================= */}
+            <div
+                ref={ghostRef}
+                className="absolute top-0 left-0 invisible pointer-events-none flex items-center gap-2 opacity-0 -z-50"
+                aria-hidden="true"
+            >
+                {primaryAction && (
+                    <div data-id="primary" className="flex items-center">
+                        <Button className="gap-2">
+                            <primaryAction.icon className="h-4 w-4" />
+                            {primaryAction.label}
                         </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80 p-0" align="start">
-                        <div className="p-3 border-b bg-muted/30">
-                            <div className="flex items-center gap-2">
-                                <Bot className="h-4 w-4 text-primary" />
-                                <span className="font-semibold text-sm">AI Suggestions</span>
-                                <Badge variant="secondary" className="text-[10px] ml-auto">
-                                    {localSuggestions.length} tips
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="max-h-64 overflow-y-auto p-2 space-y-2">
-                            {localSuggestions.length === 0 ? (
-                                <p className="text-sm text-muted-foreground text-center py-4">
-                                    No suggestions right now. Keep creating! ✨
-                                </p>
-                            ) : (
-                                localSuggestions.map((suggestion) => {
-                                    const Icon = getTypeIcon(suggestion.type);
-                                    return (
-                                        <div
-                                            key={suggestion.id}
-                                            className="p-3 rounded-lg bg-muted/50 border hover:bg-muted/80 transition-colors"
-                                        >
-                                            <div className="flex items-start gap-2">
-                                                <div className={cn("p-1.5 rounded-md", getTypeColor(suggestion.type))}>
-                                                    <Icon className="h-3.5 w-3.5" />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-medium text-xs">{suggestion.title}</p>
-                                                    <p className="text-[11px] text-muted-foreground mt-0.5">
-                                                        {suggestion.description}
-                                                    </p>
-                                                    <div className="flex items-center gap-2 mt-2">
-                                                        {suggestion.action && (
-                                                            <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1">
-                                                                {suggestion.action}
-                                                                <ChevronRight className="h-3 w-3" />
-                                                            </Button>
-                                                        )}
-                                                        <div className="flex-1" />
-                                                        <button
-                                                            onClick={() => dismissSuggestion(suggestion.id)}
-                                                            className="p-1 text-muted-foreground hover:text-green-500"
-                                                            aria-label="Helpful"
-                                                        >
-                                                            <ThumbsUp className="h-3 w-3" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => dismissSuggestion(suggestion.id)}
-                                                            className="p-1 text-muted-foreground hover:text-red-500"
-                                                            aria-label="Not helpful"
-                                                        >
-                                                            <ThumbsDown className="h-3 w-3" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })
-                            )}
-                        </div>
-                    </PopoverContent>
-                </Popover>
-            )}
-
-            {/* More Tools Dropdown */}
-            {moreActions.length > 0 && (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="gap-1">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="hidden sm:inline">More</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                        {moreActions.map((action, idx) => (
-                            <div key={action.id}>
-                                {action.separator && idx > 0 && <DropdownMenuSeparator />}
-                                <DropdownMenuItem onClick={action.onClick} className="gap-2">
-                                    <action.icon className={cn("h-4 w-4", action.iconColor)} />
-                                    {action.label}
-                                </DropdownMenuItem>
-                            </div>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )}
-
-            {/* Additional children */}
-            {children}
+                        <div className="w-px mx-2" />
+                    </div>
+                )}
+                {allPool.map((action, i) => (
+                    <Button
+                        key={action.id}
+                        data-action-index={i}
+                        size="sm"
+                        className="gap-2"
+                    >
+                        <action.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{action.label}</span>
+                    </Button>
+                ))}
+                {children && <div data-id="children">{children}</div>}
+            </div>
         </motion.div>
     );
 }

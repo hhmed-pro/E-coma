@@ -1,12 +1,22 @@
-"use client";
-
 import { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
+import { Link } from "lucide-react"; // Wait, Link is from next/link usually. Oh, looking at previous file content, Link was next/link.
+// Checking imports...
 import { usePathname } from "next/navigation";
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Settings, Clock, Star, Rocket, CheckCircle2, Circle, ArrowRight, X, PartyPopper } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Clock, Target, Sparkles, X, ChevronUp as ChevronUpIcon, Bot, Lightbulb, TrendingUp, ThumbsUp, ThumbsDown } from "lucide-react";
+import { CommandPalette } from "@/components/core/ui/command-palette";
 import { cn } from "@/lib/utils";
 import { useRightPanel } from "@/components/core/layout/RightPanelContext";
-import { CommandPalette } from "@/components/core/ui/command-palette";
+import { ActionToolbar } from "./ActionToolbar";
+import { SessionModal } from "./SessionModal";
+import { usePageActions } from "@/components/core/layout/PageActionsContext";
+import { AISuggestion } from "@/types/ai-tips";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/ui/popover";
+import { Button } from "@/components/core/ui/button";
+import { Badge } from "@/components/core/ui/badge";
+import { TEAMS } from "@/config/teams";
+import { motion } from "framer-motion";
+import { Users } from "lucide-react";
+
 import { NAV_GROUPS, CATEGORY_COLORS, NavItem } from "@/config/navigation";
 import {
     ECOSYSTEM_MODULES,
@@ -23,6 +33,13 @@ import {
 } from "@/components/core/ui/tooltip";
 import { useWindowLayout } from "@/components/core/layout/WindowLayoutContext";
 import { useScroll } from "@/components/core/layout/ScrollContext";
+import { useMode } from "@/components/core/layout/ModeContext";
+import { getFooterConfig } from "@/config/rightPanelFooterConfig";
+import { ProductTour } from "@/components/core/layout/ProductTour";
+import { TOUR_CONFIG } from "@/config/tour-config";
+import { Flag } from "lucide-react";
+
+
 
 interface EcosystemBarProps {
     onModuleClick?: (moduleId: string) => void;
@@ -34,130 +51,25 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
     const { isTopNavCollapsed, isEcosystemBarCollapsed, toggleEcosystemBar } = useWindowLayout();
     const { isScrolled } = useScroll();
     const [activeModule, setActiveModule] = useState<string | null>(null);
-    const [recentPages, setRecentPages] = useState<{ name: string; href: string }[]>([]);
-    const [showRecent, setShowRecent] = useState(false);
-    const [showFavoritesOpen, setShowFavoritesOpen] = useState(false);
-    const [favorites, setFavorites] = useState<string[]>([]);
-    const [onboardingProgress, setOnboardingProgress] = useState(0);
     const [moduleStatuses, setModuleStatuses] = useState<Record<string, ModuleStatusInfo>>({});
-    const [newFavoritesCount, setNewFavoritesCount] = useState(0);
-    const [onboardingOpen, setOnboardingOpen] = useState(false);
-    const [onboardingSteps, setOnboardingSteps] = useState([
-        { id: "profile", title: "Complete your profile", description: "Add your business information and logo", href: "/admin/general", completed: false },
-        { id: "product", title: "Add your first product", description: "Create a product to start selling", href: "/ecommerce/inventory", completed: false },
-        { id: "delivery", title: "Set up delivery zones", description: "Configure shipping areas and prices", href: "/ecommerce/orders?tab=wilaya", completed: false },
-        { id: "payment", title: "Configure payment methods", description: "Set up COD and other payment options", href: "/admin/billing", completed: false },
-        { id: "campaign", title: "Launch your first campaign", description: "Create your first marketing campaign", href: "/marketing/ads-manager", completed: false },
-    ]);
-    const { config, isOpen } = useRightPanel();
-    const pathname = usePathname();
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const prevFavoritesLength = useRef(0);
 
-    // Close onboarding popup on Escape key
+    // Load module statuses
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape" && onboardingOpen) {
-                setOnboardingOpen(false);
-            }
-        };
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [onboardingOpen]);
-
-    // Load initial states from localStorage
-    useEffect(() => {
-        try {
-            const savedRecent = localStorage.getItem("sidebar-recent");
-            const savedFavorites = localStorage.getItem("sidebar-favorites");
-            if (savedRecent) setRecentPages(JSON.parse(savedRecent));
-            if (savedFavorites) {
-                const parsed = JSON.parse(savedFavorites);
-                setFavorites(parsed);
-                prevFavoritesLength.current = parsed.length;
-            }
-
-            // Load module statuses
-            const statuses: Record<string, ModuleStatusInfo> = {};
-            ECOSYSTEM_MODULES.forEach(m => {
-                statuses[m.id] = getModuleStatus(m.id);
-            });
-            setModuleStatuses(statuses);
-        } catch (e) {
-            console.error("Failed to parse navigation data", e);
-        }
+        const statuses: Record<string, ModuleStatusInfo> = {};
+        ECOSYSTEM_MODULES.forEach(m => {
+            statuses[m.id] = getModuleStatus(m.id);
+        });
+        setModuleStatuses(statuses);
     }, []);
 
-    // Load onboarding progress and sync steps
-    useEffect(() => {
-        const loadProgress = () => {
-            try {
-                const saved = localStorage.getItem("riglify-onboarding");
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    const completedIds = parsed.completedIds || [];
-                    const completedCount = completedIds.length;
-                    const totalSteps = 5;
-                    setOnboardingProgress((completedCount / totalSteps) * 100);
-                    // Sync steps with completed state
-                    setOnboardingSteps(prev => prev.map(step => ({
-                        ...step,
-                        completed: completedIds.includes(step.id)
-                    })));
-                }
-            } catch (e) {
-                console.error("Failed to parse onboarding progress", e);
-            }
-        };
-        loadProgress();
-        window.addEventListener('storage', loadProgress);
-        return () => window.removeEventListener('storage', loadProgress);
-    }, []);
-
-    // Track new favorites for animation
-    useEffect(() => {
-        if (favorites.length > prevFavoritesLength.current) {
-            setNewFavoritesCount(favorites.length - prevFavoritesLength.current);
-            // Clear animation after 3 seconds
-            const timer = setTimeout(() => setNewFavoritesCount(0), 3000);
-            return () => clearTimeout(timer);
-        }
-        prevFavoritesLength.current = favorites.length;
-    }, [favorites]);
+    const getStatusColor = (status: ModuleStatusInfo) => STATUS_COLORS[status.status] || STATUS_COLORS.disconnected;
 
     const handleModuleClick = useCallback((moduleId: string) => {
         setActiveModule(prev => prev === moduleId ? null : moduleId);
         onModuleClick?.(moduleId);
     }, [onModuleClick]);
 
-    const toggleFavorite = useCallback(() => {
-        setFavorites(prev => {
-            const updated = prev.includes(pathname)
-                ? prev.filter(f => f !== pathname)
-                : [...prev, pathname];
-            localStorage.setItem("sidebar-favorites", JSON.stringify(updated));
-            return updated;
-        });
-    }, [pathname]);
 
-    // Handle onboarding step completion
-    const handleOnboardingStepComplete = useCallback((stepId: string) => {
-        setOnboardingSteps(prev => {
-            const updated = prev.map(step =>
-                step.id === stepId ? { ...step, completed: true } : step
-            );
-            const completedIds = updated.filter(s => s.completed).map(s => s.id);
-            localStorage.setItem("riglify-onboarding", JSON.stringify({ completedIds }));
-            setOnboardingProgress((completedIds.length / updated.length) * 100);
-            return updated;
-        });
-    }, []);
-
-    const onboardingCompletedCount = onboardingSteps.filter(s => s.completed).length;
-    const onboardingTotalCount = onboardingSteps.length;
-    const isOnboardingComplete = onboardingCompletedCount === onboardingTotalCount;
-
-    const getStatusColor = (status: ModuleStatusInfo) => STATUS_COLORS[status.status] || STATUS_COLORS.disconnected;
 
     // Get all modules (previously split into left/right)
     const allModules = ECOSYSTEM_MODULES;
@@ -217,9 +129,89 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
         );
     };
 
+
+
+    // Session Info State relative to EcosystemBar
+    const [currentTime, setCurrentTime] = useState<Date>(new Date());
+    const [sessionStart] = useState<Date>(new Date()); // Mock session start
+    const { isAdmin, mode } = useMode();
+    const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const sessionDuration = Math.floor((currentTime.getTime() - sessionStart.getTime()) / 60000); // minutes
+
+    const handleSessionClick = () => {
+        if (!isAdmin) {
+            setIsSessionModalOpen(true);
+        } else {
+            handleModuleClick('session');
+        }
+    };
+
+    // Product Tour State
+    const pathname = usePathname();
+    const [isTourOpen, setIsTourOpen] = useState(false);
+    const tourSteps = TOUR_CONFIG[pathname] || [];
+
+    // AI Tips State
+    const { suggestions, setSuggestions } = usePageActions();
+    const [isAIOpen, setIsAIOpen] = useState(false);
+
+    const getTypeIcon = (type: AISuggestion["type"]) => {
+        switch (type) {
+            case "timing": return Clock;
+            case "trend": return TrendingUp;
+            case "content": return Lightbulb;
+            case "improvement": return Sparkles;
+        }
+    };
+
+    const getTypeColor = (type: AISuggestion["type"]) => {
+        switch (type) {
+            case "timing": return "text-blue-500 bg-blue-100 dark:bg-blue-900/30";
+            case "trend": return "text-green-500 bg-green-100 dark:bg-green-900/30";
+            case "content": return "text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30";
+            case "improvement": return "text-purple-500 bg-purple-100 dark:bg-purple-900/30";
+        }
+    };
+
+    const dismissSuggestion = (id: string) => {
+        setSuggestions(suggestions.filter(s => s.id !== id));
+    };
+
+    // Tabs Logic
+    const { config, activeTab, setActiveTab, isOpen, setIsOpen } = useRightPanel();
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const tabs = config?.tabs || [];
+    const hasTabs = config?.enabled && tabs.length > 0;
+
+    const scrollTabs = (direction: "left" | "right") => {
+        if (scrollContainerRef.current) {
+            const scrollAmount = 200;
+            const newScrollLeft = scrollContainerRef.current.scrollLeft + (direction === "left" ? -scrollAmount : scrollAmount);
+            scrollContainerRef.current.scrollTo({
+                left: newScrollLeft,
+                behavior: "smooth"
+            });
+        }
+    };
+
     // Full bar view
     return (
         <TooltipProvider delayDuration={200}>
+            {/* Product Tour Component */}
+            {isTourOpen && (
+                <ProductTour
+                    steps={tourSteps}
+                    autoStart={true}
+                    onClose={() => setIsTourOpen(false)}
+                />
+            )}
+
             <div className={cn(
                 "hidden md:block fixed z-[60] transition-all duration-300 left-0 right-0",
                 // Collapse behavior - slide down when collapsed
@@ -229,318 +221,339 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                 // Always attached at bottom with consistent styling
                 "bottom-0 border-t border-border/40 bg-card/85 backdrop-blur-md shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.5)]"
             )}>
-                <div className="h-12 w-full flex items-center justify-between px-4 relative gap-8">
+                <div className="h-12 w-full flex items-center justify-between pl-4 pr-2 relative gap-4">
 
-                    {/* LEFT SECTION: Modules + Expand Toggle */}
-                    <div className="flex items-center gap-2 shrink-0 ml-0 md:ml-4">
-                        {allModules.map(renderModuleButton)}
+                    {/* LEFT SECTION: Session Info */}
+                    <div className="flex items-center gap-4 shrink-0">
+                        {/* Session Timer & User */}
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground border-r border-border/20 pr-4">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{sessionStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <span className="text-muted-foreground/50">({sessionDuration}m)</span>
+                            <span className="w-1 h-1 rounded-full bg-border" />
+                            <span className="font-medium text-foreground">User</span>
+                        </div>
 
-                        {/* Expand Toggle */}
-                        <Tooltip>
-                            <TooltipTrigger asChild>
+                        {/* Session Objectives Panel */}
+                        <button
+                            onClick={handleSessionClick}
+                            className={cn(
+                                "flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-300 group",
+                                "bg-primary/10 text-primary border border-primary/20",
+                                "hover:bg-primary/20 hover:border-primary/40 hover:shadow-[0_0_10px_hsl(var(--primary)/0.2)]",
+                                activeModule === 'session' && "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_hsl(var(--primary)/0.4)]"
+                            )}
+                        >
+                            <Target className={cn(
+                                "w-3.5 h-3.5 transition-transform duration-500",
+                                activeModule === 'session' && "rotate-180 scale-110",
+                                "group-hover:rotate-12"
+                            )} />
+                            <span>{mode === "ADMIN" ? "Admin Objectives" : "Session Objectives"}</span>
+                        </button>
+                    </div>
+
+                    {/* CENTER SECTION: Modules OR Tabs */}
+                    <div className="flex-1 flex items-center justify-center min-w-0 px-4">
+                        {hasTabs ? (
+                            /* TABS VIEW */
+                            <div className="flex items-center gap-2 overflow-hidden w-full justify-center max-w-4xl relative group/tabs">
+                                {/* Left Scroll Button */}
                                 <button
-                                    onClick={onToggleExpand}
+                                    onClick={() => scrollTabs("left")}
+                                    className="hidden md:flex absolute left-0 z-20 p-1 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-white/10 text-zinc-400 hover:text-white opacity-0 group-hover/tabs:opacity-100 transition-opacity"
+                                >
+                                    <ChevronLeft className="h-3.5 w-3.5" />
+                                </button>
+
+                                <div
+                                    ref={scrollContainerRef}
+                                    className="flex items-center justify-center gap-1 overflow-x-auto scrollbar-none px-6 h-8 w-full"
+                                >
+                                    {tabs.map((tab) => (
+                                        <button
+                                            key={tab.id}
+                                            onClick={() => setActiveTab(tab.id)}
+                                            className={cn(
+                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap border border-transparent click-feedback",
+                                                activeTab === tab.id
+                                                    ? "bg-green-500 text-black font-bold shadow-[0_0_15px_rgba(34,197,94,0.4)]"
+                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                            )}
+                                        >
+                                            {tab.icon && (
+                                                <span className={cn("h-3.5 w-3.5", activeTab === tab.id ? "text-black" : "text-current")}>
+                                                    {tab.icon}
+                                                </span>
+                                            )}
+                                            <span>{tab.label}</span>
+                                            {tab.badge !== undefined && (
+                                                <span className={cn(
+                                                    "ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full",
+                                                    activeTab === tab.id
+                                                        ? "bg-black/20 text-black"
+                                                        : "bg-muted text-muted-foreground border border-border"
+                                                )}>
+                                                    {tab.badge}
+                                                </span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Right Scroll Button */}
+                                <button
+                                    onClick={() => scrollTabs("right")}
+                                    className="hidden md:flex absolute right-0 z-20 p-1 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-white/10 text-zinc-400 hover:text-white opacity-0 group-hover/tabs:opacity-100 transition-opacity"
+                                >
+                                    <ChevronRight className="h-3.5 w-3.5" />
+                                </button>
+                            </div>
+                        ) : (
+                            /* MODULES VIEW (Fallback if no tabs) */
+                            <div className="flex items-center gap-2">
+                                {allModules.map(renderModuleButton)}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* RIGHT SECTION: Search & Tour & Detail Toggle */}
+                    <div className="flex items-center gap-2 shrink-0">
+
+                        {/* Collaboration UI (Moved from CollaborationBar) - ONLY IN ADMIN MODE */}
+                        {mode === "ADMIN" && (
+                            <div className="hidden lg:flex items-center gap-3 mr-2 pr-2 border-r border-border/20">
+                                {/* Active Teams Count */}
+                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
+                                    <Users className="h-3.5 w-3.5" />
+                                    <span>{TEAMS.length} Active Teams</span>
+                                </div>
+
+                                {/* Team Icons */}
+                                <div className="flex -space-x-1.5">
+                                    {TEAMS.map((team, index) => (
+                                        <Tooltip key={team.id}>
+                                            <TooltipTrigger asChild>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.1, zIndex: 10 }}
+                                                    className="relative group"
+                                                    onClick={() => {
+                                                        if (typeof window !== 'undefined') {
+                                                            const event = new CustomEvent('open-module', { detail: 'session' });
+                                                            window.dispatchEvent(event);
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className={cn(
+                                                        "flex items-center justify-center w-7 h-7 rounded-full border border-background cursor-pointer bg-card shadow-sm",
+                                                        "hover:ring-2 hover:ring-primary ring-offset-1 ring-offset-background"
+                                                    )}>
+                                                        <team.icon className={cn("h-3.5 w-3.5", team.color)} />
+                                                    </div>
+                                                    {/* Active indicator */}
+                                                    <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border border-background rounded-full z-20" />
+                                                </motion.button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="text-xs">
+                                                <div className="font-medium">{team.name}</div>
+                                                <div className="text-muted-foreground">Click to manage session</div>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* AI Tips Button (Left of Search) */}
+                        <Popover open={isAIOpen} onOpenChange={setIsAIOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
                                     className={cn(
-                                        "flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors click-feedback",
-                                        isExpanded && "bg-muted text-foreground"
+                                        "h-9 w-9 p-0 rounded-full hover:bg-muted relative transition-colors",
+                                        isAIOpen && "bg-primary/10 text-primary",
+                                        suggestions.length > 0 && "text-primary"
                                     )}
                                 >
-                                    {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
-                                </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="text-xs">
-                                {isExpanded ? "Collapse panel" : "Expand panel"}
-                            </TooltipContent>
-                        </Tooltip>
-
-                        {/* Divider */}
-                        <div className="h-6 w-px bg-border/50 ml-2" />
-                    </div>
-
-                    {/* CENTER-RIGHT SECTION: Onboarding + Search */}
-                    <div className="flex items-center gap-4 ml-auto mr-6">
-                        {/* Onboarding Button + Popup - styled like search */}
-                        <>
-                            <button
-                                onClick={() => setOnboardingOpen(true)}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground",
-                                    "bg-muted/50 border border-border rounded-lg",
-                                    "hover:bg-muted hover:text-foreground transition-colors",
-                                    onboardingOpen && "bg-primary/15 text-primary border-primary/30"
-                                )}
-                            >
-                                {isOnboardingComplete ? (
-                                    <PartyPopper className="h-4 w-4 text-green-500" />
-                                ) : (
-                                    <Rocket className="h-4 w-4" />
-                                )}
-                                <span className="text-left">{isOnboardingComplete ? "Complete!" : "Onboarding"}</span>
-                                <span className="hidden md:inline-flex ml-auto px-1.5 py-0.5 text-[10px] font-medium bg-background border border-border rounded">
-                                    {onboardingCompletedCount}/{onboardingTotalCount}
-                                </span>
-                            </button>
-
-                            {/* Onboarding Popup Modal */}
-                            {onboardingOpen && (
-                                <>
-                                    {/* Backdrop */}
-                                    <div
-                                        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
-                                        onClick={() => setOnboardingOpen(false)}
-                                    />
-
-                                    {/* Dialog */}
-                                    <div className="fixed left-1/2 bottom-20 -translate-x-1/2 w-full max-w-md z-[70]">
-                                        <div className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden">
-                                            {/* Header */}
-                                            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-muted/30">
-                                                <div className="flex items-center gap-2">
-                                                    <Rocket className="h-5 w-5 text-primary" />
-                                                    <h3 className="font-semibold">Getting Started</h3>
-                                                </div>
-                                                <button
-                                                    onClick={() => setOnboardingOpen(false)}
-                                                    className="p-1 hover:bg-muted rounded"
-                                                >
-                                                    <X className="h-4 w-4 text-muted-foreground" />
-                                                </button>
-                                            </div>
-
-                                            {/* Progress Bar */}
-                                            <div className="px-4 py-3 border-b border-border">
-                                                <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                                    <span>{onboardingCompletedCount} of {onboardingTotalCount} completed</span>
-                                                    <span>{Math.round(onboardingProgress)}%</span>
-                                                </div>
-                                                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-primary rounded-full transition-all duration-500"
-                                                        style={{ width: `${onboardingProgress}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* Steps List */}
-                                            <div className="max-h-80 overflow-y-auto p-2">
-                                                {onboardingSteps.map((step) => (
-                                                    <div
-                                                        key={step.id}
-                                                        className={cn(
-                                                            "flex items-start gap-3 px-3 py-3 rounded-lg transition-colors",
-                                                            step.completed ? "opacity-60" : "hover:bg-muted"
-                                                        )}
-                                                    >
-                                                        {/* Checkbox */}
-                                                        <button
-                                                            onClick={() => !step.completed && handleOnboardingStepComplete(step.id)}
-                                                            className={cn(
-                                                                "shrink-0 mt-0.5 transition-colors",
-                                                                step.completed
-                                                                    ? "text-green-500"
-                                                                    : "text-muted-foreground hover:text-primary"
-                                                            )}
-                                                            disabled={step.completed}
-                                                        >
-                                                            {step.completed ? (
-                                                                <CheckCircle2 className="h-5 w-5" />
-                                                            ) : (
-                                                                <Circle className="h-5 w-5" />
-                                                            )}
-                                                        </button>
-
-                                                        {/* Content */}
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className={cn(
-                                                                "text-sm font-medium",
-                                                                step.completed && "line-through"
-                                                            )}>
-                                                                {step.title}
-                                                            </p>
-                                                            {step.description && !step.completed && (
-                                                                <p className="text-xs text-muted-foreground mt-0.5">
-                                                                    {step.description}
-                                                                </p>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Action */}
-                                                        {!step.completed && step.href && (
-                                                            <Link
-                                                                href={step.href}
-                                                                className="shrink-0 text-primary hover:underline text-sm flex items-center gap-1"
-                                                                onClick={() => setOnboardingOpen(false)}
-                                                            >
-                                                                Start
-                                                                <ArrowRight className="h-3 w-3" />
-                                                            </Link>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            {/* Footer */}
-                                            {isOnboardingComplete && (
-                                                <div className="px-4 py-3 border-t bg-green-50 dark:bg-green-950/30">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                                                            <PartyPopper className="h-5 w-5" />
-                                                            <span className="text-sm font-medium">All done! Great job!</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Tips Footer */}
-                                            <div className="flex items-center gap-4 px-4 py-2 border-t border-border text-xs text-muted-foreground">
-                                                <span>Click a step to mark complete</span>
-                                                <span className="flex items-center gap-1">
-                                                    <kbd className="px-1.5 py-0.5 bg-muted rounded">esc</kbd> to close
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </>
-
-                        {/* Search Bar */}
-                        <div className="hidden md:flex items-center">
-                            <CommandPalette />
-                        </div>
-
-                        {/* Divider */}
-                        <div className="h-6 w-px bg-border/50 mx-2" />
-                    </div>
-
-                    {/* RIGHT SECTION: Utilities */}
-                    <div className="flex items-center gap-1 shrink-0">
-
-                        {/* Favorites */}
-                        <div
-                            className="relative"
-                            onMouseEnter={() => {
-                                if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                                setShowFavoritesOpen(true);
-                                setShowRecent(false);
-                            }}
-                            onMouseLeave={() => {
-                                timeoutRef.current = setTimeout(() => {
-                                    setShowFavoritesOpen(false);
-                                    setShowRecent(false);
-                                }, 150);
-                            }}
-                        >
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                        onClick={toggleFavorite}
-                                        className={cn(
-                                            "p-2 rounded-lg transition-all relative click-feedback",
-                                            favorites.includes(pathname)
-                                                ? "text-yellow-500 hover:text-yellow-600 hover:bg-yellow-500/10"
-                                                : showFavoritesOpen
-                                                    ? "text-yellow-500 bg-muted"
-                                                    : "text-muted-foreground hover:text-yellow-500 hover:bg-muted"
-                                        )}
-                                    >
-                                        <Star className={cn("h-4 w-4", favorites.includes(pathname) && "fill-yellow-500")} />
-
-                                        {/* Badge - only animate when NEW favorites added */}
-                                        {favorites.length > 0 && (
-                                            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                                                {newFavoritesCount > 0 && (
-                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75" />
-                                                )}
-                                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-yellow-500 text-[9px] font-bold text-black items-center justify-center">
-                                                    {favorites.length}
-                                                </span>
-                                            </span>
-                                        )}
-                                    </button>
-                                </TooltipTrigger>
-                                {!showFavoritesOpen && (
-                                    <TooltipContent side="top" className="text-xs">
-                                        {favorites.includes(pathname) ? "Remove from favorites" : "Add to favorites"}
-                                    </TooltipContent>
-                                )}
-                            </Tooltip>
-                            {/* Favorites Dropdown logic... (Simplified for brevity in diff, but assuming it renders same as before) */}
-                            {favorites.length > 0 && showFavoritesOpen && (
-                                <div
-                                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[260px] bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl py-2 z-50 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2"
-                                    onMouseEnter={() => {
-                                        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                                    }}
-                                    onMouseLeave={() => {
-                                        timeoutRef.current = setTimeout(() => {
-                                            setShowFavoritesOpen(false);
-                                            setShowRecent(false);
-                                        }, 150);
-                                    }}
-                                >
-                                    <div className="px-3 py-2 border-b border-white/5 mb-1">
-                                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Favorites</h3>
-                                    </div>
-                                    <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
-                                        {favorites.map(favPath => {
-                                            let details: NavItem & { category: string; categoryColor: string } | undefined;
-                                            for (const group of NAV_GROUPS) {
-                                                const item = group.items.find(i => i.href === favPath);
-                                                if (item) {
-                                                    details = {
-                                                        ...item,
-                                                        category: group.title,
-                                                        categoryColor: CATEGORY_COLORS[group.title] || "text-muted-foreground"
-                                                    };
-                                                    break;
-                                                }
-                                            }
-                                            if (!details) return null;
-                                            return (
-                                                <Link
-                                                    key={favPath}
-                                                    href={favPath}
-                                                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors group/item"
-                                                >
-                                                    <details.icon className={cn("h-4 w-4 shrink-0", details.categoryColor)} />
-                                                    <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                                                        <span className={cn(
-                                                            "text-[10px] uppercase tracking-wide font-semibold",
-                                                            details.categoryColor
-                                                        )}>
-                                                            {details.category}
-                                                        </span>
-                                                        <span className="text-sm font-medium text-foreground group-hover/item:text-primary transition-colors truncate">
-                                                            {details.name}
-                                                        </span>
-                                                    </div>
-                                                </Link>
-                                            );
-                                        })}
+                                    <Bot className="h-5 w-5" />
+                                    {suggestions.length > 0 && (
+                                        <Badge
+                                            variant="destructive"
+                                            className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[9px] ring-2 ring-background"
+                                        >
+                                            {suggestions.length}
+                                        </Badge>
+                                    )}
+                                    <span className="sr-only">AI Tips</span>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80 p-0" align="end" sideOffset={12}>
+                                <div className="p-3 border-b bg-muted/30">
+                                    <div className="flex items-center gap-2">
+                                        <Bot className="h-4 w-4 text-primary" />
+                                        <span className="font-semibold text-sm">AI Suggestions</span>
+                                        <Badge variant="secondary" className="text-[10px] ml-auto">
+                                            {suggestions.length} tips
+                                        </Badge>
                                     </div>
                                 </div>
-                            )}
-                        </div>
+                                <div className="max-h-64 overflow-y-auto p-2 space-y-2">
+                                    {suggestions.length === 0 ? (
+                                        <p className="text-sm text-muted-foreground text-center py-4">
+                                            No suggestions right now. Keep creating! ✨
+                                        </p>
+                                    ) : (
+                                        suggestions.map((suggestion) => {
+                                            const Icon = getTypeIcon(suggestion.type);
+                                            return (
+                                                <div
+                                                    key={suggestion.id}
+                                                    className="p-3 rounded-lg bg-muted/50 border hover:bg-muted/80 transition-colors"
+                                                >
+                                                    <div className="flex items-start gap-2">
+                                                        <div className={cn("p-1.5 rounded-md", getTypeColor(suggestion.type))}>
+                                                            <Icon className="h-3.5 w-3.5" />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-medium text-xs">{suggestion.title}</p>
+                                                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                                                                {suggestion.description}
+                                                            </p>
+                                                            <div className="flex items-center gap-2 mt-2">
+                                                                {suggestion.action && (
+                                                                    <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1">
+                                                                        {suggestion.action}
+                                                                        <ChevronRight className="h-3 w-3" />
+                                                                    </Button>
+                                                                )}
+                                                                <div className="flex-1" />
+                                                                <button
+                                                                    onClick={() => dismissSuggestion(suggestion.id)}
+                                                                    className="p-1 text-muted-foreground hover:text-green-500"
+                                                                    aria-label="Helpful"
+                                                                >
+                                                                    <ThumbsUp className="h-3 w-3" />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => dismissSuggestion(suggestion.id)}
+                                                                    className="p-1 text-muted-foreground hover:text-red-500"
+                                                                    aria-label="Not helpful"
+                                                                >
+                                                                    <ThumbsDown className="h-3 w-3" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
 
-                        {/* Settings */}
+                        {/* Search */}
+                        <CommandPalette compact className="bg-transparent border-0 hover:bg-muted/50" />
+
+                        {/* Detail Panel Toggle (from HeaderTabs) */}
+                        {hasTabs && (
+                            <>
+                                <div className="h-4 w-px bg-border/50 mx-1" />
+                                <button
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    className={cn(
+                                        "p-1.5 rounded-lg transition-all duration-200",
+                                        "text-zinc-400 hover:text-foreground hover:bg-muted",
+                                        isOpen && "bg-green-500/20 text-green-500"
+                                    )}
+                                    title={isOpen ? "Hide details" : "Show details"}
+                                >
+                                    <ChevronUpIcon className={cn(
+                                        "h-4 w-4 transition-transform duration-200",
+                                        isOpen && "rotate-180"
+                                    )} />
+                                </button>
+                            </>
+                        )}
+
+                        {/* Product Tour Trigger */}
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Link
-                                    href="/admin/general"
-                                    className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all click-feedback"
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-9 w-9 p-0 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
+                                    onClick={() => setIsTourOpen(true)}
                                 >
-                                    <Settings className="h-4 w-4" />
-                                </Link>
+                                    <Flag className="h-4 w-4" />
+                                    <span className="sr-only">Start Product Tour</span>
+                                </Button>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="text-xs">
-                                Settings
-                                <kbd className="tooltip-shortcut ml-2">Alt+,</kbd>
+                            <TooltipContent>
+                                <p>Take a Tour</p>
                             </TooltipContent>
                         </Tooltip>
+                    </div>
+
+                </div>
+            </div>
+
+            <SessionModal
+                isOpen={isSessionModalOpen}
+                onClose={() => setIsSessionModalOpen(false)}
+            />
+        </TooltipProvider>
+    );
+}
+
+/**
+ * Detail Panel Component - Shows below the header when expanded
+ */
+export function DetailPanel() {
+    const { config, activeTab, isOpen } = useRightPanel();
+    const { isScrolled } = useScroll();
+    const { detailPanelStyle, setDetailPanelOpen } = useWindowLayout();
+
+    // Sync visibility state with layout manager
+    useEffect(() => {
+        setDetailPanelOpen(isOpen);
+    }, [isOpen, setDetailPanelOpen]);
+
+    if (!config?.enabled || !isOpen) return null;
+
+    const footerConfig = getFooterConfig(activeTab);
+    const activeTabInfo = config?.tabs?.find(t => t.id === activeTab);
+
+    if (!footerConfig) return null;
+
+    return (
+
+        <div
+            className={cn(
+                "fixed z-40 px-4 md:px-6 flex justify-start animate-in slide-in-from-top-2 fade-in-0 duration-200",
+                isScrolled ? "top-[84px]" : "top-[140px]"
+            )}
+            style={detailPanelStyle}
+        >
+            <div className="w-full px-4 py-2 bg-card/95 backdrop-blur-xl rounded-xl border border-border shadow-2xl">
+                <div className="flex items-center justify-between gap-4">
+                    {/* Left Side - Tab Info */}
+                    <div className="flex-1 min-w-0">
+                        <p className="font-medium text-foreground flex items-center gap-2 text-sm">
+                            <span className="text-base">{footerConfig.icon}</span>
+                            {footerConfig.title}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight truncate">
+                            {footerConfig.description}
+                        </p>
+                    </div>
+
+                    {/* Right Side - Actions */}
+                    <div className="flex items-center gap-1">
                     </div>
                 </div>
             </div>
-        </TooltipProvider>
+        </div>
     );
 }

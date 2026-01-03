@@ -32,6 +32,7 @@ interface CommandPaletteProps {
     commands?: CommandItem[];
     placeholder?: string;
     className?: string;
+    compact?: boolean;
 }
 
 const defaultCommands: CommandItem[] = [
@@ -99,6 +100,7 @@ export function CommandPalette({
     commands = defaultCommands,
     placeholder = "Type a command or search...",
     className,
+    compact = false,
 }: CommandPaletteProps) {
     const [isOpen, setIsOpen] = React.useState(false);
     const [query, setQuery] = React.useState("");
@@ -189,17 +191,23 @@ export function CommandPalette({
             <button
                 onClick={() => setIsOpen(true)}
                 className={cn(
-                    "flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground",
-                    "bg-muted/50 border border-border rounded-lg",
-                    "hover:bg-muted hover:text-foreground transition-colors",
+                    "flex items-center gap-2 text-sm text-muted-foreground transition-colors",
+                    compact
+                        ? "justify-center w-8 h-8 rounded-full hover:bg-muted hover:text-foreground"
+                        : "px-3 py-2 bg-muted/50 border border-border rounded-lg hover:bg-muted hover:text-foreground",
                     className
                 )}
+                title={compact ? "Search (Ctrl+K)" : undefined}
             >
                 <Search className="h-4 w-4" />
-                <span className="text-left">Search...</span>
-                <kbd className="hidden md:inline-flex ml-auto px-1.5 py-0.5 text-[10px] font-medium bg-background border border-border rounded">
-                    {typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('mac') ? '⌘K' : 'Ctrl+K'}
-                </kbd>
+                {!compact && (
+                    <>
+                        <span className="text-left">Search...</span>
+                        <kbd className="hidden md:inline-flex ml-auto px-1.5 py-0.5 text-[10px] font-medium bg-background border border-border rounded">
+                            {typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('mac') ? '⌘K' : 'Ctrl+K'}
+                        </kbd>
+                    </>
+                )}
             </button>
 
             {isOpen && (

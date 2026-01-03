@@ -1,21 +1,24 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import TrendingProductAds from "@/components/store/research/TrendingProductAds";
-import SocialMediaTopics from "@/components/store/research/SocialMediaTopics";
-import ProductSearch from "@/components/store/research/ProductSearch";
-import TrackerDashboard from "@/components/store/research/TrackerDashboard";
-import WinningProductAiScore from "@/components/store/research/WinningProductAiScore";
-import CompetitorTrackerEnhanced from "@/components/store/research/CompetitorTrackerEnhanced";
-import SupplierDatabase from "@/components/shared/research/SupplierDatabase";
-import AlgeriaTrends from "@/components/store/research/AlgeriaTrends";
+import { Suspense, useState, useEffect } from "react";
+import { usePageActions } from "@/components/core/layout/PageActionsContext";
+import TrendingProductAds from "@/app/ecommerce/_components/research/TrendingProductAds";
+import SocialMediaTopics from "@/app/ecommerce/_components/research/SocialMediaTopics";
+import ProductSearch from "@/app/ecommerce/_components/research/ProductSearch";
+import TrackerDashboard from "@/app/ecommerce/_components/research/TrackerDashboard";
+import WinningProductAiScore from "@/app/ecommerce/_components/research/WinningProductAiScore";
+import CompetitorTrackerEnhanced from "@/app/ecommerce/_components/research/CompetitorTrackerEnhanced";
+import SupplierDatabase from "@/app/product-research/_components/SupplierDatabase";
+import AlgeriaTrends from "@/app/ecommerce/_components/research/AlgeriaTrends";
 import { Button } from "@/components/core/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/core/ui/card";
 import { Badge } from "@/components/core/ui/badge";
-import { FileText, Download, Upload, TrendingUp, TrendingDown, Star, Target, Eye, ShoppingCart, ChevronDown, ChevronUp, Settings, Search } from "lucide-react";
-import { FeatureFavoriteStar } from "@/components/core/ui/FeatureFavoriteStar";
+import { FileText, Download, Upload, TrendingUp, TrendingDown, Star, Target, Eye, ShoppingCart, ChevronDown, ChevronUp, Settings, Search, Sparkles, Globe, Plus } from "lucide-react";
+
 import { PageHeader } from "@/components/core/layout/PageHeader";
+import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
 import { FeatureCluster } from "@/components/core/ui/FeatureCluster";
+import { DateRangePicker } from "@/components/core/ui/date-range-picker";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/core/ui/collapsible";
 
 
@@ -38,15 +41,95 @@ const PRODUCT_PERFORMANCE_KPIS = [
 
 function ProductResearchView() {
     const [isAuxiliaryOpen, setIsAuxiliaryOpen] = useState(false);
+    const { setSuggestions } = usePageActions();
+
+    useEffect(() => {
+        setSuggestions([
+            { id: "1", type: "trend", title: "Trending Product", description: "Wireless Earbuds are up 30% this week in Algeria" },
+            { id: "2", type: "content", title: "Niche Opportunity", description: "Home organization products have low competition" },
+            { id: "3", type: "improvement", title: "Price Alert", description: "Competitor lowered prices on 3 tracked items" }
+        ]);
+        return () => setSuggestions([]);
+    }, [setSuggestions]);
 
     return (
         <div className="space-y-8 p-6 pb-20 max-w-[1600px] mx-auto">
             {/* Header */}
             <PageHeader
                 title="Product Research"
-                description="Find winning products and track competitors"
-                icon={<Search className="h-6 w-6 text-[hsl(var(--accent-blue))]" />}
-                actions={<FeatureFavoriteStar featureId="product-research" size="lg" />}
+                description="Discover winning products with AI-powered market analysis"
+                icon={<Search className="h-6 w-6 text-[hsl(var(--accent-purple))]" />}
+                actions={
+                    <QuickActionsBar
+                        variant="inline"
+                        primaryAction={{
+                            label: "New Search",
+                            icon: Search,
+                            onClick: () => console.log("New search")
+                        }}
+                        actions={[
+                            {
+                                id: "track",
+                                label: "Track Product",
+                                icon: Target,
+                                onClick: () => console.log("Track product"),
+                                hoverColor: "hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 dark:hover:bg-orange-900/20"
+                            },
+                            {
+                                id: "competitors",
+                                label: "Competitors",
+                                icon: Eye,
+                                onClick: () => console.log("Compare competitors"),
+                                hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
+                            },
+                            {
+                                id: "suppliers",
+                                label: "Suppliers",
+                                icon: Globe,
+                                onClick: () => console.log("Find suppliers"),
+                                hoverColor: "hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/20"
+                            },
+                            {
+                                id: "ai-score",
+                                label: "AI Score",
+                                icon: Sparkles,
+                                onClick: () => console.log("AI Score"),
+                                hoverColor: "hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 dark:hover:bg-purple-900/20"
+                            },
+                            {
+                                id: "health",
+                                label: "Research Status",
+                                icon: Target,
+                                onClick: () => console.log("Research status"),
+                                hoverColor: "hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-900/20"
+                            }
+                        ]}
+                        moreActions={[
+                            {
+                                id: "report",
+                                label: "Generate Full Report",
+                                icon: FileText,
+                                onClick: () => console.log("Generate report"),
+                                iconColor: "text-blue-500"
+                            },
+                            {
+                                id: "import",
+                                label: "Import Product List",
+                                icon: Upload,
+                                onClick: () => console.log("Import products"),
+                                iconColor: "text-purple-500"
+                            },
+                            {
+                                id: "export",
+                                label: "Export Research Data",
+                                icon: Download,
+                                onClick: () => console.log("Export data"),
+                                iconColor: "text-green-500",
+                                separator: true
+                            }
+                        ]}
+                    />
+                }
             />
 
             {/* ============================================================================== */}
@@ -80,6 +163,13 @@ function ProductResearchView() {
                     storageKey="product-research-tracker"
                     defaultExpanded={true}
                     headerClassName="bg-[hsl(var(--accent-orange))]"
+                    actions={
+                        <div className="flex items-center gap-2">
+                            <DateRangePicker />
+                            <Button variant="ghost" size="sm"><FileText className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="sm"><Download className="h-4 w-4" /></Button>
+                        </div>
+                    }
                 >
                     <TrackerDashboard />
                 </FeatureCluster>

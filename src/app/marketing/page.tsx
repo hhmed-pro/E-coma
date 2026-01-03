@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
+import { usePageActions } from "@/components/core/layout/PageActionsContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/core/ui/card";
 import { Button } from "@/components/core/ui/button";
 import { Badge } from "@/components/core/ui/badge";
@@ -11,24 +12,27 @@ import {
     FileText, Download, Upload, Users, DollarSign, Link2, Copy,
     CheckCircle, Clock, Plus, Eye,
     Wallet, ArrowUpRight, Users2, TrendingUp, Gift, Share2, Store, Wand2,
-    ChevronDown, ChevronUp, Bot, MessageSquare, Shield, Settings, Heart, X, Check
+    ChevronDown, ChevronUp, Bot, MessageSquare, Shield, Settings, Heart, X, Check, UserPlus, LayoutDashboard
 } from "lucide-react";
 import { PageHeader } from "@/components/core/layout/PageHeader";
 import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
-import { FeatureFavoriteStar } from "@/components/core/ui/FeatureFavoriteStar";
+import { DateRangePicker } from "@/components/core/ui/date-range-picker";
+
 import { FeatureCluster } from "@/components/core/ui/FeatureCluster";
 import { FeatureClusterGroup } from "@/components/core/ui/FeatureClusterGroup";
-import { InfluencerMarketplace } from "@/components/marketing/InfluencerMarketplace";
-import { InfluencerRateCalculator } from "@/components/marketing/InfluencerRateCalculator";
-import { ContractGenerator } from "@/components/marketing/ContractGenerator";
-import { InfluencerPayments } from "@/components/marketing/InfluencerPayments";
-import { TierComparison } from "@/components/marketing/TierComparison";
+import { InfluencerMarketplace } from "@/app/marketing/_components/InfluencerMarketplace";
+import { InfluencerRateCalculator } from "@/app/marketing/_components/InfluencerRateCalculator";
+import { ContractGenerator } from "@/app/marketing/_components/ContractGenerator";
+// Import SectionHeader from creatives shared (or global if moved) - using relative path for now or component import
+import { SectionHeader } from "@/app/creatives/_components/shared/SectionHeader";
+import { InfluencerPayments } from "@/app/marketing/_components/InfluencerPayments";
+import { TierComparison } from "@/app/marketing/_components/TierComparison";
 
-import { ConfirmationBot } from "@/components/marketing/ConfirmationBot";
-import { AICommentResponder } from "@/components/marketing/AICommentResponder";
-import { CommentsGuard } from "@/components/marketing/CommentsGuard";
-import { useRightPanel } from "@/components/core/layout/RightPanelContext";
-import PlatformHub, { PlatformCards, PlatformGrowthTrends } from "@/app/social/posts-studio/_components/PlatformHub";
+import { ConfirmationBot } from "@/app/marketing/_components/ConfirmationBot";
+import { AICommentResponder } from "@/app/marketing/_components/AICommentResponder";
+import { CommentsGuard } from "@/app/marketing/_components/CommentsGuard";
+import { Sheet, SheetContent } from "@/components/core/ui/sheet";
+import PlatformHub, { PlatformCards, PlatformGrowthTrends } from "@/app/marketing/_components/PlatformHub";
 
 // Integrated Action Panel Wrapper (Reused for consistency)
 const ActionPanelWrapper = ({
@@ -125,8 +129,19 @@ function MarketingContent() {
     const [copied, setCopied] = useState<string | null>(null);
     const [showTierComparison, setShowTierComparison] = useState(false);
     const [isAuxiliaryOpen, setIsAuxiliaryOpen] = useState(false);
-    const { setConfig, setIsOpen, isOpen } = useRightPanel();
     const { warning } = useToast();
+    const { setSuggestions } = usePageActions();
+
+    useEffect(() => {
+        setSuggestions([
+            { id: "1", type: "content", title: "Top Topics", description: "Summer Collection and Delivery Speed trending" },
+            { id: "2", type: "trend", title: "Engagement Up", description: "+340 interactions today" }
+        ]);
+        return () => setSuggestions([]);
+    }, [setSuggestions]);
+
+    // Replaced useRightPanel with local state for Sheet
+    const [activePanelPlugin, setActivePanelPlugin] = useState<{ component: React.ReactNode; title: string } | null>(null);
 
     const handleCopy = (id: string, url: string) => {
         navigator.clipboard.writeText(url + "YOUR_CODE");
@@ -135,67 +150,92 @@ function MarketingContent() {
     };
 
     const closePanel = () => {
-        setIsOpen(false);
-        setConfig(null);
+        setActivePanelPlugin(null);
     };
 
     const openBotPanel = (component: React.ReactNode, title: string) => {
-        if (isOpen) {
-            warning("Action Blocked", "Please save or cancel the current panel before switching.");
-            return;
-        }
-        setIsOpen(true);
-        setConfig({
-            enabled: true,
-            title: title,
-            content: (
-                <ActionPanelWrapper
-                    title={title}
-                    onSave={closePanel}
-                    onCancel={closePanel}
-                    saveLabel="Save Changes"
-                >
-                    {component}
-                </ActionPanelWrapper>
-            )
-        });
+        setActivePanelPlugin({ component, title });
     };
 
     return (
         <div className="space-y-8 p-6 pb-20 max-w-[1600px] mx-auto">
+            {/* Sheet for Dynamic Panels */}
+            <Sheet open={!!activePanelPlugin} onOpenChange={(open) => !open && closePanel()}>
+                <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto p-0">
+                    {activePanelPlugin && (
+                        <div className="h-full p-6">
+                            <ActionPanelWrapper
+                                title={activePanelPlugin.title}
+                                onSave={closePanel}
+                                onCancel={closePanel}
+                                saveLabel="Save Changes"
+                            >
+                                {activePanelPlugin.component}
+                            </ActionPanelWrapper>
+                        </div>
+                    )}
+                </SheetContent>
+            </Sheet>
+
             {/* Header */}
             <PageHeader
                 title="Marketing & Growth"
                 description="Scale your business with affiliates, influencers, and automation"
                 icon={<Users2 className="h-6 w-6 text-[hsl(var(--accent-orange))]" />}
-                actions={<FeatureFavoriteStar featureId="commission-marketing" size="lg" />}
-            />
-
-            {/* QuickActionsBar - Phase 4 Enhancement */}
-            <QuickActionsBar
-                primaryAction={{
-                    label: "New Campaign",
-                    icon: Wand2,
-                    onClick: () => { }
-                }}
-                actions={[
-                    { id: "responder", label: "AI Responder", icon: Bot, onClick: () => openBotPanel(<AICommentResponder />, "AI Responder") },
-                    { id: "guard", label: "Comments Guard", icon: Shield, onClick: () => openBotPanel(<CommentsGuard />, "Comments Guard") },
-                    { id: "contracts", label: "Contracts", icon: FileText, onClick: () => openBotPanel(<ContractGenerator />, "Contract Generator") },
-                ]}
-                showAITips={true}
-                suggestions={[
-                    { id: "1", type: "content", title: "Top Topics", description: "Summer Collection and Delivery Speed trending" },
-                    { id: "2", type: "trend", title: "Engagement Up", description: "+340 interactions today" }
-                ]}
-                className="mb-6"
+                actions={
+                    <QuickActionsBar
+                        variant="inline"
+                        primaryAction={{
+                            label: "New Campaign",
+                            icon: Wand2,
+                            onClick: () => { }
+                        }}
+                        actions={[
+                            { id: "responder", label: "AI Responder", icon: Bot, onClick: () => openBotPanel(<AICommentResponder />, "AI Responder") },
+                            { id: "guard", label: "Comments Guard", icon: Shield, onClick: () => openBotPanel(<CommentsGuard />, "Comments Guard") },
+                            { id: "contracts", label: "Contracts", icon: FileText, onClick: () => openBotPanel(<ContractGenerator />, "Contract Generator") },
+                            { id: "health", label: "Campaign Health", icon: TrendingUp, onClick: () => console.log("Campaign health") },
+                        ]}
+                        moreActions={[
+                            {
+                                id: "export",
+                                label: "Export Data",
+                                icon: Download,
+                                onClick: () => console.log("Export data"),
+                                iconColor: "text-green-500"
+                            },
+                            {
+                                id: "invite",
+                                label: "Invite Affiliate",
+                                icon: UserPlus,
+                                onClick: () => console.log("Invite affiliate"),
+                                iconColor: "text-blue-500"
+                            }
+                        ]}
+                        className="mb-0" // Reset margin if needed, though variant handles padding/bg
+                    />
+                }
             />
 
 
             {/* ============================================================================== */}
             {/* SECTION 1: OVERVIEW (High-Level Stats)                                         */}
             {/* ============================================================================== */}
+            {/* ============================================================================== */}
             <section className="space-y-4">
+                <SectionHeader
+                    title="Dashboard Overview"
+                    icon={LayoutDashboard}
+                    actions={
+                        <div className="flex items-center gap-2">
+                            <DateRangePicker />
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <FileText className="h-4 w-4" />
+                                Report
+                            </Button>
+                        </div>
+                    }
+                />
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {KPI_DATA.map((kpi) => (
                         <Card key={kpi.title} className="border-2 hover:shadow-md transition-shadow">

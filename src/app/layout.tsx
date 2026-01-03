@@ -6,6 +6,7 @@ import { FloatingSupportMenu } from "@/components/core/ui/floating-support-menu"
 import { ToastProvider } from "@/components/core/ui/toast";
 import { ThemeProvider } from "@/components/core/ui/theme-provider";
 import { KeyboardShortcuts } from "@/components/core/ui/keyboard-shortcuts";
+import { TooltipProvider } from "@/components/core/ui/tooltip";
 
 // Anthropic Brand Typography
 const poppins = Poppins({
@@ -41,24 +42,26 @@ export default function RootLayout({
       <body className={`${poppins.variable} ${lora.variable} ${ibmPlexArabic.variable} antialiased`}>
         <ThemeProvider defaultTheme="system" storageKey="ecoma-theme">
           <ToastProvider>
-            <LayoutWrapper>
-              {/* Silver Metallic Background Overlay */}
-              <div
-                className="fixed inset-0 z-[-1] pointer-events-none opacity-40 dark:opacity-60 mix-blend-overlay bg-cover bg-center bg-no-repeat bg-fixed"
-                style={{ backgroundImage: "url('/images/backgrounds/silver-texture.png')" }}
-              />
-              {children}
-            </LayoutWrapper>
+            <TooltipProvider>
+              <LayoutWrapper>
+                {/* Silver Metallic Background Overlay */}
+                <div
+                  className="fixed inset-0 z-[-1] pointer-events-none opacity-40 dark:opacity-60 mix-blend-overlay bg-cover bg-center bg-no-repeat bg-fixed"
+                  style={{ backgroundImage: "url('/images/backgrounds/silver-texture.png')" }}
+                />
+                {children}
+              </LayoutWrapper>
 
-            {/* Floating Support Menu - Global (Removed in favor of FloatingHelpWidget) */}
-            {/* <FloatingSupportMenu
+              {/* Floating Support Menu - Global (Removed in favor of FloatingHelpWidget) */}
+              {/* <FloatingSupportMenu
               whatsappNumber="212600000000"
               messengerUsername="riglify"
               telegramUsername="riglify_support"
             /> */}
 
-            {/* Keyboard Shortcuts Modal - Press ? to open */}
-            <KeyboardShortcuts />
+              {/* Keyboard Shortcuts Modal - Press ? to open */}
+              <KeyboardShortcuts />
+            </TooltipProvider>
           </ToastProvider>
         </ThemeProvider>
       </body>
