@@ -24,6 +24,10 @@ interface WindowLayoutContextType {
     isTopNavCollapsed: boolean;
     toggleTopNav: () => void;
 
+    // Ecosystem Bar State
+    isEcosystemBarCollapsed: boolean;
+    toggleEcosystemBar: () => void;
+
     // Sticky Actions
     stickyActions: ReactNode;
     setStickyActions: (actions: ReactNode) => void;
@@ -33,6 +37,7 @@ const WindowLayoutContext = createContext<WindowLayoutContextType | null>(null);
 
 const STORAGE_KEY_RIGHT = "riglify-right-panel-visible";
 const STORAGE_KEY_TOP_NAV = "riglify-top-nav-collapsed";
+const STORAGE_KEY_ECOSYSTEM_BAR = "riglify-ecosystem-bar-collapsed";
 
 // Constants for Layout
 const RIGHT_PANEL_WIDTH = 320;
@@ -44,6 +49,7 @@ export function WindowLayoutProvider({ children }: { children: ReactNode }) {
     const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
     const [isBottomPanelOpen, setIsBottomPanelOpen] = useState(false);
     const [isTopNavCollapsed, setIsTopNavCollapsed] = useState(false);
+    const [isEcosystemBarCollapsed, setIsEcosystemBarCollapsed] = useState(false);
     const [stickyActions, setStickyActions] = useState<ReactNode>(null);
     const { isScrolled } = useScroll();
 
@@ -54,6 +60,9 @@ export function WindowLayoutProvider({ children }: { children: ReactNode }) {
 
         const storedTopNav = localStorage.getItem(STORAGE_KEY_TOP_NAV);
         if (storedTopNav !== null) setIsTopNavCollapsed(storedTopNav === "true");
+
+        const storedEcosystemBar = localStorage.getItem(STORAGE_KEY_ECOSYSTEM_BAR);
+        if (storedEcosystemBar !== null) setIsEcosystemBarCollapsed(storedEcosystemBar === "true");
     }, []);
 
     const handleSetRightPanelOpen = (isOpen: boolean) => {
@@ -67,6 +76,14 @@ export function WindowLayoutProvider({ children }: { children: ReactNode }) {
         setIsTopNavCollapsed(prev => {
             const newState = !prev;
             localStorage.setItem(STORAGE_KEY_TOP_NAV, String(newState));
+            return newState;
+        });
+    };
+
+    const toggleEcosystemBar = () => {
+        setIsEcosystemBarCollapsed(prev => {
+            const newState = !prev;
+            localStorage.setItem(STORAGE_KEY_ECOSYSTEM_BAR, String(newState));
             return newState;
         });
     };
@@ -111,6 +128,8 @@ export function WindowLayoutProvider({ children }: { children: ReactNode }) {
             toggleRightPanel,
             isTopNavCollapsed,
             toggleTopNav,
+            isEcosystemBarCollapsed,
+            toggleEcosystemBar,
             detailPanelStyle,
             bottomPanelStyle,
             rightPanelStyle,

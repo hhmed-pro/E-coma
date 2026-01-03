@@ -14,6 +14,7 @@ import { NotificationCenter } from "@/components/core/ui/notification-center";
 import { FullscreenToggle } from "@/components/core/ui/fullscreen-toggle";
 import { OnboardingChecklist } from "@/components/core/ui/onboarding-checklist";
 import { ProfileMenu } from "./ProfileMenu";
+import { CollaborationBar } from "./CollaborationBar";
 import { NAV_GROUPS, NAV_PAGES, CATEGORY_COLORS, CATEGORY_GLOW_COLORS, BADGE_URGENCY_THRESHOLD, NavGroup, NavItem } from "@/config/navigation";
 import { useWindowLayout } from "./WindowLayoutContext";
 import { useScroll } from "./ScrollContext";
@@ -23,8 +24,9 @@ interface TopNavigationProps {
 
 export function TopNavigation({ }: TopNavigationProps) {
     const pathname = usePathname();
-    const { isTopNavCollapsed, toggleTopNav, stickyActions } = useWindowLayout();
-    const { isScrolled } = useScroll();
+    const { isTopNavCollapsed, toggleTopNav, toggleEcosystemBar, stickyActions } = useWindowLayout();
+    const { isScrolled: _isScrolled } = useScroll();
+    const isScrolled = true; // Always use compact "scrolled" style
 
     // Use shared config
     const navPages = NAV_PAGES;
@@ -43,17 +45,14 @@ export function TopNavigation({ }: TopNavigationProps) {
         'opacity-100'
     );
 
-    const showButton = !isTopNavCollapsed || isScrolled;
+    const showButton = true; // Always show toggle button for nav collapse/expand
 
     return (
         <div className={containerClasses}>
-            {/* Notification & Fullscreen - Fixed to Right Side (hide when collapsed and not scrolled - shown in PageHeader instead) */}
-            {isScrolled && (
+            {/* Sticky Actions - Shown when scrolled (page-specific actions) */}
+            {isScrolled && stickyActions && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
                     {stickyActions}
-                    <div className="h-4 w-px bg-border/50 mx-1" />
-                    <NotificationCenter />
-                    <FullscreenToggle className="hidden md:flex" />
                 </div>
             )}
 
@@ -61,7 +60,7 @@ export function TopNavigation({ }: TopNavigationProps) {
                 {/* Toggle Button - Outside Pill */}
                 {showButton && (
                     <button
-                        onClick={toggleTopNav}
+                        onClick={() => { toggleTopNav(); toggleEcosystemBar(); }}
                         className={cn(
                             "flex items-center justify-center w-10 h-10 rounded-full border border-border bg-card/50 text-muted-foreground hover:text-foreground hover:bg-muted hover:border-border/80 transition-all duration-200 shadow-lg",
                             isTopNavCollapsed && isScrolled ? "translate-x-2" : ""
@@ -142,8 +141,14 @@ export function TopNavigation({ }: TopNavigationProps) {
                         ))}
                     </div>
 
-                    {/* Right Side Actions - Profile Only */}
+                    {/* Right Side Actions - Collaboration + Utilities + Profile */}
                     <div className="flex items-center gap-2 ml-auto pl-2 border-l border-border/20">
+                        <CollaborationBar compact={isScrolled} className={isScrolled ? "hidden lg:flex" : "hidden sm:flex"} />
+                        {/* Utilities - Always visible */}
+                        <div className={cn("flex items-center gap-1", isScrolled ? "" : "pl-2 ml-1 border-l border-border/20")}>
+                            <NotificationCenter />
+                            <FullscreenToggle className="hidden md:flex" />
+                        </div>
                         {/* Profile Menu - Popup opens left */}
                         <ProfileMenu
                             variant="header"

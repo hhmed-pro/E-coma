@@ -1,4 +1,5 @@
-import { Truck, Share2, Bot, Store } from "lucide-react";
+// Icons preserved for future use if modules are re-added
+// import { Truck, Share2, Bot } from "lucide-react";
 
 // ============================================================================
 // ECOSYSTEM MODULE TYPES
@@ -28,48 +29,7 @@ export interface EcosystemModule {
 // MODULE CONFIGURATION
 // ============================================================================
 
-export const ECOSYSTEM_MODULES: EcosystemModule[] = [
-    {
-        id: "social",
-        name: "Social Media Accounts",
-        shortName: "Social Accounts",
-        icon: Share2,
-        description: "Link your social media accounts (Instagram, Facebook, TikTok)",
-        shortcut: "Alt+S",
-        statusKey: "ecosystem-social-status",
-        defaultStatus: { status: 'disconnected', progress: { current: 0, total: 3 } }
-    },
-    {
-        id: "delivery",
-        name: "Delivery Companies",
-        shortName: "Delivery",
-        icon: Truck,
-        description: "Configure delivery partners and shipping zones",
-        shortcut: "Alt+D",
-        statusKey: "ecosystem-delivery-status",
-        defaultStatus: { status: 'disconnected', progress: { current: 0, total: 3 } }
-    },
-    {
-        id: "ai-agents",
-        name: "AI Agents",
-        shortName: "AI Agents",
-        icon: Bot,
-        description: "DM Sales Agent, DM Support Agent, Comment Response Agent",
-        shortcut: "Alt+A",
-        statusKey: "ecosystem-ai-agents-status",
-        defaultStatus: { status: 'disconnected', progress: { current: 0, total: 3 } }
-    },
-    {
-        id: "online-store",
-        name: "Online Store",
-        shortName: "Store",
-        icon: Store,
-        description: "Configure your online store and landing pages",
-        shortcut: "Alt+O",
-        statusKey: "ecosystem-store-status",
-        defaultStatus: { status: 'disconnected', progress: { current: 0, total: 2 } }
-    },
-];
+export const ECOSYSTEM_MODULES: EcosystemModule[] = [];
 
 // ============================================================================
 // STATUS UTILITIES

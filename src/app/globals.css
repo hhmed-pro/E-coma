@@ -14,6 +14,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Z-Index Hierarchy System */
+@import "./z-index.css";
+
 /* Fonts - Anthropic Brand Typography */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:wght@400;500;600;700&display=swap');
 

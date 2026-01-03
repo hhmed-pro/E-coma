@@ -264,14 +264,6 @@ export function QuickActionsBar({
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* Spacer */}
-            <div className="flex-1" />
-
-            {/* Quick tip */}
-            <span className="text-xs text-muted-foreground hidden lg:inline">
-                Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd> for commands
-            </span>
         </motion.div>
     );
 }

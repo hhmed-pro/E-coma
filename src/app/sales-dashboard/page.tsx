@@ -18,6 +18,7 @@ import {
     Truck, ShieldAlert, Phone, Package, UploadCloud, BarChart, RotateCcw, PieChart, Settings, Shield, X, Check, Bot
 } from 'lucide-react';
 import { PageHeader } from "@/components/core/layout/PageHeader";
+import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
 import { OrdersChart } from '@/components/analytics/OrdersChart';
 import { CashCollector } from '@/components/analytics/CashCollector';
 import { LifecycleFunnel } from '@/components/analytics/charts/lifecycle-funnel';
@@ -190,7 +191,27 @@ export default function SalesDashboardPage() {
                 title="Sales Dashboard"
                 description="Boost sales & kill returns with AI-driven insights"
                 icon={<BarChart className="h-6 w-6 text-[#788c5d]" />}
-                className="mb-8"
+                className="mb-4"
+            />
+
+            {/* QuickActionsBar - Phase 4 Enhancement */}
+            <QuickActionsBar
+                primaryAction={{
+                    label: "New Order",
+                    icon: Package,
+                    onClick: () => { }
+                }}
+                actions={[
+                    { id: "risk", label: "Risk Settings", icon: Shield, onClick: openRiskPanel },
+                    { id: "blacklist", label: "Blacklist", icon: Ban, onClick: openBlacklistPanel },
+                    { id: "bot", label: "AI Bot", icon: Bot, onClick: () => openBotPanel(<ConfirmationBot />, "AI Order Confirmation Bot") },
+                ]}
+                showAITips={true}
+                suggestions={[
+                    { id: "1", type: "trend", title: "High Return Rate", description: "Consider reviewing product quality for top 3 returned items" },
+                    { id: "2", type: "timing", title: "Peak Hours", description: "Most orders confirmed between 2-5 PM" }
+                ]}
+                className="mb-6"
             />
 
             <section className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronUp, ChevronDown, Settings, Clock, Star, Rocket, CheckCircle2, Circle, ArrowRight, X, PartyPopper } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Settings, Clock, Star, Rocket, CheckCircle2, Circle, ArrowRight, X, PartyPopper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRightPanel } from "@/components/core/layout/RightPanelContext";
 import { CommandPalette } from "@/components/core/ui/command-palette";
@@ -31,7 +31,7 @@ interface EcosystemBarProps {
 }
 
 export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand }: EcosystemBarProps) {
-    const { isTopNavCollapsed } = useWindowLayout();
+    const { isTopNavCollapsed, isEcosystemBarCollapsed, toggleEcosystemBar } = useWindowLayout();
     const { isScrolled } = useScroll();
     const [activeModule, setActiveModule] = useState<string | null>(null);
     const [recentPages, setRecentPages] = useState<{ name: string; href: string }[]>([]);
@@ -222,9 +222,9 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
         <TooltipProvider delayDuration={200}>
             <div className={cn(
                 "hidden md:block fixed z-[60] transition-all duration-300 left-0 right-0",
-                // Collapsed State (Hidden)
-                isTopNavCollapsed
-                    ? "translate-y-[120%] opacity-0 pointer-events-none"
+                // Collapse behavior - slide down when collapsed
+                isEcosystemBarCollapsed
+                    ? "translate-y-full opacity-0 pointer-events-none"
                     : "translate-y-0 opacity-100",
                 // Always attached at bottom with consistent styling
                 "bottom-0 border-t border-border/40 bg-card/85 backdrop-blur-md shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.5)]"
@@ -415,77 +415,6 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
 
                     {/* RIGHT SECTION: Utilities */}
                     <div className="flex items-center gap-1 shrink-0">
-                        {/* Recent Pages */}
-                        {recentPages.length > 0 && (
-                            <div
-                                className="relative"
-                                onMouseEnter={() => {
-                                    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                                    setShowRecent(true);
-                                    setShowFavoritesOpen(false);
-                                }}
-                                onMouseLeave={() => {
-                                    timeoutRef.current = setTimeout(() => {
-                                        setShowRecent(false);
-                                        setShowFavoritesOpen(false);
-                                    }, 150);
-                                }}
-                            >
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <button
-                                            onClick={() => {
-                                                setShowRecent(!showRecent);
-                                                if (!showRecent) setShowFavoritesOpen(false);
-                                            }}
-                                            className={cn(
-                                                "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all click-feedback",
-                                                showRecent
-                                                    ? "bg-muted text-foreground"
-                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                                            )}
-                                        >
-                                            <Clock className="h-4 w-4" />
-                                            <span className="hidden lg:inline">Recent</span>
-                                        </button>
-                                    </TooltipTrigger>
-                                    {!showRecent && (
-                                        <TooltipContent side="top" className="text-xs">
-                                            Recently visited pages
-                                        </TooltipContent>
-                                    )}
-                                </Tooltip>
-                                {showRecent && (
-                                    <div
-                                        className="absolute bottom-full right-0 mb-2 min-w-[200px] bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl py-2 z-50 animate-in fade-in-0 zoom-in-95"
-                                        onMouseEnter={() => {
-                                            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                                        }}
-                                        onMouseLeave={() => {
-                                            timeoutRef.current = setTimeout(() => {
-                                                setShowRecent(false);
-                                                setShowFavoritesOpen(false);
-                                            }, 150);
-                                        }}
-                                    >
-                                        <div className="px-3 py-2 border-b border-white/5 mb-1">
-                                            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent</h3>
-                                        </div>
-                                        {recentPages.slice(0, 5).map(page => (
-                                            <Link
-                                                key={page.href}
-                                                href={page.href}
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                                                onClick={() => setShowRecent(false)}
-                                            >
-                                                <Clock className="h-3.5 w-3.5 opacity-50" />
-                                                <span>{page.name}</span>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
 
                         {/* Favorites */}
                         <div

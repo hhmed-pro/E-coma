@@ -33,12 +33,15 @@ const MOCK_COLLABORATORS: Collaborator[] = [
 interface CollaborationBarProps {
     contentId?: string;
     className?: string;
+    compact?: boolean; // NEW: For compact mode when scrolled
 }
 
 /**
  * CollaborationBar - Shows active collaborators with presence indicators
+ * This is a global component used across all pages.
+ * Supports compact mode for scrolled/space-constrained states.
  */
-export function CollaborationBar({ contentId, className }: CollaborationBarProps) {
+export function CollaborationBar({ contentId, className, compact = false }: CollaborationBarProps) {
     const [collaborators] = useState<Collaborator[]>(MOCK_COLLABORATORS);
 
     const activeCount = collaborators.filter(c => c.status !== "idle").length;
@@ -60,6 +63,46 @@ export function CollaborationBar({ contentId, className }: CollaborationBarProps
         }
     };
 
+    // Compact mode: Only avatar stack with tooltip showing full info
+    if (compact) {
+        return (
+            <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <div className={cn("flex -space-x-1.5 cursor-pointer", className)}>
+                            {collaborators.slice(0, 3).map((collab) => (
+                                <Avatar key={collab.id} className={cn(
+                                    "h-6 w-6 border-2 border-background transition-transform hover:scale-110",
+                                    collab.status === "editing" && "ring-1 ring-green-500"
+                                )}>
+                                    <AvatarImage src={collab.avatar} alt={collab.name} />
+                                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                                        {collab.initials}
+                                    </AvatarFallback>
+                                </Avatar>
+                            ))}
+                            {collaborators.length > 3 && (
+                                <span className="flex items-center justify-center h-6 w-6 rounded-full bg-muted text-[10px] font-medium border-2 border-background">
+                                    +{collaborators.length - 3}
+                                </span>
+                            )}
+                        </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="text-xs">
+                        <div className="font-medium">{activeCount} active collaborators</div>
+                        {editingUsers.length > 0 && (
+                            <div className="text-muted-foreground flex items-center gap-1">
+                                <Edit3 className="h-3 w-3" />
+                                {editingUsers.length} editing
+                            </div>
+                        )}
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        );
+    }
+
+    // Full mode: Complete display with labels
     return (
         <TooltipProvider delayDuration={300}>
             <div className={cn("flex items-center gap-3", className)}>

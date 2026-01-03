@@ -14,6 +14,7 @@ import {
     ChevronDown, ChevronUp, Bot, MessageSquare, Shield, Settings, Heart, X, Check
 } from "lucide-react";
 import { PageHeader } from "@/components/core/layout/PageHeader";
+import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
 import { FeatureFavoriteStar } from "@/components/core/ui/FeatureFavoriteStar";
 import { FeatureCluster } from "@/components/core/ui/FeatureCluster";
 import { FeatureClusterGroup } from "@/components/core/ui/FeatureClusterGroup";
@@ -168,6 +169,26 @@ function MarketingContent() {
                 description="Scale your business with affiliates, influencers, and automation"
                 icon={<Users2 className="h-6 w-6 text-[hsl(var(--accent-orange))]" />}
                 actions={<FeatureFavoriteStar featureId="commission-marketing" size="lg" />}
+            />
+
+            {/* QuickActionsBar - Phase 4 Enhancement */}
+            <QuickActionsBar
+                primaryAction={{
+                    label: "New Campaign",
+                    icon: Wand2,
+                    onClick: () => { }
+                }}
+                actions={[
+                    { id: "responder", label: "AI Responder", icon: Bot, onClick: () => openBotPanel(<AICommentResponder />, "AI Responder") },
+                    { id: "guard", label: "Comments Guard", icon: Shield, onClick: () => openBotPanel(<CommentsGuard />, "Comments Guard") },
+                    { id: "contracts", label: "Contracts", icon: FileText, onClick: () => openBotPanel(<ContractGenerator />, "Contract Generator") },
+                ]}
+                showAITips={true}
+                suggestions={[
+                    { id: "1", type: "content", title: "Top Topics", description: "Summer Collection and Delivery Speed trending" },
+                    { id: "2", type: "trend", title: "Engagement Up", description: "+340 interactions today" }
+                ]}
+                className="mb-6"
             />
 
 

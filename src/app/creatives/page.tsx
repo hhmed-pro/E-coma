@@ -41,7 +41,6 @@ import { CommandPalette } from "./_components/CommandPalette";
 
 // Import Backend Feature UIs
 import { VersionHistory } from "./_components/VersionHistory";
-import { CollaborationBar } from "./_components/CollaborationBar";
 import { ExportModal } from "./_components/ExportModal";
 import { ImportDropzone } from "./_components/ImportDropzone";
 
@@ -58,13 +57,6 @@ import FormatPresets from "./_components/FormatPresets";
 function CreativesContent() {
     const [isBrandVoiceOpen, setIsBrandVoiceOpen] = useState(false);
     const [activeToolId, setActiveToolId] = useState<string | null>(null);
-    const { setStickyActions } = useWindowLayout();
-
-    // Register sticky actions for this page
-    useEffect(() => {
-        setStickyActions(<CollaborationBar />);
-        return () => setStickyActions(null);
-    }, [setStickyActions]);
 
     // New state for wizard and templates
     const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -130,11 +122,6 @@ function CreativesContent() {
                     title="Creatives & Content"
                     description="From idea to posting — Create, design, and publish across all platforms"
                     icon={<Sparkles className="h-6 w-6 text-[hsl(var(--accent-blue))]" />}
-                    actions={
-                        <div className="flex items-center gap-4">
-                            <CollaborationBar />
-                        </div>
-                    }
                 />
 
                 {/* ============================================================================== */}

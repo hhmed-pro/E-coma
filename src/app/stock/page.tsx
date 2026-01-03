@@ -25,6 +25,7 @@ import { ImportBudgetTracker } from "@/components/store/inventory/ImportBudgetTr
 
 import SupplierDatabase from "@/components/shared/research/SupplierDatabase";
 import { ChinaImportService } from "@/components/store/inventory/ChinaImportService";
+import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
 
 // ✅ RESTRUCTURE: Mock Products for Sales Metrics (P1 - moved to Section 1)
 const PRODUCTS_SALES_DATA = [
@@ -169,6 +170,47 @@ export default function StockPage() {
                             <FeatureFavoriteStar featureId="stock-management" size="lg" />
                         </div>
                     }
+                />
+
+                {/* Quick Actions Bar */}
+                <QuickActionsBar
+                    primaryAction={{
+                        label: "Add Product",
+                        icon: Plus,
+                        onClick: () => console.log("Add product")
+                    }}
+                    actions={[
+                        {
+                            id: "sync-carriers",
+                            label: "Sync Carriers",
+                            icon: Truck,
+                            onClick: () => console.log("Sync carriers"),
+                            hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
+                        },
+                        {
+                            id: "import-stock",
+                            label: "Import",
+                            icon: Upload,
+                            onClick: () => console.log("Import stock"),
+                            hoverColor: "hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/20"
+                        }
+                    ]}
+                    moreActions={[
+                        {
+                            id: "export-stock",
+                            label: "Export Stock",
+                            icon: Download,
+                            onClick: () => console.log("Export stock"),
+                            iconColor: "text-purple-500"
+                        },
+                        {
+                            id: "low-stock-alerts",
+                            label: "Low Stock Alerts",
+                            icon: AlertTriangle,
+                            onClick: () => console.log("Low stock alerts"),
+                            iconColor: "text-orange-500"
+                        }
+                    ]}
                 />
 
                 {/* ✅ RESTRUCTURE: AI Inventory Score with merged Top Sellers, Low Stock Alerts, Return Rates & Recent Movements */}

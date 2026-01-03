@@ -58,6 +58,7 @@ import { FeatureClusterGroup } from "@/components/core/ui/FeatureClusterGroup";
 import { FeatureFavoriteStar } from "@/components/core/ui/FeatureFavoriteStar";
 
 import { cn } from "@/lib/utils";
+import { QuickActionsBar } from "@/components/core/layout/QuickActionsBar";
 
 // --- Types & Interfaces ---
 
@@ -254,6 +255,35 @@ export default function AnalyticsPage() {
                         <FeatureFavoriteStar featureId="analytics" size="lg" />
                     </div>
                 }
+            />
+
+            {/* Quick Actions Bar */}
+            <QuickActionsBar
+                actions={[
+                    {
+                        id: "export-report",
+                        label: "Export Report",
+                        icon: Download,
+                        onClick: () => console.log("Export report"),
+                        hoverColor: "hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/20"
+                    },
+                    {
+                        id: "scheduler",
+                        label: "Scheduler",
+                        icon: Calendar,
+                        onClick: openSchedulerPanel,
+                        hoverColor: "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20"
+                    }
+                ]}
+                moreActions={[
+                    {
+                        id: "upload-data",
+                        label: "Upload Data",
+                        icon: UploadCloud,
+                        onClick: () => console.log("Upload data"),
+                        iconColor: "text-purple-500"
+                    }
+                ]}
             />
 
             {/* SECTION 2: Delivery Hub */}
