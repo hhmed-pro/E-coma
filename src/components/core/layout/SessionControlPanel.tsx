@@ -12,7 +12,10 @@ import {
     CheckCircle2,
     Circle,
     MessageSquare,
-    LayoutGrid
+    LayoutGrid,
+    Settings,
+    Activity,
+    Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/core/ui/button";
@@ -21,8 +24,10 @@ import { Label } from "@/components/core/ui/label";
 import { Badge } from "@/components/core/ui/badge";
 import { ScrollArea } from "@/components/core/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/core/ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/ui/popover";
+import { Switch } from "@/components/core/ui/switch";
 import { useMode } from "./ModeContext";
-import { TEAMS } from "@/config/teams";
+import { TEAMS, Team } from "@/config/teams";
 
 // Tab types for each mode
 type AdminTab = "teams" | "todos" | "chat";
@@ -35,13 +40,15 @@ export function SessionModuleContent() {
         activeTeam,
         activeTeams,
         teamObjectives,
+        setTeamObjective,
         adminTodos,
         teamTodos,
         addTodo,
         toggleTodo,
         adminChats,
         teamChats,
-        sendMessage
+        sendMessage,
+        setTeamActive
     } = useMode();
 
     // Tab state
@@ -52,6 +59,10 @@ export function SessionModuleContent() {
     const [newTodo, setNewTodo] = useState("");
     const [chatMessage, setChatMessage] = useState("");
     const [broadcastMsg, setBroadcastMsg] = useState("");
+
+    // Admin filters
+    const [adminTodoFilter, setAdminTodoFilter] = useState<'all' | 'admin'>('all');
+    const [showTeamChats, setShowTeamChats] = useState(false);
 
     // Mock workers for display
     const workers = [
@@ -140,31 +151,96 @@ export function SessionModuleContent() {
                             <div className="h-full flex flex-col">
                                 <div className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider flex items-center gap-2">
                                     <Users className="w-3.5 h-3.5" />
-                                    Active Teams ({activeTeams.length})
+                                    All Teams Config
                                 </div>
                                 <ScrollArea className="flex-1">
                                     <div className="space-y-3 pr-2">
-                                        {activeTeams.map(team => {
+                                        {TEAMS.map(team => {
                                             const Icon = team.icon;
+                                            const isActive = activeTeams.some(t => t.id === team.id);
                                             const teamWorkers = workers.filter(w => w.teamId === team.id);
+
                                             return (
-                                                <div key={team.id} className="p-3 rounded-lg border border-border bg-card/50 hover:bg-card transition-colors">
-                                                    <div className="flex items-center gap-3 mb-2">
-                                                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center bg-muted")}>
-                                                            <Icon className={cn("w-4 h-4", team.color)} />
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="font-medium text-sm">{team.name}</div>
-                                                            <div className="text-[10px] text-muted-foreground truncate">
-                                                                {teamObjectives[team.id] || "No objective set"}
+                                                <div key={team.id} className={cn(
+                                                    "p-3 rounded-lg border transition-all",
+                                                    isActive
+                                                        ? "border-primary/20 bg-primary/5 shadow-sm"
+                                                        : "border-border bg-card/50 opacity-70 hover:opacity-100"
+                                                )}>
+                                                    <div className="flex items-start justify-between mb-2">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={cn(
+                                                                "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                                                                isActive ? "bg-background shadow-sm" : "bg-muted"
+                                                            )}>
+                                                                <Icon className={cn("w-4 h-4", isActive ? team.color : "text-muted-foreground")} />
+                                                            </div>
+                                                            <div>
+                                                                <div className="font-medium text-sm flex items-center gap-2">
+                                                                    {team.name}
+                                                                    {isActive && (
+                                                                        <span className="relative flex h-2 w-2">
+                                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+                                                                    {teamObjectives[team.id] || "No objective set"}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <Badge variant="outline" className="text-[9px] bg-green-500/10 text-green-500 border-green-500/20">
-                                                            Active
-                                                        </Badge>
+
+                                                        {/* Configuration Popover */}
+                                                        <Popover>
+                                                            <PopoverTrigger asChild>
+                                                                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
+                                                                    <Settings className="w-3.5 h-3.5 text-muted-foreground" />
+                                                                </Button>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent className="w-72" align="end">
+                                                                <div className="space-y-4">
+                                                                    <div className="font-medium text-sm border-b pb-2">
+                                                                        {team.name} Settings
+                                                                    </div>
+
+                                                                    <div className="flex items-center justify-between">
+                                                                        <div className="space-y-0.5">
+                                                                            <Label className="text-xs">Access Status</Label>
+                                                                            <div className="text-[10px] text-muted-foreground">
+                                                                                {isActive ? "Team can access platform" : "Access locked"}
+                                                                            </div>
+                                                                        </div>
+                                                                        <Switch
+                                                                            checked={isActive}
+                                                                            onCheckedChange={(checked) => setTeamActive(team.id, checked)}
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className="space-y-2">
+                                                                        <Label className="text-xs">Current Objective</Label>
+                                                                        <div className="flex gap-2">
+                                                                            <Input
+                                                                                className="h-7 text-xs"
+                                                                                placeholder="Set team goal..."
+                                                                                defaultValue={teamObjectives[team.id] || ""}
+                                                                                onKeyDown={(e) => {
+                                                                                    if (e.key === 'Enter') {
+                                                                                        setTeamObjective(team.id, (e.target as HTMLInputElement).value);
+                                                                                        (e.target as HTMLInputElement).blur();
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                        <p className="text-[10px] text-muted-foreground">Press Enter to save</p>
+                                                                    </div>
+                                                                </div>
+                                                            </PopoverContent>
+                                                        </Popover>
                                                     </div>
-                                                    {teamWorkers.length > 0 && (
-                                                        <div className="flex items-center gap-1 mt-2 pt-2 border-t border-border/50">
+
+                                                    {isActive && teamWorkers.length > 0 && (
+                                                        <div className="flex items-center gap-1 mt-2 pt-2 border-t border-border/10">
                                                             {teamWorkers.map(w => (
                                                                 <Avatar key={w.id} className="w-5 h-5">
                                                                     <AvatarFallback className="text-[8px] bg-primary/10 text-primary">
@@ -173,7 +249,7 @@ export function SessionModuleContent() {
                                                                 </Avatar>
                                                             ))}
                                                             <span className="text-[10px] text-muted-foreground ml-1">
-                                                                {teamWorkers.length} member{teamWorkers.length > 1 ? 's' : ''}
+                                                                {teamWorkers.length} active
                                                             </span>
                                                         </div>
                                                     )}
@@ -190,37 +266,105 @@ export function SessionModuleContent() {
                                 <div className="p-3 px-4 border-b border-border bg-muted/30 flex items-center justify-between">
                                     <h4 className="text-xs font-semibold flex items-center gap-2">
                                         <CheckSquare className="w-3.5 h-3.5" />
-                                        Admin Tasks
+                                        Task Management
                                     </h4>
-                                    <Badge variant="secondary" className="text-[10px] h-5">
-                                        {adminTodos.filter(t => t.completed).length}/{adminTodos.length}
-                                    </Badge>
+                                    <div className="flex gap-1">
+                                        <Button
+                                            variant={adminTodoFilter === 'all' ? 'secondary' : 'ghost'}
+                                            size="sm"
+                                            className="h-6 text-[10px] px-2"
+                                            onClick={() => setAdminTodoFilter('all')}
+                                        >
+                                            All
+                                        </Button>
+                                        <Button
+                                            variant={adminTodoFilter === 'admin' ? 'secondary' : 'ghost'}
+                                            size="sm"
+                                            className="h-6 text-[10px] px-2"
+                                            onClick={() => setAdminTodoFilter('admin')}
+                                        >
+                                            My Tasks
+                                        </Button>
+                                    </div>
                                 </div>
                                 <ScrollArea className="flex-1 p-2">
-                                    <div className="space-y-1">
-                                        {adminTodos.map(todo => (
-                                            <div
-                                                key={todo.id}
-                                                className={cn(
-                                                    "group flex items-start gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer",
-                                                    todo.completed && "opacity-60"
-                                                )}
-                                                onClick={() => toggleTodo(todo.id)}
-                                            >
-                                                <button className={cn(
-                                                    "mt-0.5 shrink-0 transition-colors",
-                                                    todo.completed ? "text-green-500" : "text-muted-foreground group-hover:text-primary"
-                                                )}>
-                                                    {todo.completed ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
-                                                </button>
-                                                <p className={cn(
-                                                    "text-sm leading-snug",
-                                                    todo.completed && "line-through text-muted-foreground"
-                                                )}>
-                                                    {todo.text}
-                                                </p>
+                                    <div className="space-y-4">
+                                        {/* Admin Todos */}
+                                        {(adminTodoFilter === 'all' || adminTodoFilter === 'admin') && (
+                                            <div className="space-y-1">
+                                                <div className="px-2 text-[10px] font-semibold text-muted-foreground uppercase opacity-70">My Tasks</div>
+                                                {adminTodos.map(todo => (
+                                                    <div
+                                                        key={todo.id}
+                                                        className={cn(
+                                                            "group flex items-start gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer",
+                                                            todo.completed && "opacity-60"
+                                                        )}
+                                                        onClick={() => toggleTodo(todo.id)}
+                                                    >
+                                                        <button className={cn(
+                                                            "mt-0.5 shrink-0 transition-colors",
+                                                            todo.completed ? "text-green-500" : "text-muted-foreground group-hover:text-primary"
+                                                        )}>
+                                                            {todo.completed ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
+                                                        </button>
+                                                        <p className={cn(
+                                                            "text-sm leading-snug",
+                                                            todo.completed && "line-through text-muted-foreground"
+                                                        )}>
+                                                            {todo.text}
+                                                        </p>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
+                                        )}
+
+                                        {/* Team Todos Section */}
+                                        {adminTodoFilter === 'all' && teamTodos.length > 0 && (
+                                            <div className="space-y-1 pt-2 border-t border-dashed">
+                                                <div className="px-2 text-[10px] font-semibold text-muted-foreground uppercase opacity-70 mt-2">Team Tasks</div>
+                                                {teamTodos.map(todo => {
+                                                    const team = todo.teamId ? TEAMS.find(t => t.id === todo.teamId) : null;
+                                                    return (
+                                                        <div
+                                                            key={todo.id}
+                                                            className={cn(
+                                                                "group flex items-start gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer",
+                                                                todo.completed && "opacity-60"
+                                                            )}
+                                                            onClick={() => toggleTodo(todo.id)}
+                                                        >
+                                                            <button className={cn(
+                                                                "mt-0.5 shrink-0 transition-colors",
+                                                                todo.completed ? "text-green-500" : "text-muted-foreground group-hover:text-primary"
+                                                            )}>
+                                                                {todo.completed ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
+                                                            </button>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className={cn(
+                                                                    "text-sm leading-snug",
+                                                                    todo.completed && "line-through text-muted-foreground"
+                                                                )}>
+                                                                    {todo.text}
+                                                                </p>
+                                                                {team && (
+                                                                    <div className="flex items-center gap-1 mt-1">
+                                                                        <Badge variant="outline" className="text-[9px] px-1 h-3 border-muted-foreground/20 text-muted-foreground">
+                                                                            {team.name}
+                                                                        </Badge>
+                                                                        {todo.type === 'admin' && (
+                                                                            <span className="text-[9px] text-orange-500 flex items-center gap-0.5">
+                                                                                <Shield className="w-2 h-2" /> Assigned
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
                                     </div>
                                 </ScrollArea>
                                 <div className="p-3 border-t border-border">
@@ -241,38 +385,66 @@ export function SessionModuleContent() {
 
                         {adminTab === "chat" && (
                             <div className="h-full flex flex-col border border-border rounded-xl bg-card overflow-hidden">
-                                <div className="p-3 px-4 border-b border-border bg-muted/30">
+                                <div className="p-3 px-4 border-b border-border bg-muted/30 flex items-center justify-between">
                                     <h4 className="text-xs font-semibold flex items-center gap-2">
                                         <MessageSquare className="w-3.5 h-3.5" />
-                                        Broadcast to All Teams
+                                        Communications
                                     </h4>
+                                    <div className="flex items-center gap-2">
+                                        <Label className="text-[10px] text-muted-foreground">Monitor Teams</Label>
+                                        <Switch
+                                            checked={showTeamChats}
+                                            onCheckedChange={setShowTeamChats}
+                                            className="scale-75 origin-right"
+                                        />
+                                    </div>
                                 </div>
                                 <ScrollArea className="flex-1 p-3">
                                     <div className="space-y-3">
-                                        {adminChats.map(chat => (
-                                            <div key={chat.id} className="flex gap-2">
-                                                <Avatar className="w-6 h-6 shrink-0">
-                                                    <AvatarFallback className="text-[9px] bg-primary/10 text-primary">
-                                                        {chat.senderName.charAt(0)}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-xs font-medium">{chat.senderName}</span>
-                                                        <span className="text-[10px] text-muted-foreground">
-                                                            {chat.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
+                                        {[...adminChats, ...(showTeamChats ? teamChats : [])]
+                                            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+                                            .map(chat => {
+                                                const team = chat.teamId ? TEAMS.find(t => t.id === chat.teamId) : null;
+                                                return (
+                                                    <div key={chat.id} className="flex gap-2">
+                                                        <Avatar className="w-6 h-6 shrink-0">
+                                                            <AvatarFallback className={cn(
+                                                                "text-[9px]",
+                                                                chat.type === 'admin' ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                                                            )}>
+                                                                {chat.senderName.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-medium">{chat.senderName}</span>
+                                                                <span className="text-[10px] text-muted-foreground">
+                                                                    {chat.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
+                                                                {team && (
+                                                                    <Badge variant="outline" className="ml-auto text-[8px] h-3 px-1">
+                                                                        {team.name}
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground">{chat.message}</p>
+                                                        </div>
                                                     </div>
-                                                    <p className="text-sm text-muted-foreground">{chat.message}</p>
-                                                </div>
+                                                );
+                                            })}
+
+                                        {/* Helper text if empty */}
+                                        {adminChats.length === 0 && !showTeamChats && (
+                                            <div className="text-center text-xs text-muted-foreground py-8">
+                                                No broadcast messages sent.
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
                                 </ScrollArea>
                                 <div className="p-3 border-t border-border">
                                     <form onSubmit={handleBroadcast} className="flex gap-2">
                                         <Input
-                                            placeholder="Broadcast message to all teams..."
+                                            placeholder="Broadcast to all..."
                                             value={broadcastMsg}
                                             onChange={e => setBroadcastMsg(e.target.value)}
                                             className="h-8 text-xs"
@@ -438,24 +610,36 @@ export function SessionModuleContent() {
                                 </div>
                                 <ScrollArea className="flex-1 p-3">
                                     <div className="space-y-3">
-                                        {teamChats.map(chat => (
-                                            <div key={chat.id} className="flex gap-2">
-                                                <Avatar className="w-6 h-6 shrink-0">
-                                                    <AvatarFallback className="text-[9px] bg-primary/10 text-primary">
-                                                        {chat.senderName.charAt(0)}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-xs font-medium">{chat.senderName}</span>
-                                                        <span className="text-[10px] text-muted-foreground">
-                                                            {chat.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
+                                        {[...adminChats, ...teamChats]
+                                            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+                                            .map(chat => (
+                                                <div key={chat.id} className="flex gap-2">
+                                                    <Avatar className="w-6 h-6 shrink-0">
+                                                        <AvatarFallback className={cn(
+                                                            "text-[9px]",
+                                                            chat.type === 'admin' ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                                                        )}>
+                                                            {chat.senderName.charAt(0)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs font-medium flex items-center gap-1">
+                                                                {chat.senderName}
+                                                                {chat.type === 'admin' && (
+                                                                    <Badge variant="outline" className="h-3 text-[8px] px-1 bg-destructive/5 text-destructive border-destructive/20">
+                                                                        Admin
+                                                                    </Badge>
+                                                                )}
+                                                            </span>
+                                                            <span className="text-[10px] text-muted-foreground">
+                                                                {chat.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-sm text-muted-foreground">{chat.message}</p>
                                                     </div>
-                                                    <p className="text-sm text-muted-foreground">{chat.message}</p>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
                                     </div>
                                 </ScrollArea>
                                 <div className="p-3 border-t border-border">

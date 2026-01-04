@@ -4,8 +4,13 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
     User, Moon, Sun, Keyboard, Globe, HelpCircle, LogOut,
-    ChevronRight, ChevronLeft, Sparkles, CreditCard, UserPlus, Zap, Monitor, Home, Users
+    ChevronRight, ChevronLeft, Sparkles, CreditCard, UserPlus, Zap, Monitor,
+    Users, Settings
 } from "lucide-react";
+import { ProfileSettingsModal } from "@/components/core/ui/modals/profile/ProfileSettingsModal";
+import { ReferralModal } from "@/components/core/ui/modals/profile/ReferralModal";
+import { KeyboardShortcutsModal } from "@/components/core/ui/modals/profile/KeyboardShortcutsModal";
+import { SignOutConfirmModal } from "@/components/core/ui/modals/profile/SignOutConfirmModal";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/core/ui/theme-provider";
 
@@ -62,6 +67,26 @@ export function ProfileMenu({
         setHelpWidgetVisible(newValue);
         localStorage.setItem("riglify-help-widget-visible", JSON.stringify(newValue));
         window.dispatchEvent(new CustomEvent('toggle-help-widget'));
+    };
+
+    // Modal states
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [settingsTab, setSettingsTab] = useState("general");
+    const [isReferralOpen, setIsReferralOpen] = useState(false);
+    const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+    const [isSignOutConfirmOpen, setIsSignOutConfirmOpen] = useState(false);
+
+    const openSettings = (tab: string = "general") => {
+        setSettingsTab(tab);
+        setIsSettingsOpen(true);
+        setIsOpen(false); // Close menu
+    };
+
+    const handleSignOut = () => {
+        setIsSignOutConfirmOpen(false);
+        // Add actual sign out logic here
+        console.log("Signing out...");
+        setIsOpen(false);
     };
 
     // Close on click outside
@@ -175,25 +200,25 @@ export function ProfileMenu({
                                     <Sparkles className="h-4 w-4" />
                                     Explore our plans
                                 </Link>
-                                <Link href="/admin/general" className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
+                                <button onClick={() => openSettings("general")} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
                                     <User className="h-4 w-4" />
                                     Your profile
-                                </Link>
-                                <Link href="/admin/team" className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
+                                </button>
+                                <button onClick={() => openSettings("security")} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
                                     <Users className="h-4 w-4" />
                                     Team & Security
-                                </Link>
-                                <Link href="/admin/billing" className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
+                                </button>
+                                <button onClick={() => openSettings("billing")} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
                                     <CreditCard className="h-4 w-4" />
                                     Credits & Billing
-                                </Link>
-                                <Link href="/marketing/commission" className="flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
+                                </button>
+                                <button onClick={() => { setIsReferralOpen(true); setIsOpen(false); }} className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
                                     <div className="flex items-center gap-3">
                                         <UserPlus className="h-4 w-4" />
                                         Refer a friend
                                     </div>
                                     <span className="text-muted-foreground/70">$0</span>
-                                </Link>
+                                </button>
                             </div>
                         )}
                     </div>
@@ -253,6 +278,12 @@ export function ProfileMenu({
 
                     {/* Settings */}
                     <div className="py-2 border-t border-border">
+                        <button onClick={() => { setIsShortcutsOpen(true); setIsOpen(false); }} className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
+                            <span className="flex items-center gap-3">
+                                <Keyboard className="h-4 w-4" />
+                                Keyboard shortcuts
+                            </span>
+                        </button>
                         <button className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-[Lora,Georgia,serif]">
                             <span className="flex items-center gap-3">
                                 <Globe className="h-4 w-4" />
@@ -273,13 +304,33 @@ export function ProfileMenu({
 
                     {/* Sign Out */}
                     <div className="py-2 border-t border-border">
-                        <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[hsl(var(--accent-orange))] hover:bg-[hsl(var(--accent-orange))]/10 transition-colors font-[Lora,Georgia,serif]">
+                        <button onClick={() => { setIsSignOutConfirmOpen(true); setIsOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[hsl(var(--accent-orange))] hover:bg-[hsl(var(--accent-orange))]/10 transition-colors font-[Lora,Georgia,serif]">
                             <LogOut className="h-4 w-4" />
                             Sign out
                         </button>
                     </div>
                 </div>
             )}
+
+            {/* Modals */}
+            <ProfileSettingsModal
+                open={isSettingsOpen}
+                onOpenChange={setIsSettingsOpen}
+                initialTab={settingsTab}
+            />
+            <ReferralModal
+                open={isReferralOpen}
+                onOpenChange={setIsReferralOpen}
+            />
+            <KeyboardShortcutsModal
+                open={isShortcutsOpen}
+                onOpenChange={setIsShortcutsOpen}
+            />
+            <SignOutConfirmModal
+                open={isSignOutConfirmOpen}
+                onOpenChange={setIsSignOutConfirmOpen}
+                onConfirm={handleSignOut}
+            />
         </div>
     );
 }

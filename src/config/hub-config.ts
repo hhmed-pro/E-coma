@@ -54,84 +54,90 @@ export const HUB_CATEGORIES: HubCategory[] = [
     {
         id: "analytics",
         title: "Analytics",
-        description: "Real-time Reports, Insights & Performance Metrics",
+        description: "Real-time COD Reports, Insights & Wilaya Metrics",
         icon: PieChart,
         color: "from-blue-500/20 to-blue-600/10",
         glowColor: "rgba(59, 130, 246, 0.4)",
         textColor: "text-blue-400",
         pages: [
             {
-                name: "Sales Dashboard",
+                name: "Centre de Confirmation",
                 href: "/sales-dashboard",
-                description: "Boost sales & kill returns with AI-driven insights",
+                description: "Gestion des Commandes & Clients",
                 image: "/assets/features/sales_wide.svg",
                 problemSolution: {
                     problem: "40% return rate in COD e-commerce destroys profit margins",
-                    solution: "AI risk scoring per order + customer blacklist + confirmation workflow"
+                    solution: "AI risk scoring per Wilaya + Blacklist + Confirmation workflow"
                 },
                 subTabs: [
-                    { name: "Order Control", description: "Validation & Processing", features: ["Confirmed Orders", "Confirmation Workflow", "Order Packing Mode"] },
-                    { name: "Risk Management", description: "Reduce returns & risks", features: ["Return Rate Algo", "Risk Alerts"] },
-                    { name: "Logistics", description: "Delivery tracking", features: ["Shipment Tracking"] }
+                    { name: "Traitement Commandes", description: "Validation, Appels & Suivi", features: ["Orders Kanban", "Call Scripts", "GPS Collection", "Shipment Tracker"] },
+                    { name: "Risque & Clients", description: "Scoring, Blacklist & Historique", features: ["Risk Calculator", "Customer Blacklist", "High-Risk Alerts", "Wilaya Risk Map"] },
+                    { name: "Performance Sources", description: "Canaux, ROAS & Conversions", features: ["Orders Volume", "Return Rates", "Traffic Sources", "Conversion Funnel"] },
+                    { name: "Comms & Automatisations", description: "SMS, WhatsApp & Bots", features: ["Confirmation Bot", "GPS Bot", "SMS Templates", "Communication Log"] }
                 ],
-                features: ["Return Rate Algo", "Risk Alerts", "Confirmed Orders", "Confirmation Workflow", "Order Packing Mode", "Shipment Tracking"]
+                features: ["Orders Kanban", "Risk Calculator", "Customer Blacklist", "Confirmation Bot", "GPS Collection", "Offline Conversion Sync"]
             },
             {
-                name: "Business Analytics",
+                name: "Tableau de Bord",
                 href: "/analytics",
-                description: "Complete business performance overview",
+                description: "Centre de Performance & Statistiques",
                 image: "/assets/features/analytics_wide.svg",
                 problemSolution: {
-                    problem: "COD cash frozen at carriers for days, tax compliance chaos",
+                    problem: "COD cash frozen at Yalidine/ProColis, tax compliance chaos",
                     solution: "Cash collector tracks remittances + IFU calculator ensures legal compliance"
                 },
                 subTabs: [
-                    { name: "Performance Overview", description: "Key business metrics", features: ["Business Performance", "Social Performance"] },
-                    { name: "Lifecycle Analysis", description: "Customer & Traffic journey", features: ["Clients Life Cycle", "Traffic Life Cycle"] },
-                    { name: "Financials", description: "Revenue & Costs", features: ["Revenue Chart", "Cost & Ad Spend Charts"] }
+                    { name: "Vue d'Ensemble", description: "Performance Globale & KPIs", features: ["Revenue Dashboard", "Orders Chart", "Payment Method Analytics", "Creator Earnings"] },
+                    { name: "Livraison & Wilayas", description: "Transporteurs & Cartographie", features: ["Carrier Comparison", "Wilaya Heatmap", "Regional Revenue", "Delivery Performance"] },
+                    { name: "Finance & Rentabilité", description: "Profits, Coûts & IFU", features: ["Profit Calculator", "IFU Calculator", "Cash Collector", "ROAS Analyzer"] },
+                    { name: "Rapports & Outils", description: "Exports & Intégrations", features: ["Report Builder", "Data Integrations", "Scheduled Reports", "Platform Guides"] }
                 ],
-                features: ["Business Performance", "Social Performance", "Clients Life Cycle", "Traffic Life Cycle", "Revenue Chart", "Cost & Ad Spend Charts"]
+                features: ["Revenue Dashboard", "Wilaya Heatmap", "Carrier Comparison", "IFU Calculator", "Cash Collector", "Payment Analytics", "Report Builder"]
             },
         ]
     },
     {
         id: "ecommerce",
         title: "E-Commerce",
-        description: "Stock, Products & Research Intelligence",
+        description: "Stock, El Hamiz Sourcing & Research Intelligence",
         icon: ShoppingCart,
         color: "from-green-500/20 to-green-600/10",
         glowColor: "rgba(34, 197, 94, 0.4)",
         textColor: "text-green-400",
         pages: [
             {
-                name: "Stock Management",
+                name: "Entrepôt",
                 href: "/stock",
-                description: "Inventory, carriers, sourcing & tools",
+                description: "Gestion des Stocks, Fournisseurs & Import",
                 image: "/assets/features/stock_wide.svg",
                 problemSolution: {
-                    problem: "Manual stock sync with carriers + import law compliance risks",
-                    solution: "Carrier API sync for unified inventory + import budget tracker for legal limits"
+                    problem: "Manual stock sync with carriers + Douane compliance risks",
+                    solution: "Carrier API sync (Yalidine/ProColis) + Import budget tracker"
                 },
                 subTabs: [
-                    { name: "Inventory", description: "Stock levels & Overview", features: ["Inventory Overview", "Product Operations"] },
-                    { name: "Sourcing & Logistics", description: "Suppliers & Carriers", features: ["Carrier Stock Sync", "Carrier Comparison", "Supplier Database", "Import Budget"] }
+                    { name: "État du Stock", description: "Inventaire & Vue Globale", features: ["AI Inventory Score", "Product Operations", "Stock Value"] },
+                    { name: "Alertes & Mouvements", description: "Réapprovisionnement & Historique", features: ["Low Stock Alerts", "Stock Movements", "AI Reorder Suggestions"] },
+                    { name: "Sites & Retours", description: "Emplacements & Suivi Retours", features: ["Stock Locations", "Carrier Sync", "Returns Tracking"] },
+                    { name: "Fournisseurs & Import", description: "Sourcing & Douane", features: ["Supplier Database", "China Import", "Import Budget Tracker"] }
                 ],
-                features: ["Inventory Overview", "Product Operations", "Carrier Stock Sync", "Carrier Comparison", "Supplier Database", "Import Budget"]
+                features: ["AI Inventory Score", "Low Stock Alerts", "Carrier Stock Sync", "Import Budget Tracker", "Supplier Database"]
             },
             {
-                name: "Product Research",
+                name: "Découverte Produits",
                 href: "/product-research",
-                description: "Find winning products and track competitors",
+                description: "Recherche Produits Gagnants avec Analyse IA",
                 image: "/assets/features/product-research_wide.svg",
                 problemSolution: {
-                    problem: "Finding local suppliers is hard, competitor moves go unnoticed",
+                    problem: "Finding local suppliers (El Hamiz/El Eulma) is hard",
                     solution: "Curated Algerian supplier database + competitor ad & price tracker"
                 },
                 subTabs: [
-                    { name: "Discovery", description: "Find new products", features: ["Discovery Engine", "Bestseller Trends", "Market Intelligence"] },
-                    { name: "Competitor Analysis", description: "Track competition", features: ["Competitor Tracker", "Niche Topics"] }
+                    { name: "Recherche & Tendances", description: "Découverte & Tracking", features: ["Product Search", "AI Score", "Tracker Dashboard"] },
+                    { name: "Marché Algérien", description: "Tendances Locales", features: ["Algeria Trends", "Trending Ads", "Niche Topics"] },
+                    { name: "Fournisseurs & Coûts", description: "Sourcing & Landed Cost", features: ["Supplier Database", "Cost Calculator"] },
+                    { name: "Social & Validation", description: "Concurrents & Signaux", features: ["Competitor Tracker", "Social Signals"] }
                 ],
-                features: ["Discovery Engine", "Bestseller Trends", "Market Intelligence", "Competitor Tracker", "Niche Topics"]
+                features: ["Product Search", "AI Score", "Algeria Trends", "Supplier Database", "Competitor Tracker"]
             },
         ]
     },
@@ -145,81 +151,113 @@ export const HUB_CATEGORIES: HubCategory[] = [
         textColor: "text-purple-400",
         pages: [
             {
-                name: "Creatives & Content",
+                name: "Studio Créatif",
                 href: "/creatives",
-                description: "From idea to posting — Create, design, and publish across all platforms",
+                description: "Création de Contenu IA & Publishing",
                 image: "/assets/features/creatives_wide.svg",
                 problemSolution: {
-                    problem: "French content doesn't convert, platform specs differ, editing is expensive",
+                    problem: "Standard French content doesn't convert in DZ market",
                     solution: "Darja optimizer + format presets + AI photo/video editor"
                 },
                 subTabs: [
-                    { name: "Create Content", description: "Multi-platform generator", features: ["Content Ideas", "MultiContent Generator"] },
-                    { name: "Creative Tools", description: "Optimization tools", features: ["Idea Generation", "Content Creation", "Optimization & Safety"] },
-                    { name: "Queue & Scheduler", description: "Publishing management", features: ["Intelligent Queue", "Calendar View"] }
-                ]
+                    { name: "Création & IA", description: "AI Copywriter & Hooks", features: ["AI Copywriter", "Hook Generator", "Darja Optimizer"] },
+                    { name: "Modèles & Flux", description: "Templates & Pipeline", features: ["Template Library", "Content Kanban", "Scheduler"] },
+                    { name: "Marque & Conformité", description: "Brand Voice & Safety", features: ["Brand Voice", "Content Safety", "Format Presets"] },
+                    { name: "Outils & TikTok", description: "Monétisation & Qualité", features: ["TikTok Monetization", "Quality Optimizer", "UGC Service"] }
+                ],
+                features: ["AI Copywriter", "Hook Generator", "Darja Optimizer", "Template Library", "Brand Voice", "TikTok Monetization"]
             }
         ]
     },
     {
         id: "marketing",
         title: "Marketing & ADs",
-        description: "Multi-Platform Advertising - Instagram, Facebook & TikTok",
+        description: "Multi-Platform Advertising & AI Copilot Agents",
         icon: Megaphone,
         color: "from-pink-500/20 to-pink-600/10",
         glowColor: "rgba(236, 72, 153, 0.4)",
         textColor: "text-pink-400",
         pages: [
             {
-                name: "Ads Center",
+                name: "Gestionnaire Pubs",
                 href: "/ads",
-                description: "Manage campaigns, accounts, and track performance",
+                description: "Campagnes, ROAS & Performance Multi-Plateformes",
                 image: "/assets/features/ads_wide.svg",
                 problemSolution: {
-                    problem: "Frequent account bans, hidden forex costs distort true ROI",
-                    solution: "Account health monitor with warnings + currency expense tracker for real costs"
+                    problem: "Account bans & hidden forex costs (Squar/Paysera/Wise)",
+                    solution: "Account health monitor + currency expense tracker for real costs"
                 },
                 subTabs: [
-                    { name: "Campaign Management", description: "Control your ads", features: ["Campaign Manager", "Account Health", "Budget AI Tips"] },
-                    { name: "Safety & Rules", description: "Protection mechanisms", features: ["Stop-Loss Rules", "Currency Tracker"] },
-                    { name: "Tools & Analytics", description: "Optimization tools", features: ["Creative Tools", "Traffic Analytics"] }
+                    { name: "Campagnes & ROAS", description: "Gestion & Performance", features: ["Campaign List", "ROAS Tracking", "Delivery Rate"] },
+                    { name: "Budget & Règles", description: "Stop-Loss & Devises", features: ["Budget Planner", "Stop-Loss Rules", "Currency Tracker"] },
+                    { name: "Trafic & Tunnel", description: "Analytics & Conversions", features: ["Traffic Analytics", "Conversion Funnel", "Landing Pages"] },
+                    { name: "Compte & Rapports", description: "Santé & Exports", features: ["Account Health", "Agency Manager", "Reports"] }
                 ],
-                features: ["Campaign Manager", "Account Health", "Budget AI Tips", "Stop-Loss Rules", "Currency Tracker", "Creative Tools", "Traffic Analytics"]
+                features: ["Campaign Management", "ROAS Tracking", "Stop-Loss Rules", "Currency Tracker", "Account Health", "Traffic Analytics"]
             },
             {
                 name: "Marketing & Growth",
                 href: "/marketing",
-                description: "Scale your business with affiliates, influencers, and automation",
+                description: "Scale with DZ Influencers and AI Automation",
                 image: "/assets/features/marketing_wide.svg",
                 problemSolution: {
-                    problem: "Finding verified influencers is hard, manual confirmations don't scale",
-                    solution: "Influencer marketplace with hidden identity + automated confirmation bots"
+                    problem: "Finding verified DZ influencers is hard, manual confirmations don't scale",
+                    solution: "Influencer marketplace + AI Confirmation Bots"
                 },
                 subTabs: [
-                    { name: "Affiliate Marketing", description: "Partner programs", features: ["Affiliate Hub", "Commission Links"] },
-                    { name: "Influencers", description: "Influencer management", features: ["Influencer Hub", "UGC Services"] },
-                    { name: "Automation", description: "Marketing bots", features: ["Automation Bots"] }
+                    { name: "Commission", description: "Affiliate & Influencers", features: ["Pay-To-Sell", "Commission Links", "Influencers Collab"] },
+                    { name: "AI Copilot", description: "Automation Agents", features: ["DM Sales Agent", "DM Support Agent", "Comment Response Agent"] }
                 ],
-                features: ["Affiliate Hub", "Influencer Hub", "Automation Bots", "Commission Links", "UGC Services"]
+                features: ["Pay-To-Sell", "Commission Links", "Influencers Collab", "DM Sales Agent", "DM Support Agent", "Comment Response Agent"]
             },
         ]
     },
-    // Admin category excluded from Hub view as requested, but kept in config if needed elsewhere
     {
         id: "admin",
         title: "Admin",
-        description: "Settings & Team",
+        description: "Settings, Teams & CCP Billing",
         icon: UserCog,
         color: "from-slate-500/20 to-slate-600/10",
         glowColor: "rgba(100, 116, 139, 0.4)",
         textColor: "text-slate-400",
         pages: [
-            { name: "General", href: "/admin/general" },
-            { name: "Team", href: "/admin/team" },
-            { name: "Billing", href: "/admin/billing" },
-            { name: "Credits", href: "/admin/credits" },
-            { name: "Security", href: "/admin/security" },
-            { name: "Help", href: "/admin/help" },
+            {
+                name: "General Settings",
+                href: "/admin/general",
+                description: "Platform configuration & preferences",
+                subTabs: [
+                    { name: "Profile", description: "Account info", features: ["Company Profile", "Preferences"] }
+                ],
+                features: ["Company Profile", "Preferences"]
+            },
+            {
+                name: "Team Management",
+                href: "/admin/team",
+                description: "Manage your team members and permissions",
+                subTabs: [
+                    { name: "Members", description: "Team accounts", features: ["Add Member", "Roles & Permissions"] }
+                ],
+                features: ["Teams Dashboard", "Add Member", "Roles & Permissions"]
+            },
+            {
+                name: "Billing & Credits",
+                href: "/admin/billing",
+                description: "Manage subscription and credits balance",
+                subTabs: [
+                    { name: "Billing", description: "Invoices & Plans", features: ["Subscription Plan", "Payment Methods"] },
+                    { name: "Credits", description: "Usage & Top-up", features: ["Credit Balance", "Top-up Credits"] }
+                ],
+                features: ["Subscription Plan", "Payment Methods", "Credit Balance", "Top-up Credits"]
+            },
+            {
+                name: "Security & Help",
+                href: "/admin/help",
+                description: "Security settings and support",
+                subTabs: [
+                    { name: "Help Center", description: "Guides & Support", features: ["FAQ", "Guides", "Support"] }
+                ],
+                features: ["FAQ", "Guides", "Support"]
+            },
         ]
     },
 ];

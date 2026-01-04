@@ -9,12 +9,13 @@ import { WindowLayoutProvider, useWindowLayout } from "./WindowLayoutContext";
 import { ScrollProvider, useScroll } from "./ScrollContext";
 import { HelpProvider } from "./HelpContext";
 import { PageActionsProvider, usePageActions } from "./PageActionsContext";
-import { ModeProvider } from "./ModeContext";
+import { ModeProvider, useMode } from "./ModeContext";
 
 import { CommandPalette } from "@/components/core/ui/command-palette";
 import { NotificationCenter } from "@/components/core/ui/notification-center";
 
 import { FloatingHelpWidget } from "@/app/help/_components/FloatingHelpWidget";
+import { FloatingOnboardingWidget } from "@/components/core/ui/FloatingOnboardingWidget";
 
 import { MobileSidebar, BottomTabBar } from "@/components/core/ui/mobile-sidebar";
 import { PeriodSelector } from "@/components/core/ui/period-selector";
@@ -76,6 +77,18 @@ function LayoutContent({ children }: LayoutWrapperProps) {
     useEffect(() => {
         saveLastVisitedPage(pathname);
     }, [pathname]);
+
+    // Enforce Access Control
+    const { canAccessPage } = useMode();
+    useEffect(() => {
+        // Allow public/hub pages
+        if (pathname === '/hub' || pathname.startsWith('/auth')) return;
+
+        if (!canAccessPage(pathname)) {
+            // If access is denied (e.g. Team inactive or wrong page), redirect to Hub
+            router.push('/hub');
+        }
+    }, [pathname, canAccessPage, router]);
 
     // Sync focus mode with fullscreen changes (e.g. Esc key)
     useEffect(() => {
@@ -176,6 +189,7 @@ function LayoutContent({ children }: LayoutWrapperProps) {
 
             {/* Floating Widgets */}
             <FloatingHelpWidget />
+            <FloatingOnboardingWidget />
         </div>
     );
 }

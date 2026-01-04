@@ -10,14 +10,25 @@ import Link from "next/link";
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
 
+    const handleMockLogin = (role: 'admin' | 'team') => {
+        setIsLoading(true);
+        // Set mock cookie
+        document.cookie = "mock-session=true; path=/";
+        // Set local storage for mode
+        if (role === 'admin') {
+            localStorage.setItem("system-mode", "ADMIN");
+            window.location.href = "/admin/general";
+        } else {
+            localStorage.setItem("system-mode", "TEAM");
+            // Set a default team for convenience if needed, or let them pick in Hub
+            window.location.href = "/hub"; // Accessing a team page directly or hub
+        }
+    };
+
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-        // Simulate Login
-        setTimeout(() => {
-            setIsLoading(false);
-            window.location.href = "/";
-        }, 1000);
+        // Default to Admin mock for the main form
+        handleMockLogin('admin');
     };
 
     return (
@@ -56,6 +67,17 @@ export default function LoginPage() {
                         </svg>
                         Sign in with Google
                     </Button>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button variant="secondary" onClick={() => handleMockLogin('admin')} disabled={isLoading} className="text-xs">
+                            <Lock className="mr-2 h-3 w-3" />
+                            Mock Admin
+                        </Button>
+                        <Button variant="secondary" onClick={() => handleMockLogin('team')} disabled={isLoading} className="text-xs">
+                            <Mail className="mr-2 h-3 w-3" />
+                            Mock Team
+                        </Button>
+                    </div>
 
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">

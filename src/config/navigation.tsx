@@ -32,7 +32,7 @@ export const NAV_PAGES: NavItem[] = [
     { name: "Analytics", href: "/analytics", icon: PieChart },
     { name: "Sales Center", href: "/sales-dashboard", icon: BarChart, badge: BADGES["/sales-dashboard"] },
     { name: "Gestion de Stock", href: "/stock", icon: Truck },
-    { name: "Creatives & Centent", href: "/creatives", icon: Palette },
+    { name: "Creatives & Content", href: "/creatives", icon: Palette },
     { name: "Meta/Tiktok ADS", href: "/ads", icon: Megaphone },
     { name: "Marketing", href: "/marketing", icon: TrendingUp },
     { name: "Product Research", href: "/product-research", icon: Search },

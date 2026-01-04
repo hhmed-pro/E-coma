@@ -17,22 +17,20 @@ Comprehensive guide to reusable components in E-coma.
 
 E-coma uses a component-based architecture with:
 
-- **70 UI primitives** built on Radix UI and shadcn/ui
+- **71+ UI components** built on Radix UI and shadcn/ui
 - **24 layout components** for the multi-panel system
-- **200+ feature components** for business logic
+- **21 modal components** for dialogs and sheets
+- **Feature components** co-located with their page routes
 
 ### Component Structure
 
 ```
 src/components/
-├── core/
-│   ├── ui/              # UI primitives (70 components)
-│   └── layout/          # Layout system (24 components)
-├── analytics/           # Analytics features
-├── marketing/           # Marketing features
-├── social/              # Social media features
-├── store/               # E-commerce features
-└── admin/               # Admin features
+└── core/                  # All reusable components
+    ├── layout/            # Layout system (24 components)
+    ├── providers/         # Context providers
+    └── ui/                # UI components (71+ files)
+        └── modals/        # Modal components (21 files)
 ```
 
 ---

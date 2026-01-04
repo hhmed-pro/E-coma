@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from "react";
 import { Team, TEAMS, getTeamByPage, getTeamById } from "@/config/teams";
 
 type ScreenMode = "ADMIN" | "TEAM";
@@ -35,6 +35,7 @@ interface ModeContextType {
     isAdmin: boolean;
     // New: Team management
     activeTeams: Team[];
+    onlineTeams: Team[]; // Teams currently open in other tabs
     setTeamActive: (teamId: string, active: boolean) => void;
     canAccessPage: (pathname: string) => boolean;
     // New: Todos & Chats
@@ -56,6 +57,67 @@ export function ModeProvider({ children }: { children: ReactNode }) {
     const [mode, setMode] = useState<ScreenMode>("ADMIN");
     const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
     const [sessionObjective, setSessionObjective] = useState<string>("Q4 Growth Strategy Implementation");
+
+    // Session Heartbeat for Cross-Tab Tracking
+    const [onlineTeams, setOnlineTeams] = useState<Team[]>([]);
+    const sessionIdRef = useRef<string>("");
+
+    useEffect(() => {
+        if (!sessionIdRef.current) {
+            sessionIdRef.current = Math.random().toString(36).substring(2, 15);
+        }
+
+        const heartbeat = () => {
+            const now = Date.now();
+            const STORAGE_KEY = "riglify-active-sessions";
+
+            try {
+                // Read existing sessions
+                const stored = localStorage.getItem(STORAGE_KEY);
+                let sessions: any[] = stored ? JSON.parse(stored) : [];
+
+                // Prune stale sessions (> 4s old)
+                sessions = sessions.filter((s: any) => now - s.lastHeartbeat < 4000);
+
+                // Update or add self
+                const selfIndex = sessions.findIndex((s: any) => s.id === sessionIdRef.current);
+                const selfSession = {
+                    id: sessionIdRef.current,
+                    mode,
+                    teamId: activeTeamId,
+                    lastHeartbeat: now
+                };
+
+                if (selfIndex >= 0) {
+                    sessions[selfIndex] = selfSession;
+                } else {
+                    sessions.push(selfSession);
+                }
+
+                // Save back
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+
+                // Update local state of online teams (excluding self if we are admin, or including everyone)
+                // We want to see ALL teams that are open.
+                const onlineTeamIds = new Set(
+                    sessions
+                        .filter((s: any) => s.mode === "TEAM" && s.teamId)
+                        .map((s: any) => s.teamId)
+                );
+
+                // Filter TEAMS to get Team objects
+                setOnlineTeams(TEAMS.filter(t => onlineTeamIds.has(t.id)));
+
+            } catch (e) {
+                console.error("Session heartbeat failed", e);
+            }
+        };
+
+        const interval = setInterval(heartbeat, 1000);
+        heartbeat(); // Run immediately
+
+        return () => clearInterval(interval);
+    }, [mode, activeTeamId]);
 
     // Teams with active state
     const [teamsState, setTeamsState] = useState<Record<string, boolean>>(() => {
@@ -96,19 +158,43 @@ export function ModeProvider({ children }: { children: ReactNode }) {
 
     // Load state from localStorage on mount
     useEffect(() => {
-        const savedMode = localStorage.getItem("system-mode") as ScreenMode;
-        const savedTeamId = localStorage.getItem("active-team-id");
-        const savedTeamsState = localStorage.getItem("teams-active-state");
+        const init = async () => {
+            const savedMode = localStorage.getItem("system-mode") as ScreenMode;
+            const savedTeamId = localStorage.getItem("active-team-id");
+            const savedTeamsState = localStorage.getItem("teams-active-state");
 
-        if (savedMode) setMode(savedMode);
-        if (savedTeamId) setActiveTeamId(savedTeamId);
-        if (savedTeamsState) {
-            try {
-                setTeamsState(JSON.parse(savedTeamsState));
-            } catch (e) {
-                console.error("Failed to parse teams state", e);
+            if (savedMode) setMode(savedMode);
+            if (savedTeamId) setActiveTeamId(savedTeamId);
+            if (savedTeamsState) {
+                try {
+                    setTeamsState(JSON.parse(savedTeamsState));
+                } catch (e) {
+                    console.error("Failed to parse teams state", e);
+                }
             }
-        }
+
+            // RBAC Check: Force TEAM mode if not admin
+            const { createBrowserClient } = await import('@supabase/ssr');
+            const supabase = createBrowserClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+            );
+
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: merchant } = await supabase
+                    .from('merchants')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (merchant?.role !== 'admin') {
+                    setMode("TEAM");
+                    // Optionally clear admin local storage if needed, but the mode override is enough for now
+                }
+            }
+        };
+        init();
     }, []);
 
     // Derive active teams from state
@@ -152,6 +238,9 @@ export function ModeProvider({ children }: { children: ReactNode }) {
 
         // Team mode: check if current team is allowed
         if (activeTeam) {
+            // Check if team is active/unlocked
+            if (!teamsState[activeTeam.id]) return false;
+
             return pathname.startsWith(activeTeam.allowedPage);
         }
         return false;
@@ -209,6 +298,7 @@ export function ModeProvider({ children }: { children: ReactNode }) {
             getTeamFromPath,
             isAdmin: mode === "ADMIN",
             activeTeams,
+            onlineTeams,
             setTeamActive,
             canAccessPage,
             adminTodos,

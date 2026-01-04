@@ -2,11 +2,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "lucide-react"; // Wait, Link is from next/link usually. Oh, looking at previous file content, Link was next/link.
 // Checking imports...
 import { usePathname } from "next/navigation";
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Clock, Target, Sparkles, X, ChevronUp as ChevronUpIcon, Bot, Lightbulb, TrendingUp, ThumbsUp, ThumbsDown, Settings } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Clock, Target, Sparkles, X, ChevronUp as ChevronUpIcon, Bot, Lightbulb, TrendingUp, ThumbsUp, ThumbsDown, Settings, Bell, StickyNote, Rocket, PartyPopper } from "lucide-react";
 import { CommandPalette } from "@/components/core/ui/command-palette";
 import { cn } from "@/lib/utils";
 import { SessionModal } from "./SessionModal";
 import { TeamConfigModal } from "./TeamConfigModal";
+import { NotificationCenterModal } from "@/components/core/ui/modals/NotificationCenterModal";
+import { QuickNotesModal } from "@/components/core/ui/modals/QuickNotesModal";
+// SystemStatusModal moved to TopNavigation
 import { usePageActions } from "@/components/core/layout/PageActionsContext";
 import { AISuggestion } from "@/types/ai-tips";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/ui/popover";
@@ -36,6 +39,7 @@ import { useMode } from "@/components/core/layout/ModeContext";
 import { ProductTour } from "@/components/core/layout/ProductTour";
 import { TOUR_CONFIG } from "@/config/tour-config";
 import { Flag } from "lucide-react";
+import { PageTabsNavigation } from "@/components/core/layout/PageTabsNavigation";
 
 
 
@@ -50,6 +54,9 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
     const { isScrolled } = useScroll();
     const [activeModule, setActiveModule] = useState<string | null>(null);
     const [moduleStatuses, setModuleStatuses] = useState<Record<string, ModuleStatusInfo>>({});
+
+    // Onboarding State moved to FloatingOnboardingWidget
+    // ...
 
     // Load module statuses
     useEffect(() => {
@@ -132,9 +139,15 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
     // Session Info State relative to EcosystemBar
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
     const [sessionStart] = useState<Date>(new Date()); // Mock session start
-    const { isAdmin, mode, activeTeams } = useMode();
+    const { isAdmin, mode, activeTeams, onlineTeams } = useMode();
     const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
     const [isTeamConfigOpen, setIsTeamConfigOpen] = useState(false);
+
+    // New Modals State
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isQuickNotesOpen, setIsQuickNotesOpen] = useState(false);
+    // System Status moved to TopNavigation
+
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -211,7 +224,7 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
             )}
 
             <div className={cn(
-                "hidden md:block fixed z-[60] transition-all duration-300 left-0 right-0",
+                "hidden md:block fixed z-[40] transition-all duration-300 left-0 right-0",
                 // Collapse behavior - slide down when collapsed
                 isEcosystemBarCollapsed
                     ? "translate-y-full opacity-0 pointer-events-none"
@@ -249,13 +262,35 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                             )} />
                             <span>{mode === "ADMIN" ? "Admin Objectives" : "Session Objectives"}</span>
                         </button>
+
+                        {/* Quick Notes (Moved from Right Section) */}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={cn(
+                                        "h-9 w-9 p-0 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground",
+                                        isQuickNotesOpen && "bg-yellow-500/10 text-yellow-600 dark:text-yellow-500"
+                                    )}
+                                    onClick={() => setIsQuickNotesOpen(true)}
+                                >
+                                    <StickyNote className="h-4 w-4" />
+                                    <span className="sr-only">Quick Notes</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Quick Notes</p>
+                            </TooltipContent>
+                        </Tooltip>
+
+                        {/* Onboarding Button (Moved to Floating Widget) */}
                     </div>
 
-                    {/* CENTER SECTION: Modules */}
+
+                    {/* CENTER SECTION: Page Tabs Navigation */}
                     <div className="flex-1 flex items-center justify-center min-w-0 px-4">
-                        <div className="flex items-center gap-2">
-                            {allModules.map(renderModuleButton)}
-                        </div>
+                        <PageTabsNavigation />
                     </div>
 
                     {/* RIGHT SECTION: Search & Tour & Detail Toggle */}
@@ -267,12 +302,12 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                                 {/* Active Teams Count */}
                                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
                                     <Users className="h-3.5 w-3.5" />
-                                    <span>{activeTeams.length} Active Teams</span>
+                                    <span>{onlineTeams.length} Active Teams</span>
                                 </div>
 
                                 {/* Team Icons - Only show active teams */}
                                 <div className="flex -space-x-1.5">
-                                    {activeTeams.map((team) => (
+                                    {onlineTeams.map((team) => (
                                         <Tooltip key={team.id}>
                                             <TooltipTrigger asChild>
                                                 <motion.button
@@ -319,6 +354,26 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                                     <TooltipContent side="top" className="text-xs">
                                         <div className="font-medium">Team Configuration</div>
                                         <div className="text-muted-foreground">Manage team access & objectives</div>
+                                    </TooltipContent>
+                                </Tooltip>
+
+                                {/* Notification Center (Admin Only) */}
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <button
+                                            onClick={() => setIsNotificationOpen(true)}
+                                            className={cn(
+                                                "flex items-center justify-center w-7 h-7 rounded-full border border-border/50 cursor-pointer bg-muted/50 shadow-sm transition-all relative",
+                                                "hover:bg-primary/10 hover:border-primary/30 hover:text-primary"
+                                            )}
+                                        >
+                                            <Bell className="h-3.5 w-3.5" />
+                                            <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full ring-2 ring-background scale-75" />
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="text-xs">
+                                        <div className="font-medium">Notification Center</div>
+                                        <div className="text-muted-foreground">View system alerts (Admin)</div>
                                     </TooltipContent>
                                 </Tooltip>
                             </div>
@@ -414,7 +469,12 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                         </Popover>
 
                         {/* Search */}
-                        <CommandPalette compact className="bg-transparent border-0 hover:bg-muted/50" />
+                        <CommandPalette compact className="bg-transparent border-0 hover:bg-muted w-9 h-9 rounded-full transition-colors text-muted-foreground hover:text-foreground" />
+
+                        {/* Quick Notes Removed from here */}
+
+                        {/* System Status Removed from here */}
+
 
                         {/* Product Tour Trigger */}
                         <Tooltip>
@@ -446,6 +506,17 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                 isOpen={isTeamConfigOpen}
                 onClose={() => setIsTeamConfigOpen(false)}
             />
+
+            <NotificationCenterModal
+                open={isNotificationOpen}
+                onOpenChange={setIsNotificationOpen}
+            />
+
+            <QuickNotesModal
+                open={isQuickNotesOpen}
+                onOpenChange={setIsQuickNotesOpen}
+            />
+
         </TooltipProvider>
     );
 }

@@ -250,33 +250,30 @@ e-coma/
 │   └── images/                 # Background textures
 ├── src/
 │   ├── app/                    # Next.js App Router pages
-│   │   ├── (hub)/             # Main dashboard
-│   │   ├── analytics/         # Business analytics
-│   │   ├── stock/             # Inventory management
-│   │   ├── sales-dashboard/   # Order management
-│   │   ├── creatives/         # Content creation
-│   │   ├── ads/               # Ad management
-│   │   ├── marketing/         # Marketing automation
-│   │   ├── product-research/  # Market research
-│   │   ├── social/            # Social media tools
-│   │   ├── admin/             # Admin settings
+│   │   ├── admin/             # Admin settings (17 pages)
+│   │   ├── ads/               # Ad management (7 pages)
+│   │   ├── analytics/         # Business analytics (46 pages)
 │   │   ├── auth/              # Authentication
+│   │   ├── creatives/         # Content creation (50 pages)
+│   │   ├── ecommerce/         # E-commerce operations (44 pages)
+│   │   ├── features-demo/     # Feature demonstrations
+│   │   ├── help/              # Help center (7 pages)
+│   │   ├── hub/               # Main dashboard hub
+│   │   ├── marketing/         # Marketing automation (48 pages)
+│   │   ├── product-research/  # Market research
+│   │   ├── sales-dashboard/   # Order management (10 pages)
+│   │   ├── stock/             # Inventory management
 │   │   └── api/               # API routes
 │   │       ├── agents/        # AI agent endpoints
 │   │       ├── credits/       # Credit system
 │   │       ├── marketing/     # Marketing API
 │   │       └── products/      # Product API
 │   ├── components/             # React components
-│   │   ├── core/              # Core system components
-│   │   │   ├── layout/        # Layout components (24 files)
-│   │   │   ├── ui/            # UI primitives (70 files)
-│   │   │   └── providers/     # Context providers
-│   │   ├── analytics/         # Analytics components
-│   │   ├── marketing/         # Marketing components
-│   │   ├── social/            # Social media components
-│   │   ├── store/             # E-commerce components
-│   │   ├── admin/             # Admin components
-│   │   └── shared/            # Shared utilities
+│   │   └── core/              # Core system components
+│   │       ├── layout/        # Layout components (24 files)
+│   │       ├── ui/            # UI components (71+ files)
+│   │       │   └── modals/    # Modal components (21 files)
+│   │       └── providers/     # Context providers
 │   ├── config/                 # Configuration files (8 files)
 │   │   ├── ecosystem-config.ts      # Bottom bar modules
 │   │   ├── navigation.tsx           # Main navigation
@@ -289,9 +286,13 @@ e-coma/
 │   ├── lib/                    # Utility libraries
 │   │   ├── supabase/          # Supabase clients
 │   │   ├── gemini.ts          # Google AI integration
-│   │   ├── utils.ts           # Helper functions
-│   │   └── mock-data.ts       # Mock data for demo
+│   │   ├── chart-utils.ts     # Chart utilities
+│   │   ├── mock-data.ts       # Mock data for demo
+│   │   ├── tracking.ts        # Tracking utilities
+│   │   ├── last-visited.ts    # Navigation history
+│   │   └── utils.ts           # Helper functions
 │   ├── hooks/                  # Custom React hooks
+│   ├── types/                  # TypeScript type definitions
 │   └── utils/                  # Utility functions
 ├── supabase/
 │   └── migrations/            # Database migrations
@@ -305,11 +306,11 @@ e-coma/
 
 ### Key Directories
 
-- **`src/app/`**: Next.js 15 App Router with file-based routing
+- **`src/app/`**: Next.js 15 App Router with main routes
 - **`src/components/core/layout/`**: Advanced layout system (24 components)
-- **`src/components/core/ui/`**: 70 reusable UI components (shadcn/ui based)
+- **`src/components/core/ui/`**: 71+ reusable UI components (shadcn/ui based)
 - **`src/config/`**: Centralized configuration (8 files)
-- **`src/lib/`**: Core utilities and third-party integrations
+- **`src/lib/`**: Core utilities and third-party integrations (7+ files)
 
 ---
 

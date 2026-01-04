@@ -38,7 +38,7 @@ E-coma follows a **modular, feature-based architecture** built on Next.js 15 App
 src/app/
 ├── layout.tsx              # Root layout with providers
 ├── page.tsx                # Home/Hub page
-├── (hub)/                  # Route groups (no URL segment)
+├── hub/                    # Main dashboard hub
 ├── analytics/
 │   ├── layout.tsx         # Analytics layout
 │   └── page.tsx           # Analytics page
@@ -298,15 +298,17 @@ type Theme = 'light' | 'dark' | 'system';
 ```typescript
 // Main navigation categories
 const categories = [
-  'analytics',      // Business intelligence
-  'stock',          // Inventory management
-  'sales-dashboard', // Orders & delivery
-  'creatives',      // Content creation
-  'ads',            // Ad management
-  'marketing',      // Marketing tools
+  'admin',            // Settings & administration
+  'ads',              // Ad management  
+  'analytics',        // Business intelligence
+  'creatives',        // Content creation
+  'ecommerce',        // E-commerce operations
+  'help',             // Help center
+  'hub',              // Main dashboard
+  'marketing',        // Marketing tools
   'product-research', // Market research
-  'social',         // Social media
-  'admin'           // Settings
+  'sales-dashboard',  // Orders & delivery
+  'stock'             // Inventory management
 ];
 ```
 

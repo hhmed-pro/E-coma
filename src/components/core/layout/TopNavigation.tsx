@@ -8,13 +8,15 @@ import {
     MessageSquare, Palette, Bot, Star, Package, Calendar,
     HelpCircle, FlaskConical, Sparkles, Lightbulb,
     TrendingUp, Target, FileText, Send, Plus, ChevronDown, Clock, AlertTriangle, ChevronRight, ChevronLeft,
-    Rocket, PartyPopper, CheckCircle2, Circle, ArrowRight, X
+    Rocket, PartyPopper, CheckCircle2, Circle, ArrowRight, X, Activity // Added Activity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationCenter } from "@/components/core/ui/notification-center";
 import { FullscreenToggle } from "@/components/core/ui/fullscreen-toggle";
-import { CommandPalette } from "@/components/core/ui/command-palette";
 import { OnboardingChecklist } from "@/components/core/ui/onboarding-checklist";
+import { OnboardingModal } from "@/components/core/ui/modals/OnboardingModal"; // Keep import if needed elsewhere, or remove if unused locally (removing usage so can likely remove import, but keeping it to avoid breaking if other stuff uses it - actually removing it is cleaner)
+import { QuickSettingsModal } from "@/components/core/ui/modals/QuickSettingsModal";
+import { SystemStatusModal } from "@/components/core/ui/modals/SystemStatusModal";
 import { ProfileMenu } from "./ProfileMenu";
 
 import { NAV_GROUPS, NAV_PAGES, CATEGORY_COLORS, CATEGORY_GLOW_COLORS, BADGE_URGENCY_THRESHOLD, NavGroup, NavItem } from "@/config/navigation";
@@ -33,16 +35,14 @@ export function TopNavigation({ }: TopNavigationProps) {
     const { isScrolled: _isScrolled } = useScroll();
     const isScrolled = true; // Always use compact "scrolled" style
 
-    // Onboarding State
-    const [onboardingProgress, setOnboardingProgress] = useState(0);
-    const [onboardingOpen, setOnboardingOpen] = useState(false);
-    const [onboardingSteps, setOnboardingSteps] = useState([
-        { id: "profile", title: "Complete your profile", description: "Add your business information and logo", href: "/admin/general", completed: false },
-        { id: "product", title: "Add your first product", description: "Create a product to start selling", href: "/ecommerce/inventory", completed: false },
-        { id: "delivery", title: "Set up delivery zones", description: "Configure shipping areas and prices", href: "/ecommerce/orders?tab=wilaya", completed: false },
-        { id: "payment", title: "Configure payment methods", description: "Set up COD and other payment options", href: "/admin/billing", completed: false },
-        { id: "campaign", title: "Launch your first campaign", description: "Create your first marketing campaign", href: "/marketing/ads-manager", completed: false },
-    ]);
+    // Onboarding State moved to EcosystemBar
+    // const [onboardingProgress, setOnboardingProgress] = useState(0);
+    // ...
+
+
+    // Quick Settings State
+    const [quickSettingsOpen, setQuickSettingsOpen] = useState(false);
+    const [isSystemStatusOpen, setIsSystemStatusOpen] = useState(false);
 
     // Favorites State
     const [favorites, setFavorites] = useState<string[]>([]);
@@ -70,31 +70,10 @@ export function TopNavigation({ }: TopNavigationProps) {
             setFavorites(JSON.parse(savedFavorites));
         }
 
-        // Load onboarding
-        const savedOnboarding = localStorage.getItem("riglify-onboarding");
-        if (savedOnboarding) {
-            const parsed = JSON.parse(savedOnboarding);
-            const completedIds = parsed.completedIds || [];
-            setOnboardingProgress((completedIds.length / 5) * 100);
-            setOnboardingSteps(prev => prev.map(step => ({
-                ...step,
-                completed: completedIds.includes(step.id)
-            })));
-        }
+        // Onboarding load logic moved to EcosystemBar
     }, []);
 
-    // Handle onboarding step completion
-    const handleOnboardingStepComplete = useCallback((stepId: string) => {
-        setOnboardingSteps(prev => {
-            const updated = prev.map(step =>
-                step.id === stepId ? { ...step, completed: true } : step
-            );
-            const completedIds = updated.filter(s => s.completed).map(s => s.id);
-            localStorage.setItem("riglify-onboarding", JSON.stringify({ completedIds }));
-            setOnboardingProgress((completedIds.length / updated.length) * 100);
-            return updated;
-        });
-    }, []);
+    // Onboarding handlers moved to EcosystemBar
 
     const toggleFavorite = useCallback((href: string, e: React.MouseEvent) => {
         e.preventDefault();
@@ -108,9 +87,9 @@ export function TopNavigation({ }: TopNavigationProps) {
         });
     }, []);
 
-    const onboardingCompletedCount = onboardingSteps.filter(s => s.completed).length;
-    const onboardingTotalCount = onboardingSteps.length;
-    const isOnboardingComplete = onboardingCompletedCount === onboardingTotalCount;
+    // const onboardingCompletedCount = onboardingSteps.filter(s => s.completed).length;
+    // ...
+
 
     // Use shared config
     const navPages = NAV_PAGES;
@@ -121,7 +100,7 @@ export function TopNavigation({ }: TopNavigationProps) {
 
     // Handle scroll styles
     const containerClasses = cn(
-        "relative z-[70] flex justify-start px-4 transition-all duration-300",
+        "relative z-[40] flex justify-start px-4 transition-all duration-300",
         isScrolled && !isTopNavCollapsed ? "fixed top-0 inset-x-0 pt-2 pb-2 bg-background/80 backdrop-blur-sm" : "",
         isScrolled && isTopNavCollapsed ? "fixed top-0 inset-x-0 pt-2 pb-2" : "",
         !isScrolled ? "pt-4" : "",
@@ -227,6 +206,8 @@ export function TopNavigation({ }: TopNavigationProps) {
 
     return (
         <div className={containerClasses}>
+
+
             {/* Sticky Actions - Shown when scrolled (page-specific actions) */}
             {isScrolled && stickyActions && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
@@ -389,142 +370,48 @@ export function TopNavigation({ }: TopNavigationProps) {
                     : "opacity-100 scale-100",
                 !isTopNavCollapsed && isScrolled ? "h-9 px-2" : "h-14 px-4 gap-2"
             )}>
-                {/* Onboarding Button */}
-                <div className="relative">
-                    <button
-                        onClick={() => setOnboardingOpen(true)}
-                        className={cn(
-                            "relative flex items-center justify-center w-8 h-8 rounded-full border border-border bg-card/50 hover:bg-muted transition-all duration-200",
-                            isOnboardingComplete && "border-green-500/30 bg-green-500/10 text-green-500"
-                        )}
-                        title="Onboarding Progress"
-                    >
-                        {isOnboardingComplete ? (
-                            <PartyPopper className="w-4 h-4" />
-                        ) : (
-                            <Rocket className="w-4 h-4 text-primary" />
-                        )}
-                        {/* Progress Ring/Dot */}
-                        {!isOnboardingComplete && (
-                            <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-                            </span>
-                        )}
-                    </button>
+                {/* Command Palette - REMOVED (Moved to Ecosystem Bar) */}
+                {/* <CommandPalette compact className="hidden md:flex border-none bg-transparent hover:bg-muted/50 w-8 h-8 rounded-full" /> */}
 
-                    {/* Onboarding Popup Modal - Same as before */}
-                    {onboardingOpen && (
-                        <>
-                            <div
-                                className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[80]"
-                                onClick={() => setOnboardingOpen(false)}
-                            />
-                            <div className="fixed right-4 top-20 w-[400px] z-[90] animate-in slide-in-from-right-10 fade-in-0">
-                                <div className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden">
-                                    {/* Header */}
-                                    <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-muted/30">
-                                        <div className="flex items-center gap-2">
-                                            <Rocket className="h-5 w-5 text-primary" />
-                                            <h3 className="font-semibold">Getting Started</h3>
-                                        </div>
-                                        <button
-                                            onClick={() => setOnboardingOpen(false)}
-                                            className="p-1 hover:bg-muted rounded"
-                                        >
-                                            <X className="h-4 w-4 text-muted-foreground" />
-                                        </button>
-                                    </div>
+                {/* Onboarding Button - REMOVED (Moved to Ecosystem Bar) */}
 
-                                    {/* Progress Bar */}
-                                    <div className="px-4 py-3 border-b border-border">
-                                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                            <span>{onboardingCompletedCount} of {onboardingTotalCount} completed</span>
-                                            <span>{Math.round(onboardingProgress)}%</span>
-                                        </div>
-                                        <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-primary rounded-full transition-all duration-500"
-                                                style={{ width: `${onboardingProgress}%` }}
-                                            />
-                                        </div>
-                                    </div>
 
-                                    {/* Steps List */}
-                                    <div className="max-h-[60vh] overflow-y-auto p-2">
-                                        {onboardingSteps.map((step) => (
-                                            <div
-                                                key={step.id}
-                                                className={cn(
-                                                    "flex items-start gap-3 px-3 py-3 rounded-lg transition-colors",
-                                                    step.completed ? "opacity-60" : "hover:bg-muted"
-                                                )}
-                                            >
-                                                <button
-                                                    onClick={() => !step.completed && handleOnboardingStepComplete(step.id)}
-                                                    className={cn(
-                                                        "shrink-0 mt-0.5 transition-colors",
-                                                        step.completed
-                                                            ? "text-green-500"
-                                                            : "text-muted-foreground hover:text-primary"
-                                                    )}
-                                                    disabled={step.completed}
-                                                >
-                                                    {step.completed ? (
-                                                        <CheckCircle2 className="h-5 w-5" />
-                                                    ) : (
-                                                        <Circle className="h-5 w-5" />
-                                                    )}
-                                                </button>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className={cn(
-                                                        "text-sm font-medium",
-                                                        step.completed && "line-through"
-                                                    )}>
-                                                        {step.title}
-                                                    </p>
-                                                    {step.description && !step.completed && (
-                                                        <p className="text-xs text-muted-foreground mt-0.5">
-                                                            {step.description}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                                {!step.completed && step.href && (
-                                                    <Link
-                                                        href={step.href}
-                                                        className="shrink-0 text-primary hover:underline text-sm flex items-center gap-1"
-                                                        onClick={() => setOnboardingOpen(false)}
-                                                    >
-                                                        Start
-                                                        <ArrowRight className="h-3 w-3" />
-                                                    </Link>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
 
-                                    {/* Footer */}
-                                    {isOnboardingComplete && (
-                                        <div className="px-4 py-3 border-t bg-green-50 dark:bg-green-950/30">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                                                    <PartyPopper className="h-5 w-5" />
-                                                    <span className="text-sm font-medium">All done! Great job!</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </div>
 
                 {/* Utilities - Always visible & Persistent */}
                 <div className={cn("flex items-center gap-1", isScrolled ? "" : "pl-2 ml-1 border-l border-border/20")}>
-                    <Settings className="w-5 h-5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
+                    <button onClick={() => setQuickSettingsOpen(true)}>
+                        <Settings className="w-5 h-5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
+                    </button>
+                    <QuickSettingsModal
+                        isOpen={quickSettingsOpen}
+                        onClose={() => setQuickSettingsOpen(false)}
+                    />
                     <NotificationCenter />
                     <FullscreenToggle className="hidden md:flex" />
+
+                    {/* System Status System (Moved from Ecosystem Bar) */}
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    className="flex items-center justify-center w-8 h-8 rounded-full border border-transparent hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
+                                    onClick={() => setIsSystemStatusOpen(true)}
+                                >
+                                    <Activity className="h-4 w-4" />
+                                    <span className="sr-only">System Status</span>
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>System Status</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <SystemStatusModal
+                        open={isSystemStatusOpen}
+                        onOpenChange={setIsSystemStatusOpen}
+                    />
                 </div>
                 {/* Profile Menu - Popup opens left */}
                 <ProfileMenu

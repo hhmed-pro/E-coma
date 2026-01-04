@@ -1,13 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles, Search } from "lucide-react";
 
 // Feature configuration based on provided assets
 import { HUB_CATEGORIES, PageInfo } from "@/config/hub-config";
+import { BannerModal } from "@/components/core/ui/modals/BannerModal";
+import { CommandHubModal } from "@/components/core/ui/modals/CommandHubModal";
 
 // Flatten all pages from categories for the grid view
 const ALL_PAGES = HUB_CATEGORIES.flatMap(category =>
@@ -19,6 +21,19 @@ const ALL_PAGES = HUB_CATEGORIES.flatMap(category =>
 );
 
 export default function HubPage() {
+    const [showPromo, setShowPromo] = useState(false);
+    const [showCommandModal, setShowCommandModal] = useState(false);
+
+    React.useEffect(() => {
+        const down = (e: KeyboardEvent) => {
+            if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                setShowCommandModal((open) => !open);
+            }
+        };
+        document.addEventListener("keydown", down);
+        return () => document.removeEventListener("keydown", down);
+    }, []);
     return (
         <div className="h-screen w-full bg-background text-foreground font-body p-6 md:p-10 transition-colors duration-300 overflow-y-auto scrollbar-thin">
             <div className="max-w-7xl mx-auto space-y-12 pb-20">
@@ -26,9 +41,28 @@ export default function HubPage() {
                 {/* Header Section */}
                 <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 animate-in fade-in slide-in-from-top-4 duration-700">
                     <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium border border-secondary/20">
-                            <Sparkles className="w-4 h-4" />
-                            <span>Control Center</span>
+                        <div className="flex items-center gap-3">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium border border-secondary/20">
+                                <Sparkles className="w-4 h-4" />
+                                <span>Control Center</span>
+                            </div>
+                            <button
+                                onClick={() => setShowPromo(true)}
+                                className="text-xs font-semibold text-primary hover:underline"
+                            >
+                                What's New?
+                            </button>
+                            <div className="h-4 w-px bg-border/50 mx-1" />
+                            <button
+                                onClick={() => setShowCommandModal(true)}
+                                className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/50 border border-border/50 text-xs text-muted-foreground hover:bg-background/80 hover:border-primary/20 hover:text-primary transition-all group"
+                            >
+                                <Search className="w-3 h-3 group-hover:text-primary transition-colors" />
+                                <span>Search...</span>
+                                <kbd className="pointer-events-none inline-flex h-4 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                                    <span className="text-[10px]">⌘K</span>
+                                </kbd>
+                            </button>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tight text-primary">
                             Welcome Back
@@ -38,6 +72,18 @@ export default function HubPage() {
                         </p>
                     </div>
                 </header>
+
+                <BannerModal
+                    open={showPromo}
+                    onOpenChange={setShowPromo}
+                    title="Unlock Advanced Analytics"
+                    description="Get deeper insights into your business with our new AI-powered analytics suite. Track customer behavior, forecast trends, and optimize your marketing budget."
+                    ctaLabel="Start Free Trial"
+                    secondaryCtaLabel="Learn More"
+                    theme="colorful"
+                />
+
+                <CommandHubModal open={showCommandModal} onOpenChange={setShowCommandModal} />
 
                 {/* Features Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

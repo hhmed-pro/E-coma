@@ -9,7 +9,7 @@ import { Switch } from "@/components/core/ui/switch";
 import { Input } from "@/components/core/ui/input";
 import { Button } from "@/components/core/ui/button";
 import { Badge } from "@/components/core/ui/badge";
-import { ScrollArea } from "@/components/core/ui/scroll-area";
+
 
 interface TeamConfigModalProps {
     isOpen: boolean;
@@ -90,8 +90,8 @@ export function TeamConfigModal({ isOpen, onClose }: TeamConfigModalProps) {
                 </div>
 
                 {/* Body */}
-                <ScrollArea className="flex-1 p-6">
-                    <div className="space-y-4">
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="space-y-4 p-6">
                         {TEAMS.map((team) => {
                             const isActive = activeTeams.some(t => t.id === team.id);
                             const Icon = team.icon;
@@ -187,7 +187,7 @@ export function TeamConfigModal({ isOpen, onClose }: TeamConfigModalProps) {
                             );
                         })}
                     </div>
-                </ScrollArea>
+                </div>
 
                 {/* Footer */}
                 <div className="px-6 py-3 bg-muted/30 border-t border-border text-xs text-muted-foreground flex justify-between items-center shrink-0">
