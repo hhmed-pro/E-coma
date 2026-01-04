@@ -1,20 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/core/ui/card";
+import { Card, CardContent } from "@/components/core/ui/card";
 import { Button } from "@/components/core/ui/button";
 import { Badge } from "@/components/core/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/core/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/core/ui/tabs";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/core/ui/dialog";
 import {
     Sparkles,
     ChevronRight,
     Copy,
     Check,
-    X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CONTENT_TEMPLATES, TEMPLATE_CATEGORIES, ContentTemplate } from "./template-data";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface TemplateLibraryProps {
     onSelectTemplate?: (template: ContentTemplate) => void;
@@ -24,6 +29,7 @@ interface TemplateLibraryProps {
 
 /**
  * TemplateLibrary - Browse and select pre-built content templates
+ * Migrated to standardized Dialog component - all functionality preserved
  */
 export function TemplateLibrary({
     onSelectTemplate,
@@ -49,160 +55,151 @@ export function TemplateLibrary({
         onClose?.();
     };
 
-    if (!isOpen) return null;
+    const handleOpenChange = (open: boolean) => {
+        if (!open && onClose) {
+            onClose();
+        }
+    };
 
     return (
-        <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-                onClick={onClose}
-            >
-                <motion.div
-                    initial={{ scale: 0.95, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.95, opacity: 0 }}
-                    className="bg-background rounded-xl shadow-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden"
-                    onClick={e => e.stopPropagation()}
-                >
-                    {/* Header */}
-                    <div className="flex items-center justify-between p-4 border-b">
-                        <div className="flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-primary" />
-                            <h2 className="text-lg font-semibold">Smart Templates</h2>
-                            <Badge variant="secondary">{CONTENT_TEMPLATES.length} templates</Badge>
-                        </div>
-                        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
-                            <X className="h-4 w-4" />
-                        </Button>
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+            <DialogContent size="xl" className="p-0 max-h-[80vh] overflow-hidden">
+                {/* Header */}
+                <DialogHeader className="p-4 border-b">
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        <DialogTitle>Smart Templates</DialogTitle>
+                        <Badge variant="secondary">{CONTENT_TEMPLATES.length} templates</Badge>
                     </div>
+                    <DialogDescription className="sr-only">
+                        Browse and select pre-built content templates
+                    </DialogDescription>
+                </DialogHeader>
 
-                    <div className="flex h-[calc(80vh-65px)]">
-                        {/* Left: Template List */}
-                        <div className="flex-1 overflow-hidden flex flex-col">
-                            {/* Category Tabs */}
-                            <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="px-4 pt-4">
-                                <TabsList className="w-full justify-start overflow-x-auto">
-                                    {TEMPLATE_CATEGORIES.map(cat => (
-                                        <TabsTrigger key={cat.id} value={cat.id} className="text-xs">
-                                            {cat.name}
-                                        </TabsTrigger>
-                                    ))}
-                                </TabsList>
-                            </Tabs>
+                <div className="flex h-[calc(80vh-80px)]">
+                    {/* Left: Template List */}
+                    <div className="flex-1 overflow-hidden flex flex-col">
+                        {/* Category Tabs */}
+                        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="px-4 pt-4">
+                            <TabsList className="w-full justify-start overflow-x-auto">
+                                {TEMPLATE_CATEGORIES.map(cat => (
+                                    <TabsTrigger key={cat.id} value={cat.id} className="text-xs">
+                                        {cat.name}
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </Tabs>
 
-                            {/* Template Grid */}
-                            <div className="p-4 overflow-y-auto flex-1">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    {filteredTemplates.map(template => (
-                                        <Card
-                                            key={template.id}
-                                            className={cn(
-                                                "cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5",
-                                                previewTemplate?.id === template.id && "ring-2 ring-primary"
-                                            )}
-                                            onClick={() => setPreviewTemplate(template)}
-                                        >
-                                            <CardContent className="p-4">
-                                                <div className="flex items-start gap-3">
-                                                    <div className="p-2 bg-primary/10 rounded-lg">
-                                                        <template.icon className="h-4 w-4 text-primary" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <h3 className="font-medium text-sm">{template.name}</h3>
-                                                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                                                            {template.description}
-                                                        </p>
-                                                        <div className="flex flex-wrap gap-1 mt-2">
-                                                            {template.platforms.slice(0, 3).map(p => (
-                                                                <Badge key={p} variant="outline" className="text-[10px] px-1.5 py-0">
-                                                                    {p}
-                                                                </Badge>
-                                                            ))}
-                                                        </div>
+                        {/* Template Grid */}
+                        <div className="p-4 overflow-y-auto flex-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {filteredTemplates.map(template => (
+                                    <Card
+                                        key={template.id}
+                                        className={cn(
+                                            "cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5",
+                                            previewTemplate?.id === template.id && "ring-2 ring-primary"
+                                        )}
+                                        onClick={() => setPreviewTemplate(template)}
+                                    >
+                                        <CardContent className="p-4">
+                                            <div className="flex items-start gap-3">
+                                                <div className="p-2 bg-primary/10 rounded-lg">
+                                                    <template.icon className="h-4 w-4 text-primary" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-medium text-sm">{template.name}</h3>
+                                                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                                                        {template.description}
+                                                    </p>
+                                                    <div className="flex flex-wrap gap-1 mt-2">
+                                                        {template.platforms.slice(0, 3).map(p => (
+                                                            <Badge key={p} variant="outline" className="text-[10px] px-1.5 py-0">
+                                                                {p}
+                                                            </Badge>
+                                                        ))}
                                                     </div>
                                                 </div>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
                         </div>
-
-                        {/* Right: Preview Panel */}
-                        <div className="w-80 border-l bg-muted/30 p-4 overflow-y-auto">
-                            {previewTemplate ? (
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2">
-                                        <previewTemplate.icon className="h-5 w-5 text-primary" />
-                                        <h3 className="font-semibold">{previewTemplate.name}</h3>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-xs text-muted-foreground mb-1.5">Hook Example</p>
-                                        <div className="p-3 bg-background rounded-lg border text-sm relative group">
-                                            {previewTemplate.hook}
-                                            <button
-                                                onClick={() => copyHook(previewTemplate)}
-                                                className="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                aria-label="Copy hook"
-                                            >
-                                                {copiedId === previewTemplate.id ? (
-                                                    <Check className="h-3.5 w-3.5 text-green-500" />
-                                                ) : (
-                                                    <Copy className="h-3.5 w-3.5 text-muted-foreground" />
-                                                )}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-xs text-muted-foreground mb-1.5">Structure</p>
-                                        <ol className="space-y-1">
-                                            {previewTemplate.structure.map((step, i) => (
-                                                <li key={i} className="text-sm flex items-center gap-2">
-                                                    <span className="w-5 h-5 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center">
-                                                        {i + 1}
-                                                    </span>
-                                                    {step}
-                                                </li>
-                                            ))}
-                                        </ol>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-xs text-muted-foreground mb-1.5">Suggested Hashtags</p>
-                                        <div className="flex flex-wrap gap-1">
-                                            {previewTemplate.hashtags.map(tag => (
-                                                <Badge key={tag} variant="secondary" className="text-[10px]">
-                                                    {tag}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        onClick={() => handleUseTemplate(previewTemplate)}
-                                        className="w-full gap-2 mt-4"
-                                    >
-                                        Use This Template
-                                        <ChevronRight className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center h-full text-center">
-                                    <Sparkles className="h-8 w-8 text-muted-foreground/50 mb-2" />
-                                    <p className="text-sm text-muted-foreground">
-                                        Select a template to preview
-                                    </p>
-                                </div>
-                            )}
-                        </div>
                     </div>
-                </motion.div>
-            </motion.div>
-        </AnimatePresence>
+
+                    {/* Right: Preview Panel */}
+                    <div className="w-80 border-l bg-muted/30 p-4 overflow-y-auto">
+                        {previewTemplate ? (
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <previewTemplate.icon className="h-5 w-5 text-primary" />
+                                    <h3 className="font-semibold">{previewTemplate.name}</h3>
+                                </div>
+
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-1.5">Hook Example</p>
+                                    <div className="p-3 bg-background rounded-lg border text-sm relative group">
+                                        {previewTemplate.hook}
+                                        <button
+                                            onClick={() => copyHook(previewTemplate)}
+                                            className="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            aria-label="Copy hook"
+                                        >
+                                            {copiedId === previewTemplate.id ? (
+                                                <Check className="h-3.5 w-3.5 text-green-500" />
+                                            ) : (
+                                                <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-1.5">Structure</p>
+                                    <ol className="space-y-1">
+                                        {previewTemplate.structure.map((step, i) => (
+                                            <li key={i} className="text-sm flex items-center gap-2">
+                                                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center">
+                                                    {i + 1}
+                                                </span>
+                                                {step}
+                                            </li>
+                                        ))}
+                                    </ol>
+                                </div>
+
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-1.5">Suggested Hashtags</p>
+                                    <div className="flex flex-wrap gap-1">
+                                        {previewTemplate.hashtags.map(tag => (
+                                            <Badge key={tag} variant="secondary" className="text-[10px]">
+                                                {tag}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <Button
+                                    onClick={() => handleUseTemplate(previewTemplate)}
+                                    className="w-full gap-2 mt-4"
+                                >
+                                    Use This Template
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-center">
+                                <Sparkles className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                                <p className="text-sm text-muted-foreground">
+                                    Select a template to preview
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
+

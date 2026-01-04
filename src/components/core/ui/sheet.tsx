@@ -38,13 +38,25 @@ const sheetVariants = cva(
                 top: "inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
                 bottom:
                     "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
-                left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm",
+                left: "inset-y-0 left-0 h-full border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
                 right:
-                    "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
+                    "inset-y-0 right-0 h-full border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+            },
+            size: {
+                sm: "w-[320px]",
+                default: "w-[400px] sm:w-[440px]",
+                lg: "w-[500px] sm:w-[600px]",
+                xl: "w-[600px] sm:w-[800px]",
             },
         },
+        compoundVariants: [
+            // Top/Bottom sheets should be full width, ignore size
+            { side: "top", className: "w-full" },
+            { side: "bottom", className: "w-full" },
+        ],
         defaultVariants: {
             side: "right",
+            size: "default",
         },
     }
 )
@@ -56,12 +68,12 @@ interface SheetContentProps
 const SheetContent = React.forwardRef<
     React.ElementRef<typeof SheetPrimitive.Content>,
     SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
+>(({ side = "right", size = "default", className, children, ...props }, ref) => (
     <SheetPortal>
         <SheetOverlay />
         <SheetPrimitive.Content
             ref={ref}
-            className={cn(sheetVariants({ side }), className)}
+            className={cn(sheetVariants({ side, size }), className)}
             {...props}
         >
             {children}

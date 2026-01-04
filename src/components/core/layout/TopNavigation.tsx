@@ -48,7 +48,7 @@ export function TopNavigation({ }: TopNavigationProps) {
     const [favorites, setFavorites] = useState<string[]>([]);
 
     // Mode Context
-    const { mode, activeTeam, sessionObjective, switchToAdminMode, switchToTeamMode, getTeamFromPath } = useMode();
+    const { mode, activeTeam, sessionObjective, switchToAdminMode, switchToTeamMode, getTeamFromPath, canAccessPage } = useMode();
     const [pin, setPin] = useState("");
     const [pinError, setPinError] = useState(false);
 
@@ -276,98 +276,105 @@ export function TopNavigation({ }: TopNavigationProps) {
                         "flex items-center gap-1 overflow-x-auto no-scrollbar mask-linear-fade transition-all duration-300",
                         isScrolled ? "pr-0" : ""
                     )}>
-                        {navPages.map((page) => (
-                            <div key={page.href} className="flex items-center gap-1">
-                                <Link
-                                    href={page.href}
-                                    className={cn(
-                                        "flex items-center rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap relative group click-feedback shrink-0 font-[Poppins,Arial,sans-serif]",
-                                        isScrolled ? "px-1.5 py-1 gap-1" : "px-3 py-2 gap-2",
-                                        isActive(page.href)
-                                            ? "bg-[hsl(var(--accent-orange))]/15 text-[hsl(var(--accent-orange))] shadow-[0_0_15px_hsl(var(--accent-orange)/0.25)] nav-active-underline"
-                                            : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                                    )}>
-                                    <page.icon className={cn(
-                                        "transition-colors",
-                                        isScrolled ? "h-3.5 w-3.5" : "h-3.5 w-3.5",
-                                        isActive(page.href) ? "text-[hsl(var(--accent-orange))]" : "text-muted-foreground/70 group-hover:text-foreground/80"
-                                    )} />
-                                    <span className={cn(
-                                        "transition-all duration-300 overflow-hidden whitespace-nowrap",
-                                        isScrolled
-                                            ? "max-w-[200px] opacity-100 text-[10px]"
-                                            : "max-w-[200px] opacity-100"
-                                    )}>
-                                        {page.name}
-                                    </span>
-
-                                    {/* Badge */}
-                                    {page.badge && (
-                                        <span className={cn(
-                                            "ml-1 px-1.5 py-0.5 font-bold rounded-full border",
-                                            isScrolled ? "text-[8px]" : "text-[9px]",
-                                            isActive(page.href)
-                                                ? "bg-[hsl(var(--accent-orange))] text-background border-[hsl(var(--accent-orange))]"
-                                                : "bg-destructive/20 text-destructive border-destructive/50"
-                                        )}>
-                                            {page.badge}
-                                        </span>
-                                    )}
-
-                                    {/* Favorite Star */}
-                                    <button
-                                        onClick={(e) => toggleFavorite(page.href, e)}
+                        {navPages.map((page) => {
+                            const isPageAccessible = canAccessPage(page.href);
+                            return (
+                                <div key={page.href} className="flex items-center gap-1">
+                                    <Link
+                                        href={isPageAccessible ? page.href : "#"}
+                                        onClick={(e) => !isPageAccessible && e.preventDefault()}
                                         className={cn(
-                                            "ml-1 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100",
-                                            favorites.includes(page.href) && "opacity-100"
-                                        )}
-                                    >
-                                        <Star className={cn(
-                                            "w-3 h-3 transition-colors",
-                                            favorites.includes(page.href)
-                                                ? "fill-yellow-500 text-yellow-500"
-                                                : "text-muted-foreground hover:text-yellow-500"
+                                            "flex items-center rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap relative group click-feedback shrink-0 font-[Poppins,Arial,sans-serif]",
+                                            isScrolled ? "px-1.5 py-1 gap-1" : "px-3 py-2 gap-2",
+                                            !isPageAccessible && "opacity-40 cursor-not-allowed",
+                                            isActive(page.href)
+                                                ? "bg-[hsl(var(--accent-orange))]/15 text-[hsl(var(--accent-orange))] shadow-[0_0_15px_hsl(var(--accent-orange)/0.25)] nav-active-underline"
+                                                : isPageAccessible
+                                                    ? "text-muted-foreground hover:bg-accent hover:text-foreground"
+                                                    : "text-muted-foreground"
+                                        )}>
+                                        <page.icon className={cn(
+                                            "transition-colors",
+                                            isScrolled ? "h-3.5 w-3.5" : "h-3.5 w-3.5",
+                                            isActive(page.href) ? "text-[hsl(var(--accent-orange))]" : "text-muted-foreground/70 group-hover:text-foreground/80"
                                         )} />
-                                    </button>
-                                </Link>
+                                        <span className={cn(
+                                            "transition-all duration-300 overflow-hidden whitespace-nowrap",
+                                            isScrolled
+                                                ? "max-w-[200px] opacity-100 text-[10px]"
+                                                : "max-w-[200px] opacity-100"
+                                        )}>
+                                            {page.name}
+                                        </span>
 
-                                {/* GLOBAL SWITCH TO TEAM MODE BUTTON - ONLY IN ADMIN MODE AND NEAR ACTIVE PAGE */}
-                                {isActive(page.href) && mode === "ADMIN" && (
-                                    <div className="flex items-center">
-                                        <div className="w-px h-3 bg-border/50 mx-0.5" />
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <button
-                                                    onClick={() => {
-                                                        const detectedTeam = getTeamFromPath && getTeamFromPath(pathname);
-                                                        if (detectedTeam) {
-                                                            switchToTeamMode(detectedTeam.id);
-                                                        } else {
-                                                            alert("No specific team context found for this page. Please navigate to a team page (e.g. Sales, Marketing) to switch.");
-                                                        }
-                                                    }}
-                                                    className={cn(
-                                                        "relative px-1.5 py-0.5 rounded-full text-[8px] font-bold overflow-hidden group transition-all duration-300 shrink-0",
-                                                        "bg-gradient-to-r from-primary/10 to-blue-500/10",
-                                                        "border border-primary/20 hover:border-primary/50",
-                                                        "hover:shadow-[0_0_15px_hsl(var(--primary)/0.3)]",
-                                                        "text-primary flex items-center gap-0.5"
-                                                    )}
-                                                >
-                                                    <Lock className="w-2 h-2 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-12" />
-                                                    <span className="relative z-10 font-bold tracking-wide">TEAM</span>
-                                                    {/* Background shine effect */}
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
-                                                </button>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="bottom" className="text-xs">
-                                                Switch the current page to Focused Team Mode
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                                        {/* Badge */}
+                                        {page.badge && (
+                                            <span className={cn(
+                                                "ml-1 px-1.5 py-0.5 font-bold rounded-full border",
+                                                isScrolled ? "text-[8px]" : "text-[9px]",
+                                                isActive(page.href)
+                                                    ? "bg-[hsl(var(--accent-orange))] text-background border-[hsl(var(--accent-orange))]"
+                                                    : "bg-destructive/20 text-destructive border-destructive/50"
+                                            )}>
+                                                {page.badge}
+                                            </span>
+                                        )}
+
+                                        {/* Favorite Star */}
+                                        <button
+                                            onClick={(e) => toggleFavorite(page.href, e)}
+                                            className={cn(
+                                                "ml-1 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100",
+                                                favorites.includes(page.href) && "opacity-100"
+                                            )}
+                                        >
+                                            <Star className={cn(
+                                                "w-3 h-3 transition-colors",
+                                                favorites.includes(page.href)
+                                                    ? "fill-yellow-500 text-yellow-500"
+                                                    : "text-muted-foreground hover:text-yellow-500"
+                                            )} />
+                                        </button>
+                                    </Link>
+
+                                    {/* GLOBAL SWITCH TO TEAM MODE BUTTON - ONLY IN ADMIN MODE AND NEAR ACTIVE PAGE */}
+                                    {isActive(page.href) && mode === "ADMIN" && (
+                                        <div className="flex items-center">
+                                            <div className="w-px h-3 bg-border/50 mx-0.5" />
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <button
+                                                        onClick={() => {
+                                                            const detectedTeam = getTeamFromPath && getTeamFromPath(pathname);
+                                                            if (detectedTeam) {
+                                                                switchToTeamMode(detectedTeam.id);
+                                                            } else {
+                                                                alert("No specific team context found for this page. Please navigate to a team page (e.g. Sales, Marketing) to switch.");
+                                                            }
+                                                        }}
+                                                        className={cn(
+                                                            "relative px-1.5 py-0.5 rounded-full text-[8px] font-bold overflow-hidden group transition-all duration-300 shrink-0",
+                                                            "bg-gradient-to-r from-primary/10 to-blue-500/10",
+                                                            "border border-primary/20 hover:border-primary/50",
+                                                            "hover:shadow-[0_0_15px_hsl(var(--primary)/0.3)]",
+                                                            "text-primary flex items-center gap-0.5"
+                                                        )}
+                                                    >
+                                                        <Lock className="w-2 h-2 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-12" />
+                                                        <span className="relative z-10 font-bold tracking-wide">TEAM</span>
+                                                        {/* Background shine effect */}
+                                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+                                                    </button>
+                                                </TooltipTrigger>
+                                                <TooltipContent side="bottom" className="text-xs">
+                                                    Switch the current page to Focused Team Mode
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 </nav>
             </div >

@@ -17,8 +17,8 @@ Comprehensive guide to reusable components in E-coma.
 
 E-coma uses a component-based architecture with:
 
-- **69 UI primitives** built on Radix UI and shadcn/ui
-- **23 layout components** for the multi-panel system
+- **70 UI primitives** built on Radix UI and shadcn/ui
+- **24 layout components** for the multi-panel system
 - **200+ feature components** for business logic
 
 ### Component Structure
@@ -26,8 +26,8 @@ E-coma uses a component-based architecture with:
 ```
 src/components/
 ├── core/
-│   ├── ui/              # UI primitives (69 components)
-│   └── layout/          # Layout system (23 components)
+│   ├── ui/              # UI primitives (70 components)
+│   └── layout/          # Layout system (24 components)
 ├── analytics/           # Analytics features
 ├── marketing/           # Marketing features
 ├── social/              # Social media features
@@ -477,25 +477,6 @@ function MyPage() {
     setContent(<MyCustomPanel />);
   }, []);
 }
-```
-
----
-
-### HeaderTabs
-
-Dynamic tab navigation.
-
-**Usage:**
-
-```tsx
-import { HeaderTabs } from '@/components/core/layout/HeaderTabs';
-
-const tabs = [
-  { id: 'overview', label: 'Overview', href: '/analytics' },
-  { id: 'reports', label: 'Reports', href: '/analytics/reports' },
-];
-
-<HeaderTabs tabs={tabs} />
 ```
 
 ---

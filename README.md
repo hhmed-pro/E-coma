@@ -268,8 +268,8 @@ e-coma/
 │   │       └── products/      # Product API
 │   ├── components/             # React components
 │   │   ├── core/              # Core system components
-│   │   │   ├── layout/        # Layout components (14 files)
-│   │   │   ├── ui/            # UI primitives (73 files)
+│   │   │   ├── layout/        # Layout components (24 files)
+│   │   │   ├── ui/            # UI primitives (70 files)
 │   │   │   └── providers/     # Context providers
 │   │   ├── analytics/         # Analytics components
 │   │   ├── marketing/         # Marketing components
@@ -277,11 +277,14 @@ e-coma/
 │   │   ├── store/             # E-commerce components
 │   │   ├── admin/             # Admin components
 │   │   └── shared/            # Shared utilities
-│   ├── config/                 # Configuration files
+│   ├── config/                 # Configuration files (8 files)
 │   │   ├── ecosystem-config.ts      # Bottom bar modules
 │   │   ├── navigation.tsx           # Main navigation
 │   │   ├── hub-config.ts            # Hub categories
-│   │   ├── feature-favorites-config.ts  # 127 features
+│   │   ├── feature-favorites-config.ts  # Feature registry
+│   │   ├── favorites-config.ts      # User favorites
+│   │   ├── teams.ts                 # Team definitions
+│   │   ├── tour-config.ts           # Product tour steps
 │   │   └── rightPanelConfig.tsx     # Right panel config
 │   ├── lib/                    # Utility libraries
 │   │   ├── supabase/          # Supabase clients
@@ -303,9 +306,9 @@ e-coma/
 ### Key Directories
 
 - **`src/app/`**: Next.js 15 App Router with file-based routing
-- **`src/components/core/layout/`**: Advanced layout system with context providers
-- **`src/components/core/ui/`**: 69 reusable UI components (shadcn/ui based)
-- **`src/config/`**: Centralized configuration for navigation, features, and modules
+- **`src/components/core/layout/`**: Advanced layout system (24 components)
+- **`src/components/core/ui/`**: 70 reusable UI components (shadcn/ui based)
+- **`src/config/`**: Centralized configuration (8 files)
 - **`src/lib/`**: Core utilities and third-party integrations
 
 ---

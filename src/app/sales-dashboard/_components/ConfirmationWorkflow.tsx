@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Package, Truck, Archive, PlayCircle, FolderClock, ShieldAlert, Ban, MapPin, Phone, Link2, AlertCircle, Calendar, Clock, Search, Filter, ChevronDown, MoreVertical, Save, X, Check } from 'lucide-react';
-import { useRightPanel } from "@/components/core/layout/RightPanelContext";
+import { CheckCircle2, Package, Truck, FolderClock, ShieldAlert, Ban, PlayCircle, X, Check } from 'lucide-react';
 import { useToast } from "@/components/core/ui/toast";
 import { CallCenterScripts } from './CallCenterScripts';
 import { LocationCollector } from './LocationCollector';
 import PackerModePanel from '@/app/ecommerce/_components/delivery/PackerModePanel';
+import { Sheet, SheetContent } from "@/components/core/ui/sheet";
 
 // Integrated Action Panel Wrapper
 const ActionPanelWrapper = ({
@@ -53,6 +53,7 @@ const ActionPanelWrapper = ({
 );
 
 type OrderStatus = 'pre-order' | 'confirmed' | 'packed' | 'shipped' | 'delivered' | 'returned';
+type ActionType = 'confirm' | 'pack' | 'ship' | null;
 
 interface Order {
     id: string;
@@ -62,6 +63,10 @@ interface Order {
     value: number;
 }
 
+/**
+ * ConfirmationWorkflow - Order confirmation workflow with action panels
+ * Migrated to standardized Sheet component - all functionality preserved
+ */
 export const ConfirmationWorkflow = () => {
     // Mock Data
     // Mock Blacklist (Synced with CustomerBlacklist component ideally)
@@ -74,91 +79,33 @@ export const ConfirmationWorkflow = () => {
         { id: 'ORD-095', customer: 'Fatim Z.', phone: '0555667788', status: 'packed', value: 12000 },
     ]);
 
+    // Local Sheet state (migrated from useRightPanel)
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-    const { setConfig, setIsOpen, isOpen } = useRightPanel();
+    const [activeAction, setActiveAction] = useState<ActionType>(null);
+    const [isSheetOpen, setIsSheetOpen] = useState(false);
     const { warning } = useToast();
+
+    const closeSheet = () => {
+        setIsSheetOpen(false);
+        setActiveAction(null);
+        setSelectedOrder(null);
+    };
 
     const moveStatus = (id: string, newStatus: OrderStatus) => {
         setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-        setIsOpen(false); // Close panel after action
-        setConfig(null);
+        closeSheet();
     };
 
-    const openActionPanel = (action: 'confirm' | 'pack' | 'ship', order: Order) => {
+    const openActionPanel = (action: ActionType, order: Order) => {
         // Checks if panel is already open and blocks interaction
-        if (isOpen) {
+        if (isSheetOpen) {
             warning("Action Blocked", "Please save or cancel the current panel before switching.");
             return;
         }
 
-        setSelectedOrder(order); // Keep for local highlighting if needed
-
-        // Hints Component
-        const OrderHints = () => (
-            <div className="flex gap-2 mb-4">
-                {order.value > 8000 && (
-                    <div className="bg-[hsl(var(--accent-orange))]/10 text-[hsl(var(--accent-orange))] px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                        <ShieldAlert className="w-3 h-3" /> High Value Order
-                    </div>
-                )}
-                {blacklistedNumbers.includes(order.phone) && (
-                    <div className="bg-destructive/10 text-destructive px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                        <Ban className="w-3 h-3" /> BLACKLISTED CUSTOMER
-                    </div>
-                )}
-            </div>
-        );
-
-        let content = null;
-        let title = "";
-
-        if (action === 'confirm') {
-            title = "Confirm Order";
-            content = (
-                <ActionPanelWrapper
-                    title={title}
-                    onSave={() => moveStatus(order.id, 'confirmed')}
-                    onCancel={() => { setIsOpen(false); setConfig(null); }}
-                    saveLabel="Confirm & Save"
-                >
-                    <OrderHints />
-                    <CallCenterScripts />
-                </ActionPanelWrapper>
-            );
-        } else if (action === 'pack') {
-            title = "Packer Mode";
-            content = (
-                <ActionPanelWrapper
-                    title={title}
-                    onSave={() => moveStatus(order.id, 'packed')}
-                    onCancel={() => { setIsOpen(false); setConfig(null); }}
-                    saveLabel="Mark as Packed"
-                >
-                    <OrderHints />
-                    <PackerModePanel />
-                </ActionPanelWrapper>
-            );
-        } else if (action === 'ship') {
-            title = "Shipping Details";
-            content = (
-                <ActionPanelWrapper
-                    title={title}
-                    onSave={() => moveStatus(order.id, 'shipped')}
-                    onCancel={() => { setIsOpen(false); setConfig(null); }}
-                    saveLabel="Mark as Shipped"
-                >
-                    <OrderHints />
-                    <LocationCollector />
-                </ActionPanelWrapper>
-            );
-        }
-
-        setConfig({
-            enabled: true,
-            title: title,
-            content: content
-        });
-        setIsOpen(true);
+        setSelectedOrder(order);
+        setActiveAction(action);
+        setIsSheetOpen(true);
     };
 
     const getStatusColor = (status: OrderStatus) => {
@@ -183,12 +130,81 @@ export const ConfirmationWorkflow = () => {
         }
     };
 
+    // Hints Component
+    const OrderHints = ({ order }: { order: Order }) => (
+        <div className="flex gap-2 mb-4">
+            {order.value > 8000 && (
+                <div className="bg-[hsl(var(--accent-orange))]/10 text-[hsl(var(--accent-orange))] px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <ShieldAlert className="w-3 h-3" /> High Value Order
+                </div>
+            )}
+            {blacklistedNumbers.includes(order.phone) && (
+                <div className="bg-destructive/10 text-destructive px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <Ban className="w-3 h-3" /> BLACKLISTED CUSTOMER
+                </div>
+            )}
+        </div>
+    );
+
+    // Get panel content based on action type
+    const getPanelContent = () => {
+        if (!selectedOrder || !activeAction) return null;
+
+        switch (activeAction) {
+            case 'confirm':
+                return (
+                    <ActionPanelWrapper
+                        title="Confirm Order"
+                        onSave={() => moveStatus(selectedOrder.id, 'confirmed')}
+                        onCancel={closeSheet}
+                        saveLabel="Confirm & Save"
+                    >
+                        <OrderHints order={selectedOrder} />
+                        <CallCenterScripts />
+                    </ActionPanelWrapper>
+                );
+            case 'pack':
+                return (
+                    <ActionPanelWrapper
+                        title="Packer Mode"
+                        onSave={() => moveStatus(selectedOrder.id, 'packed')}
+                        onCancel={closeSheet}
+                        saveLabel="Mark as Packed"
+                    >
+                        <OrderHints order={selectedOrder} />
+                        <PackerModePanel />
+                    </ActionPanelWrapper>
+                );
+            case 'ship':
+                return (
+                    <ActionPanelWrapper
+                        title="Shipping Details"
+                        onSave={() => moveStatus(selectedOrder.id, 'shipped')}
+                        onCancel={closeSheet}
+                        saveLabel="Mark as Shipped"
+                    >
+                        <OrderHints order={selectedOrder} />
+                        <LocationCollector />
+                    </ActionPanelWrapper>
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
             <h3 className="text-lg font-semibold mb-6 flex items-center gap-2 text-foreground">
                 <CheckCircle2 className="w-6 h-6 text-[hsl(var(--accent-green))]" />
                 Order Confirmation Workflow
             </h3>
+
+            {/* Action Sheet */}
+            <Sheet open={isSheetOpen} onOpenChange={(open) => !open && closeSheet()}>
+                <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+                    {getPanelContent()}
+                </SheetContent>
+            </Sheet>
 
             <div className="overflow-x-auto">
                 <table className="w-full text-left">
@@ -279,8 +295,7 @@ export const ConfirmationWorkflow = () => {
                     </tbody>
                 </table>
             </div>
-
-            {/* INTEGRATED ACTION SHEETS - REMOVED, REPLACED BY RIGHT PANEL */}
         </div>
     );
 };
+

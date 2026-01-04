@@ -256,7 +256,7 @@ export function Example() {
 
 <div align="center">
 
-**Documentation Last Updated:** 2024
+**Documentation Last Updated:** January 2026
 
 Made with ❤️ for the E-coma community
 

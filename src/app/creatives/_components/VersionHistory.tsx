@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/core/ui/card";
 import { Button } from "@/components/core/ui/button";
 import { Badge } from "@/components/core/ui/badge";
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+} from "@/components/core/ui/sheet";
 import {
     History,
     Undo2,
@@ -12,9 +17,6 @@ import {
     RotateCcw,
     Eye,
     Clock,
-    ChevronDown,
-    ChevronUp,
-    X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +48,7 @@ interface VersionHistoryProps {
 
 /**
  * VersionHistory - Timeline panel showing past versions with restore functionality
+ * Migrated to standardized Sheet component - all functionality preserved
  */
 export function VersionHistory({
     contentId,
@@ -56,7 +59,6 @@ export function VersionHistory({
 }: VersionHistoryProps) {
     const [versions] = useState<Version[]>(MOCK_VERSIONS);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isExpanded, setIsExpanded] = useState(true);
 
     const canUndo = currentIndex < versions.length - 1;
     const canRedo = currentIndex > 0;
@@ -70,6 +72,12 @@ export function VersionHistory({
     const handleRedo = () => {
         if (canRedo) {
             setCurrentIndex(prev => prev - 1);
+        }
+    };
+
+    const handleOpenChange = (open: boolean) => {
+        if (!open && onClose) {
+            onClose();
         }
     };
 
@@ -94,122 +102,113 @@ export function VersionHistory({
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0, x: 300 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 300 }}
-                className="fixed right-4 top-20 bottom-20 w-80 z-40"
-            >
-                <Card className="h-full flex flex-col shadow-2xl">
-                    <CardHeader className="pb-3 border-b">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <History className="h-4 w-4 text-primary" />
-                                <CardTitle className="text-sm">Version History</CardTitle>
-                            </div>
-                            <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7">
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
+        <Sheet open={isOpen} onOpenChange={handleOpenChange}>
+            <SheetContent side="right" size="sm" className="flex flex-col p-0">
+                {/* Header */}
+                <SheetHeader className="p-4 border-b">
+                    <div className="flex items-center gap-2">
+                        <History className="h-4 w-4 text-primary" />
+                        <SheetTitle className="text-sm">Version History</SheetTitle>
+                    </div>
+                    <SheetDescription className="sr-only">
+                        View and restore previous versions of your content
+                    </SheetDescription>
 
-                        {/* Undo/Redo Controls */}
-                        <div className="flex items-center gap-2 mt-3">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleUndo}
-                                disabled={!canUndo}
-                                className="flex-1 gap-1"
+                    {/* Undo/Redo Controls */}
+                    <div className="flex items-center gap-2 mt-3">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleUndo}
+                            disabled={!canUndo}
+                            className="flex-1 gap-1"
+                        >
+                            <Undo2 className="h-3.5 w-3.5" />
+                            Undo
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleRedo}
+                            disabled={!canRedo}
+                            className="flex-1 gap-1"
+                        >
+                            <Redo2 className="h-3.5 w-3.5" />
+                            Redo
+                        </Button>
+                    </div>
+                </SheetHeader>
+
+                {/* Timeline Content */}
+                <div className="flex-1 overflow-y-auto p-3">
+                    <div className="relative">
+                        {/* Vertical line */}
+                        <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-muted" />
+
+                        {versions.map((version, index) => (
+                            <div
+                                key={version.id}
+                                className={cn(
+                                    "relative pl-8 pb-4 group",
+                                    index === currentIndex && "opacity-100",
+                                    index !== currentIndex && "opacity-60 hover:opacity-80"
+                                )}
                             >
-                                <Undo2 className="h-3.5 w-3.5" />
-                                Undo
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleRedo}
-                                disabled={!canRedo}
-                                className="flex-1 gap-1"
-                            >
-                                <Redo2 className="h-3.5 w-3.5" />
-                                Redo
-                            </Button>
-                        </div>
-                    </CardHeader>
-
-                    <CardContent className="flex-1 overflow-y-auto p-3">
-                        {/* Timeline */}
-                        <div className="relative">
-                            {/* Vertical line */}
-                            <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-muted" />
-
-                            {versions.map((version, index) => (
+                                {/* Timeline dot */}
                                 <div
-                                    key={version.id}
                                     className={cn(
-                                        "relative pl-8 pb-4 group",
-                                        index === currentIndex && "opacity-100",
-                                        index !== currentIndex && "opacity-60 hover:opacity-80"
+                                        "absolute left-1.5 top-1 w-3 h-3 rounded-full border-2 border-background",
+                                        index === currentIndex
+                                            ? "bg-primary ring-2 ring-primary/30"
+                                            : "bg-muted-foreground/50"
                                     )}
-                                >
-                                    {/* Timeline dot */}
-                                    <div
-                                        className={cn(
-                                            "absolute left-1.5 top-1 w-3 h-3 rounded-full border-2 border-background",
-                                            index === currentIndex
-                                                ? "bg-primary ring-2 ring-primary/30"
-                                                : "bg-muted-foreground/50"
-                                        )}
-                                    />
+                                />
 
-                                    {/* Version card */}
-                                    <div className="bg-muted/50 rounded-lg p-2.5 border hover:border-primary/30 transition-colors">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <Badge variant="outline" className={cn("text-[10px] px-1.5", getTypeColor(version.type))}>
-                                                {version.type}
-                                            </Badge>
-                                            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                                <Clock className="h-2.5 w-2.5" />
-                                                {formatTime(version.timestamp)}
-                                            </span>
-                                        </div>
-                                        <p className="text-xs font-medium">{version.description}</p>
-                                        <p className="text-[10px] text-muted-foreground mt-0.5">by {version.author}</p>
+                                {/* Version card */}
+                                <div className="bg-muted/50 rounded-lg p-2.5 border hover:border-primary/30 transition-colors">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <Badge variant="outline" className={cn("text-[10px] px-1.5", getTypeColor(version.type))}>
+                                            {version.type}
+                                        </Badge>
+                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                            <Clock className="h-2.5 w-2.5" />
+                                            {formatTime(version.timestamp)}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs font-medium">{version.description}</p>
+                                    <p className="text-[10px] text-muted-foreground mt-0.5">by {version.author}</p>
 
-                                        {/* Actions */}
-                                        <div className="flex gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {/* Actions */}
+                                    <div className="flex gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-6 text-[10px] flex-1"
+                                            onClick={() => onPreview?.(version.id)}
+                                        >
+                                            <Eye className="h-3 w-3 mr-1" />
+                                            Preview
+                                        </Button>
+                                        {index !== currentIndex && (
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className="h-6 text-[10px] flex-1"
-                                                onClick={() => onPreview?.(version.id)}
+                                                className="h-6 text-[10px] flex-1 text-primary"
+                                                onClick={() => onRestore?.(version.id)}
                                             >
-                                                <Eye className="h-3 w-3 mr-1" />
-                                                Preview
+                                                <RotateCcw className="h-3 w-3 mr-1" />
+                                                Restore
                                             </Button>
-                                            {index !== currentIndex && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="h-6 text-[10px] flex-1 text-primary"
-                                                    onClick={() => onRestore?.(version.id)}
-                                                >
-                                                    <RotateCcw className="h-3 w-3 mr-1" />
-                                                    Restore
-                                                </Button>
-                                            )}
-                                        </div>
+                                        )}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </motion.div>
-        </AnimatePresence>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </SheetContent>
+        </Sheet>
     );
 }
+

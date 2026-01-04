@@ -95,7 +95,7 @@ src/app/
 RootLayout (Providers)
 ├── LayoutWrapper (Context Providers)
 │   ├── WindowLayoutContext
-│   ├── RightPanelContext
+│   ├── ModeContext (Admin/Team switching)
 │   ├── ScrollContext
 │   ├── HelpContext
 │   └── PageActionsContext
@@ -103,9 +103,8 @@ RootLayout (Providers)
 │       ├── IconSidebar (Left Navigation)
 │       ├── TopNavigation (Collapsible Header)
 │       ├── PageHeader (Title, Actions Slot)
-│       ├── HeaderTabs (Dynamic Tabs)
 │       ├── Page Content (Dynamic)
-│       ├── CategoryRightPanel (Context Sidebar)
+│       ├── Dialogs/Sheets (Unified Modal System)
 │       └── EcosystemBar (Bottom Status Bar)
 ```
 
@@ -130,18 +129,17 @@ interface WindowLayoutState {
 
 **Purpose:** Global window state management
 
-#### 2. RightPanelContext
+#### 2. ModeContext
 
 ```typescript
-interface RightPanelState {
-  content: React.ReactNode | null;
-  isOpen: boolean;
-  width: number;
-  title: string;
+interface ModeState {
+  mode: 'admin' | 'team';
+  activeTeam: Team | null;
+  sessionActive: boolean;
 }
 ```
 
-**Purpose:** Dynamic right sidebar content
+**Purpose:** Admin/Team mode switching and session management
 
 #### 3. ScrollContext
 
@@ -203,13 +201,13 @@ type Theme = 'light' | 'dark' | 'system';
 - Profile menu and quick actions
 - Search command palette trigger
 
-#### HeaderTabs
+#### Unified Modal System (Dialog/Sheet)
 
-- Dynamic tab system per page
-- Persistent active tab state
-- Smooth animations
+- Dialogs for focused, critical tasks
+- Sheets for side panels and filters
+- Command Palette for navigation
 
-#### CategoryRightPanel
+#### ProfileMenu
 
 - Context-aware sidebar
 - AI agents panel

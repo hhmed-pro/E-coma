@@ -1,22 +1,27 @@
 "use client";
 
 import { useState, createContext, useContext, ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/core/ui/card";
+import { motion } from "framer-motion";
+import { Card } from "@/components/core/ui/card";
 import { Button } from "@/components/core/ui/button";
 import { Badge } from "@/components/core/ui/badge";
 import { Progress } from "@/components/core/ui/progress";
 import {
-    X,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from "@/components/core/ui/dialog";
+import {
     ChevronLeft,
     ChevronRight,
     Target,
     Layout,
     MessageSquare,
     FileText,
-    Palette,
     Sparkles,
-    Shield,
     CheckCircle,
     Rocket
 } from "lucide-react";
@@ -308,105 +313,84 @@ export function CreationWizard({ isOpen, onClose, onComplete }: CreationWizardPr
     const StepComponent = step.component;
     const progress = ((currentStep + 1) / WIZARD_STEPS.length) * 100;
 
-    if (!isOpen) return null;
-
     return (
-        <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-                onClick={handleClose}
-            >
-                <motion.div
-                    initial={{ scale: 0.95, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.95, opacity: 0 }}
-                    className="bg-background rounded-xl shadow-2xl w-full max-w-lg overflow-hidden"
-                    onClick={e => e.stopPropagation()}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="wizard-title"
-                >
-                    {/* Header */}
-                    <div className="p-4 border-b">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="h-5 w-5 text-primary" />
-                                <h2 id="wizard-title" className="text-lg font-semibold">Creation Wizard</h2>
-                            </div>
-                            <Button variant="ghost" size="icon" onClick={handleClose} aria-label="Close wizard">
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-                        <Progress value={progress} className="h-1.5" aria-label={`Step ${currentStep + 1} of ${WIZARD_STEPS.length}`} />
+        <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+            <DialogContent size="lg" className="p-0 max-h-[90vh] overflow-hidden flex flex-col">
+                {/* Header */}
+                <DialogHeader className="p-4 border-b">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        <DialogTitle>Creation Wizard</DialogTitle>
                     </div>
+                    <Progress value={progress} className="h-1.5" aria-label={`Step ${currentStep + 1} of ${WIZARD_STEPS.length}`} />
+                    <DialogDescription className="sr-only">
+                        A guided wizard to help you create content
+                    </DialogDescription>
+                </DialogHeader>
 
-                    {/* Step Indicator */}
-                    <div className="px-4 py-3 bg-muted/30 flex items-center gap-2 overflow-x-auto">
-                        {WIZARD_STEPS.map((s, i) => (
-                            <div
-                                key={s.id}
-                                className={cn(
-                                    "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs whitespace-nowrap",
-                                    i === currentStep && "bg-primary text-primary-foreground",
-                                    i < currentStep && "text-muted-foreground",
-                                    i > currentStep && "text-muted-foreground/50"
-                                )}
-                            >
-                                <s.icon className="h-3 w-3" />
-                                <span className="hidden sm:inline">{s.title}</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Step Content */}
-                    <WizardContext.Provider value={{ data, updateData }}>
-                        <CardContent className="p-6 min-h-[300px]">
-                            <motion.div
-                                key={step.id}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                            >
-                                <h3 className="font-semibold mb-4">{step.title}</h3>
-                                <StepComponent />
-                            </motion.div>
-                        </CardContent>
-                    </WizardContext.Provider>
-
-                    {/* Footer */}
-                    <div className="p-4 border-t flex justify-between">
-                        <Button
-                            variant="ghost"
-                            onClick={handleBack}
-                            disabled={currentStep === 0}
-                            aria-label="Previous step"
-                        >
-                            <ChevronLeft className="h-4 w-4 mr-1" />
-                            Back
-                        </Button>
-                        <Button
-                            onClick={handleNext}
-                            disabled={!canProceed()}
-                            aria-label={currentStep === WIZARD_STEPS.length - 1 ? "Generate content" : "Next step"}
-                        >
-                            {currentStep === WIZARD_STEPS.length - 1 ? (
-                                <>
-                                    <Sparkles className="h-4 w-4 mr-1" />
-                                    Generate Content
-                                </>
-                            ) : (
-                                <>
-                                    Next
-                                    <ChevronRight className="h-4 w-4 ml-1" />
-                                </>
+                {/* Step Indicator */}
+                <div className="px-4 py-3 bg-muted/30 flex items-center gap-2 overflow-x-auto">
+                    {WIZARD_STEPS.map((s, i) => (
+                        <div
+                            key={s.id}
+                            className={cn(
+                                "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs whitespace-nowrap",
+                                i === currentStep && "bg-primary text-primary-foreground",
+                                i < currentStep && "text-muted-foreground",
+                                i > currentStep && "text-muted-foreground/50"
                             )}
-                        </Button>
+                        >
+                            <s.icon className="h-3 w-3" />
+                            <span className="hidden sm:inline">{s.title}</span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Step Content */}
+                <WizardContext.Provider value={{ data, updateData }}>
+                    <div className="p-6 min-h-[300px] flex-1 overflow-y-auto">
+                        <motion.div
+                            key={step.id}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                        >
+                            <h3 className="font-semibold mb-4">{step.title}</h3>
+                            <StepComponent />
+                        </motion.div>
                     </div>
-                </motion.div>
-            </motion.div>
-        </AnimatePresence>
+                </WizardContext.Provider>
+
+                {/* Footer */}
+                <DialogFooter className="p-4 border-t flex justify-between sm:justify-between">
+                    <Button
+                        variant="ghost"
+                        onClick={handleBack}
+                        disabled={currentStep === 0}
+                        aria-label="Previous step"
+                    >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        Back
+                    </Button>
+                    <Button
+                        onClick={handleNext}
+                        disabled={!canProceed()}
+                        aria-label={currentStep === WIZARD_STEPS.length - 1 ? "Generate content" : "Next step"}
+                    >
+                        {currentStep === WIZARD_STEPS.length - 1 ? (
+                            <>
+                                <Sparkles className="h-4 w-4 mr-1" />
+                                Generate Content
+                            </>
+                        ) : (
+                            <>
+                                Next
+                                <ChevronRight className="h-4 w-4 ml-1" />
+                            </>
+                        )}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }

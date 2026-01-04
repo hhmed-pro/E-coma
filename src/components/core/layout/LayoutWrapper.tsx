@@ -5,7 +5,6 @@ import { IconSidebar } from "./IconSidebar";
 import { TopNavigation } from "./TopNavigation";
 import { EcosystemBar, DetailPanel } from "./EcosystemBar";
 import { BottomPanel } from "./BottomPanel";
-import { RightPanelProvider, useRightPanel } from "./RightPanelContext";
 import { WindowLayoutProvider, useWindowLayout } from "./WindowLayoutContext";
 import { ScrollProvider, useScroll } from "./ScrollContext";
 import { HelpProvider } from "./HelpContext";
@@ -39,7 +38,7 @@ function LayoutContent({ children }: LayoutWrapperProps) {
     const [activeModule, setActiveModule] = useState<string | null>(null);
     const [selectedPeriod, setSelectedPeriod] = useState<Period>("today");
     const [viewMode, setViewMode] = useState<"count" | "rate">("count");
-    const { config, isOpen, togglePanel } = useRightPanel();
+    // RightPanel removed - pages now use local state for tabs/panels
     const { isTopNavCollapsed, toggleTopNav, setRightPanelOpen } = useWindowLayout();
     const { isScrolled } = useScroll();
     const { actions: pageActions } = usePageActions();
@@ -162,8 +161,6 @@ function LayoutContent({ children }: LayoutWrapperProps) {
                 isExpanded={isPanelOpen}
                 onToggleExpand={handleToggleExpand}
             />
-            {/* Detail Panel */}
-            <DetailPanel />
 
             {/* Bottom Panel - Expandable */}
             <BottomPanel
@@ -179,27 +176,27 @@ function LayoutContent({ children }: LayoutWrapperProps) {
 
             {/* Floating Widgets */}
             <FloatingHelpWidget />
-
-            {/* Floating Exit Focus Mode Button - Removed */}
         </div>
     );
 }
 
-// Wrap with provider
+/**
+ * LayoutWrapper - Main layout provider
+ * RightPanelProvider removed - pages now use local state for tabs/panels
+ */
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
     return (
         <HelpProvider>
             <ScrollProvider threshold={100}>
                 <WindowLayoutProvider>
-                    <RightPanelProvider>
-                        <PageActionsProvider>
-                            <ModeProvider>
-                                <LayoutContent>{children}</LayoutContent>
-                            </ModeProvider>
-                        </PageActionsProvider>
-                    </RightPanelProvider>
+                    <PageActionsProvider>
+                        <ModeProvider>
+                            <LayoutContent>{children}</LayoutContent>
+                        </ModeProvider>
+                    </PageActionsProvider>
                 </WindowLayoutProvider>
             </ScrollProvider>
         </HelpProvider>
     );
 }
+

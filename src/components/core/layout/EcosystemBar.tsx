@@ -2,12 +2,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "lucide-react"; // Wait, Link is from next/link usually. Oh, looking at previous file content, Link was next/link.
 // Checking imports...
 import { usePathname } from "next/navigation";
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Clock, Target, Sparkles, X, ChevronUp as ChevronUpIcon, Bot, Lightbulb, TrendingUp, ThumbsUp, ThumbsDown } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Clock, Target, Sparkles, X, ChevronUp as ChevronUpIcon, Bot, Lightbulb, TrendingUp, ThumbsUp, ThumbsDown, Settings } from "lucide-react";
 import { CommandPalette } from "@/components/core/ui/command-palette";
 import { cn } from "@/lib/utils";
-import { useRightPanel } from "@/components/core/layout/RightPanelContext";
-import { ActionToolbar } from "./ActionToolbar";
 import { SessionModal } from "./SessionModal";
+import { TeamConfigModal } from "./TeamConfigModal";
 import { usePageActions } from "@/components/core/layout/PageActionsContext";
 import { AISuggestion } from "@/types/ai-tips";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/ui/popover";
@@ -34,7 +33,6 @@ import {
 import { useWindowLayout } from "@/components/core/layout/WindowLayoutContext";
 import { useScroll } from "@/components/core/layout/ScrollContext";
 import { useMode } from "@/components/core/layout/ModeContext";
-import { getFooterConfig } from "@/config/rightPanelFooterConfig";
 import { ProductTour } from "@/components/core/layout/ProductTour";
 import { TOUR_CONFIG } from "@/config/tour-config";
 import { Flag } from "lucide-react";
@@ -134,8 +132,9 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
     // Session Info State relative to EcosystemBar
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
     const [sessionStart] = useState<Date>(new Date()); // Mock session start
-    const { isAdmin, mode } = useMode();
+    const { isAdmin, mode, activeTeams } = useMode();
     const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+    const [isTeamConfigOpen, setIsTeamConfigOpen] = useState(false);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -183,11 +182,10 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
         setSuggestions(suggestions.filter(s => s.id !== id));
     };
 
-    // Tabs Logic
-    const { config, activeTab, setActiveTab, isOpen, setIsOpen } = useRightPanel();
+    // Tabs Logic - now using local state since pages use local tab navigation
+    // The center section will show modules when no external tabs are configured
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const tabs = config?.tabs || [];
-    const hasTabs = config?.enabled && tabs.length > 0;
+    const hasTabs = false; // Tabs now handled by individual pages with InlineTabNavigation
 
     const scrollTabs = (direction: "left" | "right") => {
         if (scrollContainerRef.current) {
@@ -253,68 +251,11 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                         </button>
                     </div>
 
-                    {/* CENTER SECTION: Modules OR Tabs */}
+                    {/* CENTER SECTION: Modules */}
                     <div className="flex-1 flex items-center justify-center min-w-0 px-4">
-                        {hasTabs ? (
-                            /* TABS VIEW */
-                            <div className="flex items-center gap-2 overflow-hidden w-full justify-center max-w-4xl relative group/tabs">
-                                {/* Left Scroll Button */}
-                                <button
-                                    onClick={() => scrollTabs("left")}
-                                    className="hidden md:flex absolute left-0 z-20 p-1 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-white/10 text-zinc-400 hover:text-white opacity-0 group-hover/tabs:opacity-100 transition-opacity"
-                                >
-                                    <ChevronLeft className="h-3.5 w-3.5" />
-                                </button>
-
-                                <div
-                                    ref={scrollContainerRef}
-                                    className="flex items-center justify-center gap-1 overflow-x-auto scrollbar-none px-6 h-8 w-full"
-                                >
-                                    {tabs.map((tab) => (
-                                        <button
-                                            key={tab.id}
-                                            onClick={() => setActiveTab(tab.id)}
-                                            className={cn(
-                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap border border-transparent click-feedback",
-                                                activeTab === tab.id
-                                                    ? "bg-green-500 text-black font-bold shadow-[0_0_15px_rgba(34,197,94,0.4)]"
-                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                                            )}
-                                        >
-                                            {tab.icon && (
-                                                <span className={cn("h-3.5 w-3.5", activeTab === tab.id ? "text-black" : "text-current")}>
-                                                    {tab.icon}
-                                                </span>
-                                            )}
-                                            <span>{tab.label}</span>
-                                            {tab.badge !== undefined && (
-                                                <span className={cn(
-                                                    "ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full",
-                                                    activeTab === tab.id
-                                                        ? "bg-black/20 text-black"
-                                                        : "bg-muted text-muted-foreground border border-border"
-                                                )}>
-                                                    {tab.badge}
-                                                </span>
-                                            )}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                {/* Right Scroll Button */}
-                                <button
-                                    onClick={() => scrollTabs("right")}
-                                    className="hidden md:flex absolute right-0 z-20 p-1 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-white/10 text-zinc-400 hover:text-white opacity-0 group-hover/tabs:opacity-100 transition-opacity"
-                                >
-                                    <ChevronRight className="h-3.5 w-3.5" />
-                                </button>
-                            </div>
-                        ) : (
-                            /* MODULES VIEW (Fallback if no tabs) */
-                            <div className="flex items-center gap-2">
-                                {allModules.map(renderModuleButton)}
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                            {allModules.map(renderModuleButton)}
+                        </div>
                     </div>
 
                     {/* RIGHT SECTION: Search & Tour & Detail Toggle */}
@@ -326,12 +267,12 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                                 {/* Active Teams Count */}
                                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
                                     <Users className="h-3.5 w-3.5" />
-                                    <span>{TEAMS.length} Active Teams</span>
+                                    <span>{activeTeams.length} Active Teams</span>
                                 </div>
 
-                                {/* Team Icons */}
+                                {/* Team Icons - Only show active teams */}
                                 <div className="flex -space-x-1.5">
-                                    {TEAMS.map((team, index) => (
+                                    {activeTeams.map((team) => (
                                         <Tooltip key={team.id}>
                                             <TooltipTrigger asChild>
                                                 <motion.button
@@ -361,6 +302,25 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                                         </Tooltip>
                                     ))}
                                 </div>
+
+                                {/* Team Configuration Button */}
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <button
+                                            onClick={() => setIsTeamConfigOpen(true)}
+                                            className={cn(
+                                                "flex items-center justify-center w-7 h-7 rounded-full border border-border/50 cursor-pointer bg-muted/50 shadow-sm transition-all",
+                                                "hover:bg-primary/10 hover:border-primary/30 hover:text-primary"
+                                            )}
+                                        >
+                                            <Settings className="h-3.5 w-3.5" />
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="text-xs">
+                                        <div className="font-medium">Team Configuration</div>
+                                        <div className="text-muted-foreground">Manage team access & objectives</div>
+                                    </TooltipContent>
+                                </Tooltip>
                             </div>
                         )}
 
@@ -456,27 +416,6 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                         {/* Search */}
                         <CommandPalette compact className="bg-transparent border-0 hover:bg-muted/50" />
 
-                        {/* Detail Panel Toggle (from HeaderTabs) */}
-                        {hasTabs && (
-                            <>
-                                <div className="h-4 w-px bg-border/50 mx-1" />
-                                <button
-                                    onClick={() => setIsOpen(!isOpen)}
-                                    className={cn(
-                                        "p-1.5 rounded-lg transition-all duration-200",
-                                        "text-zinc-400 hover:text-foreground hover:bg-muted",
-                                        isOpen && "bg-green-500/20 text-green-500"
-                                    )}
-                                    title={isOpen ? "Hide details" : "Show details"}
-                                >
-                                    <ChevronUpIcon className={cn(
-                                        "h-4 w-4 transition-transform duration-200",
-                                        isOpen && "rotate-180"
-                                    )} />
-                                </button>
-                            </>
-                        )}
-
                         {/* Product Tour Trigger */}
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -503,57 +442,15 @@ export function EcosystemBar({ onModuleClick, isExpanded = false, onToggleExpand
                 isOpen={isSessionModalOpen}
                 onClose={() => setIsSessionModalOpen(false)}
             />
+            <TeamConfigModal
+                isOpen={isTeamConfigOpen}
+                onClose={() => setIsTeamConfigOpen(false)}
+            />
         </TooltipProvider>
     );
 }
 
-/**
- * Detail Panel Component - Shows below the header when expanded
- */
-export function DetailPanel() {
-    const { config, activeTab, isOpen } = useRightPanel();
-    const { isScrolled } = useScroll();
-    const { detailPanelStyle, setDetailPanelOpen } = useWindowLayout();
+// DetailPanel is now a standalone component in DetailPanel.tsx
+// Export it from here for backwards compatibility
+export { DetailPanel } from "./DetailPanel";
 
-    // Sync visibility state with layout manager
-    useEffect(() => {
-        setDetailPanelOpen(isOpen);
-    }, [isOpen, setDetailPanelOpen]);
-
-    if (!config?.enabled || !isOpen) return null;
-
-    const footerConfig = getFooterConfig(activeTab);
-    const activeTabInfo = config?.tabs?.find(t => t.id === activeTab);
-
-    if (!footerConfig) return null;
-
-    return (
-
-        <div
-            className={cn(
-                "fixed z-40 px-4 md:px-6 flex justify-start animate-in slide-in-from-top-2 fade-in-0 duration-200",
-                isScrolled ? "top-[84px]" : "top-[140px]"
-            )}
-            style={detailPanelStyle}
-        >
-            <div className="w-full px-4 py-2 bg-card/95 backdrop-blur-xl rounded-xl border border-border shadow-2xl">
-                <div className="flex items-center justify-between gap-4">
-                    {/* Left Side - Tab Info */}
-                    <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground flex items-center gap-2 text-sm">
-                            <span className="text-base">{footerConfig.icon}</span>
-                            {footerConfig.title}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight truncate">
-                            {footerConfig.description}
-                        </p>
-                    </div>
-
-                    {/* Right Side - Actions */}
-                    <div className="flex items-center gap-1">
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}

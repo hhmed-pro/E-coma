@@ -17,31 +17,18 @@ import { wilayas, type Wilaya } from "@/lib/chart-utils";
 import { useState, useMemo, useEffect } from "react";
 import { Skeleton } from "@/components/core/ui/skeleton";
 import { MOCK_ORDERS } from "@/lib/mock-data";
-import { useRightPanel } from "@/components/core/layout/RightPanelContext";
+
+const DASHBOARD_TABS = [
+  { value: "dash-overview", label: "Revenue", icon: <Wallet className="w-4 h-4" /> },
+  { value: "dash-confirmations", label: "Confirmations", icon: <CheckCircle className="w-4 h-4" /> },
+  { value: "dash-delivery", label: "Delivery", icon: <Truck className="w-4 h-4" /> },
+];
 
 export default function Home() {
   const [selectedWilaya, setSelectedWilaya] = useState<Wilaya | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { setConfig, activeTab, setActiveTab } = useRightPanel();
-
-  // The dashboard tabs - synced with right panel
-  const dashboardTab = activeTab || "dash-overview";
-
-  // Configure right panel with dashboard tabs
-  useEffect(() => {
-    setConfig({
-      enabled: true,
-      title: "Hey User 👋",
-      subtitle: "Here's what's happening with your business today.",
-      icon: "📊",
-      tabs: [
-        { id: "dash-overview", label: "Revenue", icon: <Wallet className="w-4 h-4" /> },
-        { id: "dash-confirmations", label: "Confirmations", icon: <CheckCircle className="w-4 h-4" /> },
-        { id: "dash-delivery", label: "Delivery", icon: <Truck className="w-4 h-4" /> },
-      ],
-    });
-    return () => setConfig(null);
-  }, [setConfig]);
+  // Local tab state (migrated from useRightPanel)
+  const [dashboardTab, setDashboardTab] = useState("dash-overview");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);

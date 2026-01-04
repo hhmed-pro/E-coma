@@ -51,9 +51,7 @@ import { CarrierComparison } from "@/app/ecommerce/_components/inventory/Carrier
 import { RevenueProfitChart } from "@/app/analytics/_components/RevenueProfitChart";
 import SchedulerView from "@/app/creatives/_components/scheduler/SchedulerView";
 import PlatformGuides from "./_components/PlatformGuides";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/core/ui/sheet";
-
-import { useRightPanel } from "@/components/core/layout/RightPanelContext";
+import { Sheet, SheetContent } from "@/components/core/ui/sheet";
 
 import { DateRangePicker } from "@/components/core/ui/date-range-picker";
 import { FeatureCluster } from "@/components/core/ui/FeatureCluster";
@@ -216,7 +214,6 @@ function ActionPanelWrapper({
 // ... existing code ...
 
 export default function AnalyticsPage() {
-    const { setConfig, setIsOpen, isOpen } = useRightPanel();
     const { setSuggestions } = usePageActions();
 
     useEffect(() => {
@@ -227,11 +224,6 @@ export default function AnalyticsPage() {
         ]);
         return () => setSuggestions([]);
     }, [setSuggestions]);
-
-    const closePanel = () => {
-        setIsOpen(false);
-        setConfig(null);
-    };
 
     const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
 
