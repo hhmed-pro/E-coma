@@ -1,15 +1,9 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import {
-    Search,
-    TrendingUp,
-    MapPin,
-    Globe,
-    Target
-} from "lucide-react";
+import { Search } from "lucide-react";
 import { PageHeader } from "@/components/core/layout/PageHeader";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/core/ui/tabs";
+import { Tabs, TabsContent } from "@/components/core/ui/tabs";
 import { usePageActions } from "@/components/core/layout/PageActionsContext";
 
 // Import Tab Components
@@ -18,37 +12,20 @@ import { MarcheAlgerienTab } from "./_components/tabs/MarcheAlgerienTab";
 import { FournisseursCoutsTab } from "./_components/tabs/FournisseursCoutsTab";
 import { SocialValidationTab } from "./_components/tabs/SocialValidationTab";
 
-// Tab Configuration
-const productResearchHubTabs = [
-    {
-        id: "recherche-tendances",
-        label: "Recherche & Tendances",
-        icon: Search,
-        description: "Découverte & Tracking",
-    },
-    {
-        id: "marche-algerien",
-        label: "Marché Algérien",
-        icon: MapPin,
-        description: "Tendances Locales",
-    },
-    {
-        id: "fournisseurs-couts",
-        label: "Fournisseurs & Coûts",
-        icon: Globe,
-        description: "Sourcing & Landed Cost",
-    },
-    {
-        id: "social-validation",
-        label: "Social & Validation",
-        icon: Target,
-        description: "Concurrents & Signaux",
-    },
-];
-
 function ProductResearchContent() {
     const { setSuggestions } = usePageActions();
     const [activeTab, setActiveTab] = useState("recherche-tendances");
+
+    // Listen for tab changes from Ecosystem Bar
+    useEffect(() => {
+        const handleTabChange = (e: CustomEvent<{ tabId: string; pathname: string }>) => {
+            if (e.detail.pathname === '/product-research') {
+                setActiveTab(e.detail.tabId);
+            }
+        };
+        window.addEventListener('page-tab-change', handleTabChange as EventListener);
+        return () => window.removeEventListener('page-tab-change', handleTabChange as EventListener);
+    }, []);
 
     useEffect(() => {
         setSuggestions([
@@ -68,40 +45,23 @@ function ProductResearchContent() {
                 icon={<Search className="h-6 w-6 text-[hsl(var(--accent-purple))]" />}
             />
 
-            {/* Tab Navigation */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-muted/50 rounded-xl">
-                    {productResearchHubTabs.map((tab) => (
-                        <TabsTrigger
-                            key={tab.id}
-                            value={tab.id}
-                            className="flex flex-col items-center gap-1 py-3 px-4 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all"
-                        >
-                            <tab.icon className="h-5 w-5" />
-                            <span className="text-sm font-medium hidden sm:block">{tab.label}</span>
-                            <span className="text-xs text-muted-foreground hidden md:block">{tab.description}</span>
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+            {/* Tab Contents - Navigation handled by Ecosystem Bar */}
+            <Tabs value={activeTab} className="w-full">
+                <TabsContent value="recherche-tendances" className="mt-0">
+                    <RechercheTendancesTab />
+                </TabsContent>
 
-                {/* Tab Contents */}
-                <div className="mt-6">
-                    <TabsContent value="recherche-tendances" className="mt-0">
-                        <RechercheTendancesTab />
-                    </TabsContent>
+                <TabsContent value="marche-algerien" className="mt-0">
+                    <MarcheAlgerienTab />
+                </TabsContent>
 
-                    <TabsContent value="marche-algerien" className="mt-0">
-                        <MarcheAlgerienTab />
-                    </TabsContent>
+                <TabsContent value="fournisseurs-couts" className="mt-0">
+                    <FournisseursCoutsTab />
+                </TabsContent>
 
-                    <TabsContent value="fournisseurs-couts" className="mt-0">
-                        <FournisseursCoutsTab />
-                    </TabsContent>
-
-                    <TabsContent value="social-validation" className="mt-0">
-                        <SocialValidationTab />
-                    </TabsContent>
-                </div>
+                <TabsContent value="social-validation" className="mt-0">
+                    <SocialValidationTab />
+                </TabsContent>
             </Tabs>
         </div>
     );

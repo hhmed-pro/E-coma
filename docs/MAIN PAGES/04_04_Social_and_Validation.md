@@ -1,23 +1,28 @@
 # Social & Validation (Tab)
 
-**Parent Page**: Découverte Produits
+**Parent Page**: Découverte Produits  
+**Route**: `/product-research` (Tab: social-validation)  
+**Fichier Tab**: `src/app/product-research/_components/tabs/SocialValidationTab.tsx`
 
 ## Tab Overview
-Detailed view of the tab functionality.
+
+Outils de validation sociale et veille concurrentielle. Surveille les concurrents et leurs produits, analyse les signaux sociaux (engagement, viralité) et évalue le potentiel marché avant lancement.
 
 ## Features List
 
 | Feature | Description | Purpose | Status | Components Reference |
 |---------|-------------|---------|--------|----------------------|
-| Competitor Tracker | Detailed description of Competitor Tracker | Purpose of Competitor Tracker | Active | Refer to Components Reference |
-| Social Signals | Detailed description of Social Signals | Purpose of Social Signals | Active | Refer to Components Reference |
+| Competitor Tracker | Suivi des boutiques concurrentes: nouveaux produits lancés, changements de prix, promotions actives, créatives utilisées. Alertes sur les mouvements importants. | Surveiller la concurrence pour rester compétitif | Active | Inline Tracker |
+| Social Signals | Analyse des signaux sociaux pour un produit: likes, partages, commentaires, sauvegardes sur FB/IG/TikTok. Score de viralité potentielle. | Évaluer le potentiel viral d'un produit | Active | Inline Component |
+| Engagement Analysis | Métriques d'engagement détaillées: taux d'engagement par plateforme, sentiment des commentaires (positif/négatif), questions fréquentes. | Comprendre la réception du produit par le marché | Active | Inline Component |
+| Market Validation Score | Score global de validation marché combinant: demande (recherches), offre (concurrence), signal social (engagement), prix (marge possible). Note sur 100 avec détail. | Décision data-driven sur le lancement d'un produit | Active | Inline Score Card |
+| Trending Product Alerts | Alertes automatiques quand un produit devient viral ou quand un concurrent lance une nouvelle offre. Configurable par seuil et catégorie. | Réagir rapidement aux opportunités du marché | Active | Inline Config |
 
 ## Components Reference
 
 | Component | File Location | Purpose |
 |-----------|---------------|---------|
-| Main Component | src/app/product-research/_components/[component-name].tsx | Main container |
-| Competitor Tracker Component | src/app/product-research/_components/CompetitorTracker.tsx | Implements Competitor Tracker |
-| Social Signals Component | src/app/product-research/_components/SocialSignals.tsx | Implements Social Signals |
+| SocialValidationTab | `src/app/product-research/_components/tabs/SocialValidationTab.tsx` | Conteneur principal de l'onglet |
+| FeatureCluster | `src/components/core/ui/FeatureCluster.tsx` | Conteneur collapsible |
 
-> **Note**: This documentation covers all major and minor features. If a section or a collabstic section have many features -> mention all the features.
+> **Note**: Les signaux sociaux sont collectés via les API publiques des plateformes et le scraping autorisé.

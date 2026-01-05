@@ -196,19 +196,21 @@ export const HUB_CATEGORIES: HubCategory[] = [
                 features: ["Campaign Management", "ROAS Tracking", "Stop-Loss Rules", "Currency Tracker", "Account Health", "Traffic Analytics"]
             },
             {
-                name: "Marketing & Growth",
+                name: "Partenariats & Croissance",
                 href: "/marketing",
-                description: "Scale with DZ Influencers and AI Automation",
+                description: "Influenceurs, Affiliés & Automatisation Marketing",
                 image: "/assets/features/marketing_wide.svg",
                 problemSolution: {
                     problem: "Finding verified DZ influencers is hard, manual confirmations don't scale",
                     solution: "Influencer marketplace + AI Confirmation Bots"
                 },
                 subTabs: [
-                    { name: "Commission", description: "Affiliate & Influencers", features: ["Pay-To-Sell", "Commission Links", "Influencers Collab"] },
-                    { name: "AI Copilot", description: "Automation Agents", features: ["DM Sales Agent", "DM Support Agent", "Comment Response Agent"] }
+                    { name: "Influenceurs & UGC", description: "Marketplace & Tarifs", features: ["Influencer Discovery", "UGC Creators", "Campaign Briefs", "Performance Tracking"] },
+                    { name: "Affiliation", description: "Affiliés & Commissions", features: ["Pay-To-Sell", "Commission Links", "Affiliate Dashboard", "Payout Management"] },
+                    { name: "Plateformes & Social", description: "Engagement & Bots", features: ["DM Sales Agent", "DM Support Agent", "Comment Response Agent", "Social Listening"] },
+                    { name: "Analyses & Config", description: "KPIs & Paramètres", features: ["Campaign Analytics", "ROI Tracking", "Settings", "Integrations"] }
                 ],
-                features: ["Pay-To-Sell", "Commission Links", "Influencers Collab", "DM Sales Agent", "DM Support Agent", "Comment Response Agent"]
+                features: ["Influencer Marketplace", "UGC Creators", "Affiliate System", "DM Sales Agent", "DM Support Agent", "Comment Response Agent"]
             },
         ]
     },

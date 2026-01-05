@@ -1,27 +1,36 @@
 # Vue d'Ensemble (Tab)
 
-**Parent Page**: Tableau de Bord
+**Parent Page**: Tableau de Bord  
+**Route**: `/analytics` (Tab: vue-ensemble)  
+**Fichier Tab**: `src/app/analytics/_components/tabs/VueEnsembleTab.tsx`
 
 ## Tab Overview
-Detailed view of the tab functionality.
+
+Dashboard principal de performance avec vue globale des KPIs business. Affiche les revenus totaux, bénéfices nets, total commandes et panier moyen. Inclut l'analyse des méthodes de paiement, le calculateur IFU pour la fiscalité algérienne, et le suivi des gains créateurs/affiliés.
 
 ## Features List
 
 | Feature | Description | Purpose | Status | Components Reference |
 |---------|-------------|---------|--------|----------------------|
-| Revenue Dashboard | Detailed description of Revenue Dashboard | Purpose of Revenue Dashboard | Active | Refer to Components Reference |
-| Orders Chart | Detailed description of Orders Chart | Purpose of Orders Chart | Active | Refer to Components Reference |
-| Payment Method Analytics | Detailed description of Payment Method Analytics | Purpose of Payment Method Analytics | Active | Refer to Components Reference |
-| Creator Earnings | Detailed description of Creator Earnings | Purpose of Creator Earnings | Active | Refer to Components Reference |
+| Revenue KPI Cards | 4 cartes KPI colorées: Revenus Total (145,230 DA, +12%), Bénéfice Net (42,150 DA, +8%), Total Commandes (1,247, +15%), Panier Moyen (8,450 DA, -3%). Avec indicateurs de tendance. | Vue instantanée de la performance financière | Active | Inline KPI Cards |
+| Payment Method Analytics | Analyse détaillée des paiements: répartition COD vs paiement en ligne, frais COD (12,450 DA), taux par méthode. Visualisation graphique. | Comprendre l'impact des méthodes de paiement sur la rentabilité | Active | PaymentMethodAnalytics.tsx |
+| IFU Calculator | Calculateur fiscal algérien pour estimer les taxes IFU selon le régime (forfaitaire, réel simplifié, réel). Calcul automatique selon le CA. | Prévoir les obligations fiscales et optimiser la structure | Active | IFUCalculator.tsx |
+| Creator Earnings | Suivi des gains des créateurs de contenu et affiliés. Répartition par créateur, commissions dues, et paiements en attente. | Gérer la rémunération des partenaires marketing | Active | CreatorEarnings.tsx |
+| Revenue/Profit Chart | Graphique comparatif revenus vs bénéfices sur période sélectionnable. Courbes avec code couleur et tendances. | Visualiser l'évolution de la rentabilité dans le temps | Active | RevenueProfitChart.tsx |
+| Orders Chart | Graphique détaillé des commandes avec breakdown par statut (confirmées, expédiées, livrées, retournées). | Suivre le flux des commandes et les taux de succès | Active | OrdersChart.tsx |
+| Date Range Picker | Sélecteur de période avec presets (Aujourd'hui, 7j, 30j, Ce mois, Mois dernier) et sélection personnalisée. | Filtrer les données sur n'importe quelle période | Active | DateRangePicker |
 
 ## Components Reference
 
 | Component | File Location | Purpose |
 |-----------|---------------|---------|
-| Main Component | src/app/analytics/_components/[component-name].tsx | Main container |
-| Revenue Dashboard Component | src/app/analytics/_components/RevenueDashboard.tsx | Implements Revenue Dashboard |
-| Orders Chart Component | src/app/analytics/_components/OrdersChart.tsx | Implements Orders Chart |
-| Payment Method Analytics Component | src/app/analytics/_components/PaymentMethodAnalytics.tsx | Implements Payment Method Analytics |
-| Creator Earnings Component | src/app/analytics/_components/CreatorEarnings.tsx | Implements Creator Earnings |
+| VueEnsembleTab | `src/app/analytics/_components/tabs/VueEnsembleTab.tsx` | Conteneur principal de l'onglet |
+| PaymentMethodAnalytics | `src/app/analytics/_components/PaymentMethodAnalytics.tsx` | Analyse des méthodes de paiement |
+| IFUCalculator | `src/app/analytics/_components/IFUCalculator.tsx` | Calculateur taxe IFU Algérie |
+| CreatorEarnings | `src/app/analytics/_components/CreatorEarnings.tsx` | Suivi gains créateurs |
+| RevenueProfitChart | `src/app/analytics/_components/RevenueProfitChart.tsx` | Graphique revenus/profits |
+| OrdersChart | `src/app/analytics/_components/OrdersChart.tsx` | Graphique des commandes |
+| DateRangePicker | `src/components/core/ui/date-range-picker.tsx` | Sélecteur de dates |
+| FeatureCluster | `src/components/core/ui/FeatureCluster.tsx` | Conteneur collapsible |
 
-> **Note**: This documentation covers all major and minor features. If a section or a collabstic section have many features -> mention all the features.
+> **Note**: Le calculateur IFU est spécifique à la fiscalité algérienne avec les régimes locaux.

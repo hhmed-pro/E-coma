@@ -1,27 +1,32 @@
 # Rapports & Outils (Tab)
 
-**Parent Page**: Tableau de Bord
+**Parent Page**: Tableau de Bord  
+**Route**: `/analytics` (Tab: rapports-outils)  
+**Fichier Tab**: `src/app/analytics/_components/tabs/RapportsOutilsTab.tsx`
 
 ## Tab Overview
-Detailed view of the tab functionality.
+
+Centre de reporting et d'intégrations. Actions rapides pour générer/exporter des rapports, gestion des connexions aux plateformes tierces (GA4, Meta Pixel, TikTok), programmation des rapports automatiques et accès aux guides de la plateforme.
 
 ## Features List
 
 | Feature | Description | Purpose | Status | Components Reference |
 |---------|-------------|---------|--------|----------------------|
-| Report Builder | Detailed description of Report Builder | Purpose of Report Builder | Active | Refer to Components Reference |
-| Data Integrations | Detailed description of Data Integrations | Purpose of Data Integrations | Active | Refer to Components Reference |
-| Scheduled Reports | Detailed description of Scheduled Reports | Purpose of Scheduled Reports | Active | Refer to Components Reference |
-| Platform Guides | Detailed description of Platform Guides | Purpose of Platform Guides | Active | Refer to Components Reference |
+| Quick Actions | 4 boutons d'action rapide: Générer Rapport, Exporter Données, Importer Données, Actualiser. Accès direct aux fonctions courantes. | Effectuer les actions de reporting en un clic | Active | Inline Buttons |
+| Report Builder | Constructeur de rapports personnalisés avec sélection des métriques à inclure: revenus, commandes, panier moyen, profit, distribution géo, performance livraison. Export PDF/Excel. | Créer des rapports sur mesure pour analyse ou présentation | Active | ExportBuilderModal |
+| Data Integrations | Gestion des connexions: Google Analytics 4 (connecté, sync 5 min), Meta Pixel (connecté, sync 2 min), TikTok Pixel (déconnecté), Shopify (en attente). Statut et dernière sync. | Centraliser les données de toutes les plateformes | Active | IntegrationModal |
+| Scheduled Reports | Configuration des rapports automatiques: Quotidien (PDF, 8h), Hebdomadaire (Excel, Lundi 9h), Mensuel (PDF, 1er du mois). Envoi par email. | Recevoir les rapports automatiquement sans action manuelle | Coming Soon | Placeholder Card |
+| Platform Guides | Bibliothèque de tutoriels et guides: Comment configurer les pixels, Optimiser le ROAS, Utiliser le calculateur IFU, etc. Format vidéo et texte. | Former les utilisateurs aux fonctionnalités de la plateforme | Active | PlatformGuides.tsx |
+| Add Integration | Bouton pour ajouter de nouvelles intégrations avec wizard de configuration. Support pour les principales plateformes e-commerce et marketing. | Étendre les connexions à d'autres outils | Active | Button + Modal |
 
 ## Components Reference
 
 | Component | File Location | Purpose |
 |-----------|---------------|---------|
-| Main Component | src/app/analytics/_components/[component-name].tsx | Main container |
-| Report Builder Component | src/app/analytics/_components/ReportBuilder.tsx | Implements Report Builder |
-| Data Integrations Component | src/app/analytics/_components/DataIntegrations.tsx | Implements Data Integrations |
-| Scheduled Reports Component | src/app/analytics/_components/ScheduledReports.tsx | Implements Scheduled Reports |
-| Platform Guides Component | src/app/analytics/_components/PlatformGuides.tsx | Implements Platform Guides |
+| RapportsOutilsTab | `src/app/analytics/_components/tabs/RapportsOutilsTab.tsx` | Conteneur principal de l'onglet |
+| ExportBuilderModal | `src/components/core/ui/modals/ExportBuilderModal.tsx` | Modal de construction de rapports |
+| IntegrationModal | `src/components/core/ui/modals/IntegrationModal.tsx` | Modal de configuration intégration |
+| PlatformGuides | `src/app/analytics/_components/PlatformGuides.tsx` | Bibliothèque de guides |
+| FeatureCluster | `src/components/core/ui/FeatureCluster.tsx` | Conteneur collapsible |
 
-> **Note**: This documentation covers all major and minor features. If a section or a collabstic section have many features -> mention all the features.
+> **Note**: Les intégrations utilisent les API officielles des plateformes avec authentification OAuth où disponible.

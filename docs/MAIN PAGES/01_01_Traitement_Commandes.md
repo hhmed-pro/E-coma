@@ -1,27 +1,34 @@
 # Traitement Commandes (Tab)
 
-**Parent Page**: Centre de Confirmation
+**Parent Page**: Centre de Confirmation  
+**Route**: `/sales-dashboard` (Tab: traitement-commandes)  
+**Fichier Tab**: `src/app/sales-dashboard/_components/tabs/TraitementCommandesTab.tsx`
 
 ## Tab Overview
-Detailed view of the tab functionality.
+
+Onglet principal de gestion des commandes avec vue Kanban, workflow de confirmation téléphonique, scripts d'appel, collecte GPS via WhatsApp et suivi des expéditions en temps réel. Affiche des KPIs en temps réel: nouvelles commandes, appels en attente, confirmées, expédiées, livrées et taux de confirmation.
 
 ## Features List
 
 | Feature | Description | Purpose | Status | Components Reference |
 |---------|-------------|---------|--------|----------------------|
-| Orders Kanban | Detailed description of Orders Kanban | Purpose of Orders Kanban | Active | Refer to Components Reference |
-| Call Scripts | Detailed description of Call Scripts | Purpose of Call Scripts | Active | Refer to Components Reference |
-| GPS Collection | Detailed description of GPS Collection | Purpose of GPS Collection | Active | Refer to Components Reference |
-| Shipment Tracker | Detailed description of Shipment Tracker | Purpose of Shipment Tracker | Active | Refer to Components Reference |
+| Orders Kanban | Tableau Kanban visuel avec colonnes: Nouvelles, Appelées, Confirmées, En Traitement, Expédiées, Livrées. Drag-and-drop des commandes entre les colonnes avec tags de risque. | Visualiser et gérer le flux de commandes de manière intuitive | Active | VisualBoardModal |
+| KPI Dashboard | Affichage des métriques principales avec cartes colorées: nouvelles commandes (24), à appeler (8), confirmées (142), expédiées (89), livrées (67), taux confirmation (78%) | Avoir une vue instantanée de l'état des commandes | Active | Inline KPI Cards |
+| Confirmation Workflow | Flux de confirmation téléphonique avancé avec suivi des appels, notes clients, et statuts multiples. Interface dédiée pour les agents call center. | Standardiser et optimiser le processus de confirmation téléphonique | Active | ConfirmationWorkflow.tsx |
+| Call Scripts | Bibliothèque de scripts d'appel prédéfinis pour différents scénarios: confirmation standard, upsell, problème livraison. Affichage contextuel selon le type de commande. | Guider les agents pour des appels efficaces et cohérents | Active | CallCenterScripts.tsx |
+| GPS Collection WhatsApp | Bot automatisé qui envoie un message WhatsApp demandant la position GPS du client. Collecte et affiche les coordonnées pour faciliter la livraison. | Améliorer le taux de livraison en obtenant des adresses précises | Active | LocationCollector.tsx |
+| Shipment Tracker | Suivi en temps réel des expéditions avec statut transporteur, numéro de suivi, et historique de tracking. Intégration multi-transporteurs. | Suivre les colis et anticiper les problèmes de livraison | Active | ShipmentTracker.tsx (from ecommerce) |
 
 ## Components Reference
 
 | Component | File Location | Purpose |
 |-----------|---------------|---------|
-| Main Component | src/app/sales-dashboard/_components/[component-name].tsx | Main container |
-| Orders Kanban Component | src/app/sales-dashboard/_components/OrdersKanban.tsx | Implements Orders Kanban |
-| Call Scripts Component | src/app/sales-dashboard/_components/CallScripts.tsx | Implements Call Scripts |
-| GPS Collection Component | src/app/sales-dashboard/_components/GPSCollection.tsx | Implements GPS Collection |
-| Shipment Tracker Component | src/app/sales-dashboard/_components/ShipmentTracker.tsx | Implements Shipment Tracker |
+| TraitementCommandesTab | `src/app/sales-dashboard/_components/tabs/TraitementCommandesTab.tsx` | Conteneur principal de l'onglet |
+| ConfirmationWorkflow | `src/app/sales-dashboard/_components/ConfirmationWorkflow.tsx` | Flux de confirmation des commandes |
+| CallCenterScripts | `src/app/sales-dashboard/_components/CallCenterScripts.tsx` | Scripts d'appel pour agents |
+| LocationCollector | `src/app/sales-dashboard/_components/LocationCollector.tsx` | Collecte GPS via WhatsApp |
+| ShipmentTracker | `src/app/ecommerce/_components/delivery/ShipmentTracker.tsx` | Suivi des expéditions |
+| VisualBoardModal | `src/components/core/ui/modals/VisualBoardModal.tsx` | Modal Kanban réutilisable |
+| FeatureCluster | `src/components/core/ui/FeatureCluster.tsx` | Conteneur collapsible pour features |
 
-> **Note**: This documentation covers all major and minor features. If a section or a collabstic section have many features -> mention all the features.
+> **Note**: Ce tab utilise des composants partagés de `ecommerce` pour le tracking des expéditions.

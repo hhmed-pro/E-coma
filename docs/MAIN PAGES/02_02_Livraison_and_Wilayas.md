@@ -1,27 +1,30 @@
 # Livraison & Wilayas (Tab)
 
-**Parent Page**: Tableau de Bord
+**Parent Page**: Tableau de Bord  
+**Route**: `/analytics` (Tab: livraison-wilayas)  
+**Fichier Tab**: `src/app/analytics/_components/tabs/LivraisonWilayasTab.tsx`
 
 ## Tab Overview
-Detailed view of the tab functionality.
+
+Vue géographique complète de la performance logistique. Compare les transporteurs algériens, affiche une carte thermique des wilayas par volume de commandes, et analyse les revenus par région (Nord, Centre, Est, Sud).
 
 ## Features List
 
 | Feature | Description | Purpose | Status | Components Reference |
 |---------|-------------|---------|--------|----------------------|
-| Carrier Comparison | Detailed description of Carrier Comparison | Purpose of Carrier Comparison | Active | Refer to Components Reference |
-| Wilaya Heatmap | Detailed description of Wilaya Heatmap | Purpose of Wilaya Heatmap | Active | Refer to Components Reference |
-| Regional Revenue | Detailed description of Regional Revenue | Purpose of Regional Revenue | Active | Refer to Components Reference |
-| Delivery Performance | Detailed description of Delivery Performance | Purpose of Delivery Performance | Active | Refer to Components Reference |
+| Carrier Comparison | Tableau comparatif des transporteurs: Yalidine, Maystro, ZR-Express. Métriques: tarifs, délais moyens, taux de livraison, zones couvertes. Avec données financières optionnelles. | Choisir le meilleur transporteur selon les critères | Active | CarrierComparison.tsx |
+| Wilaya Heatmap | Carte interactive de l'Algérie avec heatmap des commandes par wilaya. Couleurs selon le volume. Drill-down au clic pour détails. | Visualiser la distribution géographique des ventes | Active | WilayaHeatmap.tsx |
+| Regional Revenue | Breakdown des revenus par région: Nord (62%, 89,500 DA, 782 commandes), Centre (22%), Est (10%), Sud (6%). Barres de progression visuelles. | Identifier les régions les plus rentables | Active | Inline Component |
+| Carrier API Health | Monitoring en temps réel des API transporteurs: Yalidine (connecté, 45ms), Maystro (connecté, 62ms), ZR-Express (déconnecté). Latence et statut. | Surveiller la disponibilité des intégrations transporteurs | Coming Soon | Placeholder Card |
+| Average Delivery Time | Indicateur du délai moyen de livraison national (2.4 jours) avec comparaison par région et transporteur. | Suivre et améliorer les délais de livraison | Coming Soon | Placeholder Card |
 
 ## Components Reference
 
 | Component | File Location | Purpose |
 |-----------|---------------|---------|
-| Main Component | src/app/analytics/_components/[component-name].tsx | Main container |
-| Carrier Comparison Component | src/app/analytics/_components/CarrierComparison.tsx | Implements Carrier Comparison |
-| Wilaya Heatmap Component | src/app/analytics/_components/WilayaHeatmap.tsx | Implements Wilaya Heatmap |
-| Regional Revenue Component | src/app/analytics/_components/RegionalRevenue.tsx | Implements Regional Revenue |
-| Delivery Performance Component | src/app/analytics/_components/DeliveryPerformance.tsx | Implements Delivery Performance |
+| LivraisonWilayasTab | `src/app/analytics/_components/tabs/LivraisonWilayasTab.tsx` | Conteneur principal de l'onglet |
+| CarrierComparison | `src/app/ecommerce/_components/inventory/CarrierComparison.tsx` | Comparaison transporteurs |
+| WilayaHeatmap | `src/app/ecommerce/_components/delivery/wilaya-heatmap.tsx` | Carte thermique wilayas |
+| FeatureCluster | `src/components/core/ui/FeatureCluster.tsx` | Conteneur collapsible |
 
-> **Note**: This documentation covers all major and minor features. If a section or a collabstic section have many features -> mention all the features.
+> **Note**: La carte des wilayas couvre les 58 wilayas d'Algérie avec données générées dynamiquement.

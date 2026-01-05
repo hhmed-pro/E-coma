@@ -1,23 +1,29 @@
 # Fournisseurs & Coûts (Tab)
 
-**Parent Page**: Découverte Produits
+**Parent Page**: Découverte Produits  
+**Route**: `/product-research` (Tab: fournisseurs-couts)  
+**Fichier Tab**: `src/app/product-research/_components/tabs/FournisseursCoutsTab.tsx`
 
 ## Tab Overview
-Detailed view of the tab functionality.
+
+Outils de sourcing et calcul de rentabilité. Base de données de fournisseurs vérifiés avec notes et historique, calculateur de coût complet incluant tous les frais d'import, et analyse du landed cost pour décision d'achat éclairée.
 
 ## Features List
 
 | Feature | Description | Purpose | Status | Components Reference |
 |---------|-------------|---------|--------|----------------------|
-| Supplier Database | Detailed description of Supplier Database | Purpose of Supplier Database | Active | Refer to Components Reference |
-| Cost Calculator | Detailed description of Cost Calculator | Purpose of Cost Calculator | Active | Refer to Components Reference |
+| Supplier Database | Base de 500+ fournisseurs vérifiés: nom, pays, spécialités, note qualité (5 étoiles), délai moyen, MOQ, certifications. Filtres avancés et recherche. Fiches détaillées. | Trouver des fournisseurs fiables rapidement | Active | SupplierDatabase.tsx |
+| Cost Calculator | Calculateur de coût total: prix unitaire produit, quantité, shipping (maritime/aérien/express), frais douane (5-30% selon catégorie), TVA 19%, frais manutention. Résultat: coût unitaire rendu Algérie. | Calculer le vrai coût d'un produit avant commande | Active | Inline Calculator |
+| Landed Cost Analysis | Comparaison prix achat vs landed cost vs prix de vente marché. Calcul automatique de la marge brute possible. Alerte si marge insuffisante. | Valider la rentabilité avant investissement | Active | Inline Analysis |
+| Supplier Comparison | Tableau comparatif de plusieurs fournisseurs pour le même produit: prix, MOQ, délai, qualité. Aide à la décision. | Choisir le meilleur fournisseur objectivement | Active | Inline Component |
+| Quick Quote Request | Formulaire de demande de devis rapide envoyé directement au fournisseur. Historique des demandes et réponses. | Obtenir des prix précis sans quitter la plateforme | Active | Inline Form |
 
 ## Components Reference
 
 | Component | File Location | Purpose |
 |-----------|---------------|---------|
-| Main Component | src/app/product-research/_components/[component-name].tsx | Main container |
-| Supplier Database Component | src/app/product-research/_components/SupplierDatabase.tsx | Implements Supplier Database |
-| Cost Calculator Component | src/app/product-research/_components/CostCalculator.tsx | Implements Cost Calculator |
+| FournisseursCoutsTab | `src/app/product-research/_components/tabs/FournisseursCoutsTab.tsx` | Conteneur principal de l'onglet |
+| SupplierDatabase | `src/app/product-research/_components/SupplierDatabase.tsx` | Base fournisseurs |
+| FeatureCluster | `src/components/core/ui/FeatureCluster.tsx` | Conteneur collapsible |
 
-> **Note**: This documentation covers all major and minor features. If a section or a collabstic section have many features -> mention all the features.
+> **Note**: Les frais de douane algériens varient selon la catégorie de produit (électronique, textile, etc.).

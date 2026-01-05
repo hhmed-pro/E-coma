@@ -1,14 +1,9 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import {
-    Sparkles,
-    PenTool,
-    Palette,
-    Video
-} from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/core/layout/PageHeader";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/core/ui/tabs";
+import { Tabs, TabsContent } from "@/components/core/ui/tabs";
 import { usePageActions } from "@/components/core/layout/PageActionsContext";
 
 // Import Tab Components
@@ -17,37 +12,20 @@ import { ModelesFluxTab } from "./_components/tabs/ModelesFluxTab";
 import { MarqueConformiteTab } from "./_components/tabs/MarqueConformiteTab";
 import { OutilsTikTokTab } from "./_components/tabs/OutilsTikTokTab";
 
-// Tab Configuration
-const creativesHubTabs = [
-    {
-        id: "creation-ia",
-        label: "Création & IA",
-        icon: Sparkles,
-        description: "AI Copywriter & Hooks",
-    },
-    {
-        id: "modeles-flux",
-        label: "Modèles & Flux",
-        icon: PenTool,
-        description: "Templates & Pipeline",
-    },
-    {
-        id: "marque-conformite",
-        label: "Marque & Conformité",
-        icon: Palette,
-        description: "Brand Voice & Safety",
-    },
-    {
-        id: "outils-tiktok",
-        label: "Outils & TikTok",
-        icon: Video,
-        description: "Monétisation & Qualité",
-    },
-];
-
 function CreativesContent() {
     const { setSuggestions } = usePageActions();
     const [activeTab, setActiveTab] = useState("creation-ia");
+
+    // Listen for tab changes from Ecosystem Bar
+    useEffect(() => {
+        const handleTabChange = (e: CustomEvent<{ tabId: string; pathname: string }>) => {
+            if (e.detail.pathname === '/creatives') {
+                setActiveTab(e.detail.tabId);
+            }
+        };
+        window.addEventListener('page-tab-change', handleTabChange as EventListener);
+        return () => window.removeEventListener('page-tab-change', handleTabChange as EventListener);
+    }, []);
 
     useEffect(() => {
         setSuggestions([
@@ -67,40 +45,23 @@ function CreativesContent() {
                 icon={<Sparkles className="h-6 w-6 text-[hsl(var(--accent-purple))]" />}
             />
 
-            {/* Tab Navigation */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-muted/50 rounded-xl">
-                    {creativesHubTabs.map((tab) => (
-                        <TabsTrigger
-                            key={tab.id}
-                            value={tab.id}
-                            className="flex flex-col items-center gap-1 py-3 px-4 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all"
-                        >
-                            <tab.icon className="h-5 w-5" />
-                            <span className="text-sm font-medium hidden sm:block">{tab.label}</span>
-                            <span className="text-xs text-muted-foreground hidden md:block">{tab.description}</span>
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+            {/* Tab Contents - Navigation handled by Ecosystem Bar */}
+            <Tabs value={activeTab} className="w-full">
+                <TabsContent value="creation-ia" className="mt-0">
+                    <CreationIATab />
+                </TabsContent>
 
-                {/* Tab Contents */}
-                <div className="mt-6">
-                    <TabsContent value="creation-ia" className="mt-0">
-                        <CreationIATab />
-                    </TabsContent>
+                <TabsContent value="modeles-flux" className="mt-0">
+                    <ModelesFluxTab />
+                </TabsContent>
 
-                    <TabsContent value="modeles-flux" className="mt-0">
-                        <ModelesFluxTab />
-                    </TabsContent>
+                <TabsContent value="marque-conformite" className="mt-0">
+                    <MarqueConformiteTab />
+                </TabsContent>
 
-                    <TabsContent value="marque-conformite" className="mt-0">
-                        <MarqueConformiteTab />
-                    </TabsContent>
-
-                    <TabsContent value="outils-tiktok" className="mt-0">
-                        <OutilsTikTokTab />
-                    </TabsContent>
-                </div>
+                <TabsContent value="outils-tiktok" className="mt-0">
+                    <OutilsTikTokTab />
+                </TabsContent>
             </Tabs>
         </div>
     );

@@ -1,25 +1,32 @@
 # Marque & Conformité (Tab)
 
-**Parent Page**: Studio Créatif
+**Parent Page**: Studio Créatif  
+**Route**: `/creatives` (Tab: marque-conformite)  
+**Fichier Tab**: `src/app/creatives/_components/tabs/MarqueConformiteTab.tsx`
 
 ## Tab Overview
-Detailed view of the tab functionality.
+
+Outils de cohérence de marque et conformité du contenu. Profil de voix de marque pour guider l'IA, vérificateur de conformité avant publication, et presets de format par plateforme.
 
 ## Features List
 
 | Feature | Description | Purpose | Status | Components Reference |
 |---------|-------------|---------|--------|----------------------|
-| Brand Voice | Detailed description of Brand Voice | Purpose of Brand Voice | Active | Refer to Components Reference |
-| Content Safety | Detailed description of Content Safety | Purpose of Content Safety | Active | Refer to Components Reference |
-| Format Presets | Detailed description of Format Presets | Purpose of Format Presets | Active | Refer to Components Reference |
+| Brand Voice Profile | Configuration du profil de marque: ton (professionnel, décontracté, luxe), valeurs, mots-clés à utiliser/éviter, exemples de contenus. Guide l'IA dans ses générations. | Maintenir une voix de marque cohérente sur tous les contenus | Active | BrandVoiceProfile.tsx |
+| Content Safety Checker | Vérification automatique du contenu avant publication: détection de termes interdits, vérification des claims produits, conformité réglementaire, risques de signalement. | Éviter les problèmes de modération et légaux | Active | ContentSafetyChecker.tsx |
+| Format Presets | Presets de format par plateforme: dimensions images/vidéos, durées, limites de caractères. Application automatique lors de la création. Inclut: Feed FB/IG, Story, Reels, TikTok. | Créer du contenu aux bonnes dimensions sans erreur | Active | FormatPresets.tsx |
+| Brand Guidelines Library | Documentation des guidelines de marque: logos (usage correct), palette couleurs, typographies, do's and don'ts. Partageable en équipe. | Centraliser les règles de marque pour référence | Active | Inline Component |
+| Compliance History | Historique des vérifications de conformité: contenus analysés, alertes levées, corrections apportées. Audit trail pour traçabilité. | Suivre les vérifications pour audit et amélioration | Active | Inline Component |
+| Auto-Apply Brand | Application automatique des éléments de marque sur les créations: logo, couleurs, police. Sans manipulation manuelle à chaque création. | Automatiser le branding du contenu | Active | Integrated in Editor |
 
 ## Components Reference
 
 | Component | File Location | Purpose |
 |-----------|---------------|---------|
-| Main Component | src/app/creatives/_components/[component-name].tsx | Main container |
-| Brand Voice Component | src/app/creatives/_components/BrandVoice.tsx | Implements Brand Voice |
-| Content Safety Component | src/app/creatives/_components/ContentSafety.tsx | Implements Content Safety |
-| Format Presets Component | src/app/creatives/_components/FormatPresets.tsx | Implements Format Presets |
+| MarqueConformiteTab | `src/app/creatives/_components/tabs/MarqueConformiteTab.tsx` | Conteneur principal de l'onglet |
+| BrandVoiceProfile | `src/app/creatives/_components/BrandVoiceProfile.tsx` | Configuration voix de marque |
+| ContentSafetyChecker | `src/app/creatives/_components/ContentSafetyChecker.tsx` | Vérificateur conformité |
+| FormatPresets | `src/app/creatives/_components/FormatPresets.tsx` | Presets de format |
+| FeatureCluster | `src/components/core/ui/FeatureCluster.tsx` | Conteneur collapsible |
 
-> **Note**: This documentation covers all major and minor features. If a section or a collabstic section have many features -> mention all the features.
+> **Note**: Le Safety Checker inclut des règles spécifiques à la publicité en Algérie.

@@ -1,27 +1,31 @@
 # Finance & Rentabilité (Tab)
 
-**Parent Page**: Tableau de Bord
+**Parent Page**: Tableau de Bord  
+**Route**: `/analytics` (Tab: finance-rentabilite)  
+**Fichier Tab**: `src/app/analytics/_components/tabs/FinanceRentabiliteTab.tsx`
 
 ## Tab Overview
-Detailed view of the tab functionality.
+
+Suite d'outils financiers avancés pour maximiser la rentabilité. Calculateur de profit détaillé, analyse ROAS multi-plateforme, répartition des coûts, collecteur de paiements COD et suivi des taux de change.
 
 ## Features List
 
 | Feature | Description | Purpose | Status | Components Reference |
 |---------|-------------|---------|--------|----------------------|
-| Profit Calculator | Detailed description of Profit Calculator | Purpose of Profit Calculator | Active | Refer to Components Reference |
-| IFU Calculator | Detailed description of IFU Calculator | Purpose of IFU Calculator | Active | Refer to Components Reference |
-| Cash Collector | Detailed description of Cash Collector | Purpose of Cash Collector | Active | Refer to Components Reference |
-| ROAS Analyzer | Detailed description of ROAS Analyzer | Purpose of ROAS Analyzer | Active | Refer to Components Reference |
+| Profit Calculator | Calculateur de bénéfice complet: prix de vente, coût produit, frais livraison, frais pub, emballage. Calcul automatique de la marge brute et nette. Simulation de scénarios. | Calculer précisément la rentabilité de chaque produit/commande | Active | ProfitCalculator.tsx |
+| ROAS Analyzer | Analyse du Return On Ad Spend par plateforme: Global (2.8x), Facebook (3.2x), Instagram (2.4x), TikTok (2.1x). Avec seuil de rentabilité (1.5x). | Mesurer et optimiser l'efficacité des dépenses publicitaires | Coming Soon | Placeholder Card |
+| Cost Breakdown | Répartition visuelle des coûts: Produits (35%, 45,230 DA), Livraison (22%), Publicités (28%), Emballage (10%), Autres (5%). Barres colorées par catégorie. | Identifier où va l'argent pour optimiser les dépenses | Active | Inline Component |
+| Cash Collector | Tableau de bord de collecte COD: suivi des montants en attente chez les transporteurs, âge des créances (7j, 14j, 30j+), actions de réclamation. | Récupérer l'argent COD rapidement et éviter les impayés | Active | CashCollector.tsx |
+| Currency Tracker | Suivi des taux de change EUR/DZD (146.52, +0.35%) et USD/DZD (134.85, -0.12%) pour les imports. Actualisation et alertes. | Optimiser les achats en devise étrangère | Coming Soon | Placeholder Card |
+| Pending COD by Age | Ventilation des COD en attente par ancienneté: 7 jours (45,200 DA, 34 commandes), 14 jours (28,500 DA), 30+ jours (12,800 DA - urgent). Code couleur par urgence. | Prioriser la collecte des COD les plus anciens | Active | Inline Component |
 
 ## Components Reference
 
 | Component | File Location | Purpose |
 |-----------|---------------|---------|
-| Main Component | src/app/analytics/_components/[component-name].tsx | Main container |
-| Profit Calculator Component | src/app/analytics/_components/ProfitCalculator.tsx | Implements Profit Calculator |
-| IFU Calculator Component | src/app/analytics/_components/IFUCalculator.tsx | Implements IFU Calculator |
-| Cash Collector Component | src/app/analytics/_components/CashCollector.tsx | Implements Cash Collector |
-| ROAS Analyzer Component | src/app/analytics/_components/ROASAnalyzer.tsx | Implements ROAS Analyzer |
+| FinanceRentabiliteTab | `src/app/analytics/_components/tabs/FinanceRentabiliteTab.tsx` | Conteneur principal de l'onglet |
+| ProfitCalculator | `src/app/analytics/_components/ProfitCalculator.tsx` | Calculateur de profit détaillé |
+| CashCollector | `src/app/analytics/_components/CashCollector.tsx` | Gestion collecte COD |
+| FeatureCluster | `src/components/core/ui/FeatureCluster.tsx` | Conteneur collapsible |
 
-> **Note**: This documentation covers all major and minor features. If a section or a collabstic section have many features -> mention all the features.
+> **Note**: Le Cash Collector s'intègre avec les API transporteurs pour récupérer les statuts de paiement.
