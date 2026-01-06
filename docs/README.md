@@ -42,9 +42,9 @@ Welcome to the comprehensive documentation for E-coma platform.
 
 ## 📊 Documentation Statistics
 
-- **Total Files:** 12+ documents
-- **Total Size:** ~200 KB
-- **Coverage:** Architecture, API, Components, Database, Features, Setup, Deployment, UI Analytics
+- **Total Files:** 14+ documents
+- **Total Size:** ~220 KB
+- **Coverage:** Architecture, API, Components, Database, Features, Setup, Deployment, UI Analytics, Zone Navigation
 
 ---
 

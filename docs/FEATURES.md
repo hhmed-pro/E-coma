@@ -22,6 +22,18 @@ Each feature can be marked as a favorite for quick access.
 | **Core (Implemented)** | ~40 | Features currently configured and active in `feature-favorites-config.ts`. |
 | **Roadmap (Planned)** | ~87 | Features defined in the specification but currently under development or integration. |
 
+### 🗺️ Zone-Based Navigation (NEW)
+
+E-coma uses a 3-zone navigation structure optimized for Algerian COD e-commerce workflows:
+
+| Zone | Color | Purpose | Pages |
+|------|-------|---------|-------|
+| **Operations** | 🔴 Red | Daily order processing | Confirmation Command, Logistics & Recovery |
+| **Growth** | 🟢 Green | Business scaling | Ads Manager, Creative Studio |
+| **Command** | 🟣 Purple | Strategic oversight | Finance & Insights, Sourcing |
+
+Configuration: `src/config/zone-navigation.ts`
+
 ---
 
 ## Analytics Features

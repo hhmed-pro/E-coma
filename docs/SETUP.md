@@ -215,6 +215,7 @@ console.log('✓ Gemini Key:', process.env.GEMINI_API_KEY ? 'Set' : '❌ Missing
 ```
 
 Run test:
+
 ```bash
 node tmp_rovodev_test_env.js
 # Clean up
@@ -261,7 +262,7 @@ npx supabase db dump       # Backup database
 
 After starting the dev server, verify:
 
-- [ ] Server running at http://localhost:3000
+- [ ] Server running at <http://localhost:3000>
 - [ ] No console errors in browser
 - [ ] Can navigate to different pages
 - [ ] Dark/light theme toggle works
@@ -323,6 +324,11 @@ e-coma/
 ├── node_modules/               ✓ Installed dependencies
 ├── public/                     ✓ Static assets
 ├── src/                        ✓ Source code
+│   ├── app/                   ✓ Next.js App Router pages
+│   ├── components/            ✓ Core UI components (93 UI, 27 layout)
+│   ├── config/                ✓ Configuration files (9 files)
+│   ├── views/                 ✓ Zone-based view components (43 files)
+│   └── lib/                   ✓ Utilities and integrations
 ├── supabase/                   ✓ Database migrations
 ├── docs/                       ✓ Documentation
 ├── package.json                ✓ Dependencies list
@@ -411,7 +417,7 @@ If issues persist:
 
 1. Check [GitHub Issues](https://github.com/yourusername/e-coma/issues)
 2. Review [Documentation](../README.md)
-3. Contact support: dev@e-coma.com
+3. Contact support: <dev@e-coma.com>
 
 ---
 
@@ -432,6 +438,7 @@ After successful setup:
 ### Hot Reload
 
 Next.js automatically reloads when you save files:
+
 - **Components (.tsx)** - Hot reload
 - **Styles (.css)** - Hot reload
 - **Config files** - Requires restart
@@ -457,6 +464,7 @@ Create `.vscode/settings.json`:
 ### Browser Extensions
 
 Recommended Chrome/Edge extensions:
+
 - React Developer Tools
 - Redux DevTools (for Zustand)
 - TailwindCSS Debug Screens

@@ -100,13 +100,32 @@ RootLayout (Providers)
 │   ├── HelpContext
 │   └── PageActionsContext
 │       │
-│       ├── IconSidebar (Left Navigation)
+│       ├── ZoneSidebar / IconSidebar (Left Navigation)
 │       ├── TopNavigation (Collapsible Header)
 │       ├── PageHeader (Title, Actions Slot)
 │       ├── Page Content (Dynamic)
 │       ├── Dialogs/Sheets (Unified Modal System)
 │       └── EcosystemBar (Bottom Status Bar)
 ```
+
+### Layout Component Inventory
+
+The layout system comprises **27 components** in `src/components/core/layout/`:
+
+| Component | Purpose |
+|-----------|--------- |
+| `LayoutWrapper.tsx` | Root layout with all context providers |
+| `IconSidebar.tsx` | Traditional icon-based navigation |
+| `ZoneSidebar.tsx` | Zone-based navigation sidebar |
+| `ZoneLayoutWrapper.tsx` | Zone layout container |
+| `UltimateSidebar.tsx` | Enhanced sidebar with all features |
+| `TopNavigation.tsx` | Collapsible header navigation |
+| `EcosystemBar.tsx` | Bottom status bar with AI agents |
+| `ProfileMenu.tsx` | User profile and settings menu |
+| `SessionControlPanel.tsx` | Session and team management |
+| `PageTabsNavigation.tsx` | Tab-based page navigation |
+| `ModeContext.tsx` | Admin/Team mode switching |
+| `WindowLayoutContext.tsx` | Window state management |
 
 ---
 
@@ -293,7 +312,65 @@ type Theme = 'light' | 'dark' | 'system';
 
 ## Routing & Navigation
 
-### Route Structure
+### Zone-Based Navigation (Anti-Gravity Architecture)
+
+E-coma uses a **3-zone navigation system** optimized for Algerian COD e-commerce workflows:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      ZONE NAVIGATION                        │
+├─────────────────────────────────────────────────────────────┤
+│  🔴 OPERATIONS        │  🟢 GROWTH          │  🟣 COMMAND    │
+│  (Daily Tasks)        │  (Scale Business)   │  (Strategy)    │
+├───────────────────────┼─────────────────────┼────────────────┤
+│  • Confirmation       │  • Ads Manager      │  • Finance     │
+│  • Logistics          │  • Creative Studio  │  • Sourcing    │
+│  • Recovery (Rotour)  │  • Influencers      │  • Insights    │
+└───────────────────────┴─────────────────────┴────────────────┘
+```
+
+Configuration in `src/config/zone-navigation.ts`:
+
+```typescript
+export const ZONE_NAVIGATION: ZoneNavigation = {
+  zones: [
+    {
+      id: "operations",
+      label: "Operations",
+      labelAr: "العمليات",
+      color: "#EF4444", // Red
+      pages: [
+        { id: "confirmation-command", route: "/operations/confirmation" },
+        { id: "logistics-recovery", route: "/operations/logistics" }
+      ]
+    },
+    {
+      id: "growth",
+      label: "Growth",
+      labelAr: "النمو",
+      color: "#22C55E", // Green
+      pages: [
+        { id: "ads-manager", route: "/growth/ads" },
+        { id: "creative-studio", route: "/growth/creatives" }
+      ]
+    },
+    {
+      id: "command",
+      label: "Command",
+      labelAr: "القيادة",
+      color: "#8B5CF6", // Purple
+      pages: [
+        { id: "finance", route: "/command/finance" },
+        { id: "sourcing", route: "/command/sourcing" }
+      ]
+    }
+  ]
+};
+```
+
+### Legacy Route Structure
+
+Traditional routes still supported for backward compatibility:
 
 ```typescript
 // Main navigation categories
@@ -310,6 +387,48 @@ const categories = [
   'sales-dashboard',  // Orders & delivery
   'stock'             // Inventory management
 ];
+```
+
+### 3.1 Views Architecture (`src/views/`)
+
+The application uses a **Zone-Based Architecture** organizing the 7 functional modules into 3 strategic zones. This structure aligns the codebase with the business logic.
+
+#### Zones & Modules Map
+
+| **Zone** | **Focus** | **Primary Modules (Routes)** | **Legacy Module ID** |
+| :--- | :--- | :--- | :--- |
+| **🔴 OPERATIONS** | *Run the Business* | **Confirmation** (`/operations/confirmation`)<br>**Logistics** (`/operations/logistics`) | 01 (Centre de Confirmation)<br>03 (Entrepôt) |
+| **🟢 GROWTH** | *Grow the Business* | **Ads Manager** (`/growth/ads-manager`)<br>**Creative Studio** (`/growth/creative-studio`)<br>**Marketing** (`/growth`)* | 06 (Gestionnaire Pubs)<br>05 (Studio Créatif)<br>07 (Marketing & Growth) |
+| **🟣 COMMAND** | *Strategize* | **Finance** (`/command/finance`)<br>**Sourcing** (`/command/sourcing`) | 02 (Tableau de Bord)<br>04 (Découverte Produits) |
+
+> *\*Note: Module 07 (Marketing) features are currently being integrated into the Growth zone.*
+
+### 3.2 Navigation Levels
+
+The application implements a 3-tier navigation system:
+
+1. **Zone Navigation (Sidebar)**: High-level switching between Operations, Growth, and Command.
+    - *Config:* `src/config/zone-navigation.ts`
+2. **Module Navigation (Sidebar/Grid)**: Access to specific functional modules (the 7 Pages).
+    - *Legacy Config:* `src/config/navigation.tsx`
+3. **Feature Navigation (Tabs)**: Deep navigation within a module (e.g., "Filtering", "Automation" tabs).
+    - *Implementation:* Local `Tabs` components in `src/views/`.
+
+### 3.3 Component Hierarchy
+
+Reusable view components in `src/views/` organized by zone:
+
+```
+src/views/
+├── Command/
+│   ├── Finance/          # Cash flow, profitability, utilities
+│   └── Sourcing/         # Product research, suppliers
+├── Growth/
+│   ├── AdsManager/       # Campaign management
+│   └── CreativeStudio/   # Content production, influencers
+└── Operations/
+    ├── ConfirmationCommand/  # Filtering, calling, automation
+    └── LogisticsRecovery/    # Shipping, returns, inventory
 ```
 
 ### Dynamic Navigation Configuration
@@ -339,7 +458,7 @@ Automatic breadcrumbs from URL:
 
 ```
 /marketing/ads-manager → Marketing > Ads Manager
-/social/creation-studio → Social > Creation Studio
+/operations/logistics → Operations > Logistics & Recovery
 ```
 
 ---

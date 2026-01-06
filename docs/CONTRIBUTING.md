@@ -20,6 +20,7 @@ Thank you for considering contributing to E-coma! This document provides guideli
 ### Our Pledge
 
 We are committed to providing a welcoming and inclusive environment for all contributors, regardless of:
+
 - Experience level
 - Gender identity and expression
 - Sexual orientation
@@ -49,7 +50,7 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 ### Enforcement
 
-Violations can be reported to: conduct@e-coma.com
+Violations can be reported to: <conduct@e-coma.com>
 
 ---
 
@@ -316,6 +317,7 @@ calculateTotal.ts
 # Configs: kebab-case
 hub-config.ts
 feature-favorites-config.ts
+zone-navigation.ts
 
 # Types: PascalCase
 User.types.ts
@@ -422,6 +424,7 @@ BREAKING CHANGE: Credit balance endpoint now returns object instead of number"
 ### Scope Guidelines
 
 Use feature/module names as scopes:
+
 - `analytics`
 - `social`
 - `marketing`
@@ -733,21 +736,25 @@ export async function POST(request: NextRequest) {
 ### State Management Guidelines
 
 **Use useState for:**
+
 - Local component state
 - Form inputs
 - UI toggles
 
 **Use Context for:**
+
 - Layout state
 - Theme preferences
 - UI panel states
 
 **Use Zustand for:**
+
 - Global app state
 - User preferences
 - Cross-component data
 
 **Use Supabase for:**
+
 - Persistent data
 - User data
 - Database records
@@ -767,16 +774,18 @@ export async function POST(request: NextRequest) {
 
 - **GitHub Issues**: Bug reports and feature requests
 - **GitHub Discussions**: Questions and ideas
-- **Email**: dev@e-coma.com
+- **Email**: <dev@e-coma.com>
 
 ### Questions?
 
 Before asking:
+
 1. Check documentation
 2. Search existing issues
 3. Review closed PRs
 
 When asking:
+
 - Provide context
 - Include error messages
 - Share code snippets
@@ -787,6 +796,7 @@ When asking:
 ## Recognition
 
 Contributors will be recognized in:
+
 - CONTRIBUTORS.md file
 - Release notes
 - Project README

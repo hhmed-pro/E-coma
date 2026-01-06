@@ -251,18 +251,18 @@ e-coma/
 ├── src/
 │   ├── app/                    # Next.js App Router pages
 │   │   ├── admin/             # Admin settings (17 pages)
-│   │   ├── ads/               # Ad management (7 pages)
-│   │   ├── analytics/         # Business analytics (46 pages)
+│   │   ├── ads/               # Ad management (12 pages)
+│   │   ├── analytics/         # Business analytics (51 pages)
 │   │   ├── auth/              # Authentication
-│   │   ├── creatives/         # Content creation (50 pages)
+│   │   ├── creatives/         # Content creation (55 pages)
 │   │   ├── ecommerce/         # E-commerce operations (44 pages)
 │   │   ├── features-demo/     # Feature demonstrations
 │   │   ├── help/              # Help center (7 pages)
 │   │   ├── hub/               # Main dashboard hub
-│   │   ├── marketing/         # Marketing automation (48 pages)
-│   │   ├── product-research/  # Market research
-│   │   ├── sales-dashboard/   # Order management (10 pages)
-│   │   ├── stock/             # Inventory management
+│   │   ├── marketing/         # Marketing automation (53 pages)
+│   │   ├── product-research/  # Market research (8 pages)
+│   │   ├── sales-dashboard/   # Order management (15 pages)
+│   │   ├── stock/             # Inventory management (7 pages)
 │   │   └── api/               # API routes
 │   │       ├── agents/        # AI agent endpoints
 │   │       ├── credits/       # Credit system
@@ -270,13 +270,18 @@ e-coma/
 │   │       └── products/      # Product API
 │   ├── components/             # React components
 │   │   └── core/              # Core system components
-│   │       ├── layout/        # Layout components (24 files)
-│   │       ├── ui/            # UI components (71+ files)
+│   │       ├── layout/        # Layout components (27 files)
+│   │       ├── ui/            # UI components (93 files)
 │   │       │   └── modals/    # Modal components (21 files)
 │   │       └── providers/     # Context providers
-│   ├── config/                 # Configuration files (8 files)
+│   ├── views/                  # Reusable view components (43 files)
+│   │   ├── Command/           # Finance, Sourcing views
+│   │   ├── Growth/            # Ads Manager, Creative Studio views
+│   │   └── Operations/        # Confirmation, Logistics views
+│   ├── config/                 # Configuration files (9 files)
 │   │   ├── ecosystem-config.ts      # Bottom bar modules
 │   │   ├── navigation.tsx           # Main navigation
+│   │   ├── zone-navigation.ts       # Zone-based navigation (NEW)
 │   │   ├── hub-config.ts            # Hub categories
 │   │   ├── feature-favorites-config.ts  # Feature registry
 │   │   ├── favorites-config.ts      # User favorites
@@ -307,10 +312,11 @@ e-coma/
 ### Key Directories
 
 - **`src/app/`**: Next.js 15 App Router with main routes
-- **`src/components/core/layout/`**: Advanced layout system (24 components)
-- **`src/components/core/ui/`**: 71+ reusable UI components (shadcn/ui based)
-- **`src/config/`**: Centralized configuration (8 files)
-- **`src/lib/`**: Core utilities and third-party integrations (7+ files)
+- **`src/components/core/layout/`**: Advanced layout system (27 components)
+- **`src/components/core/ui/`**: 93 reusable UI components (shadcn/ui based)
+- **`src/views/`**: Zone-based reusable view components (43 files)
+- **`src/config/`**: Centralized configuration (9 files)
+- **`src/lib/`**: Core utilities and third-party integrations (8 files)
 
 ---
 
